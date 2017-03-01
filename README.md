@@ -1,1 +1,1 @@
---== Insta Study Categories APP ==-- nr & jz
+--== Insta Study Categories APP ==-- ?? & jz
