@@ -45,4 +45,16 @@ public class Subcategory extends EveObject {
         this.active = active;
     }
 
+    @Override
+    public String toString() {
+        String string = "Subcategory[";
+        string += "name=" + name + ", ";
+        string += "users=" + users + ", ";
+        string += "usersSize=" + usersSize + ", ";
+        string += "hashtags=" + hashtags + ", ";
+        string += "active=" + active;
+        string += "]";
+        return string;
+    }
+
 }

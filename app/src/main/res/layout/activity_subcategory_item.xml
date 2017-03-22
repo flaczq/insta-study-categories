@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/category_item_layout"
+    android:id="@+id/subcategory_item_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorAccent">
+    android:background="@color/colorPrimaryDark">
 
-    <TextView android:id="@+id/category_item_textview"
+    <TextView android:id="@+id/subcategory_item_textview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="College"
+        android:text="Biology"
         android:textSize="26dp"
         android:textColor="#FFF"
         android:textStyle="bold"

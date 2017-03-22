@@ -63,14 +63,15 @@ public class Category extends EveObject {
 
     @Override
     public String toString() {
-        String string = "";
-        string += name + ";";
-        string += users + ";";
-        string += usersSize + ";";
-        string += subcategories + ";";
-        string += subcategoriesSize + ";";
-        string += hashtags + ";";
-        string += active;
+        String string = "Category[";
+        string += "name=" + name + ", ";
+        string += "users=" + users + ", ";
+        string += "usersSize=" + usersSize + ", ";
+        string += "subcategories=" + subcategories + ", ";
+        string += "subcategoriesSize=" + subcategoriesSize + ", ";
+        string += "hashtags=" + hashtags + ", ";
+        string += "active=" + active;
+        string += "]";
         return string;
     }
 

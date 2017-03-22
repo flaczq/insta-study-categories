@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CategoryActivity extends AppCompatActivity {
+public class SubcategoryActivity extends AppCompatActivity {
 
     private final Activity clazz = this;
     private StaggeredGridView gridView;
@@ -25,20 +25,14 @@ public class CategoryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_category);
-        gridView = (StaggeredGridView) findViewById(R.id.category_gridview);
-        preloader = (CrystalPreloader) findViewById(R.id.category_preloader);
+        setContentView(R.layout.activity_subcategory);
+        gridView = (StaggeredGridView) findViewById(R.id.subcategory_gridview);
+        preloader = (CrystalPreloader) findViewById(R.id.subcategory_preloader);
 
-        Utils.log(Utils.LOG_DEBUG, clazz, "Build data: " +
-                BuildConfig.FLAVOR_FULLNAME +
-                "/" + BuildConfig.BUILD_TYPE + " " +
-                BuildConfig.VERSION_NAME
-        );
-
-        new ProcessCategories().execute();
+        new ProcessSubcategories().execute();
     }
 
-    private class ProcessCategories extends AsyncTask<Void, Void, List<Category>> {
+    private class ProcessSubcategories extends AsyncTask<Void, Void, List<Subcategory>> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -47,14 +41,14 @@ public class CategoryActivity extends AppCompatActivity {
         }
 
         @Override
-        protected List<Category> doInBackground(Void... voids) {
-            List<Category> categories = new ArrayList<>();
+        protected List<Subcategory> doInBackground(Void... voids) {
+            List<Subcategory> subcategories = new ArrayList<>();
 
             try {
                 Thread.sleep(5000); // FIXME: showing preloader, REMOVE
-                categories = Api.getCategories();
-                for (Category category : categories) {
-                    Utils.log(Utils.LOG_DEBUG, clazz, category.toString());
+                subcategories = Api.getSubcategories();
+                for (Subcategory subcategory : subcategories) {
+                    Utils.log(Utils.LOG_DEBUG, clazz, subcategory.toString());
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -67,16 +61,16 @@ public class CategoryActivity extends AppCompatActivity {
                 Utils.log(Utils.LOG_ERROR, clazz, e.getMessage());
             }
 
-            return categories;
+            return subcategories;
         }
 
         @Override
-        protected void onPostExecute(List<Category> categories) {
-            super.onPostExecute(categories);
+        protected void onPostExecute(List<Subcategory> subcategories) {
+            super.onPostExecute(subcategories);
 
             preloader.setVisibility(View.GONE);
-            CategoryAdapter categoryAdapter = new CategoryAdapter(clazz, categories);
-            gridView.setAdapter(categoryAdapter);
+            SubcategoryAdapter subcategoryAdapter = new SubcategoryAdapter(clazz, subcategories);
+            gridView.setAdapter(subcategoryAdapter);
         }
     }
 

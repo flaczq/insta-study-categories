@@ -77,16 +77,17 @@ public class User extends EveObject {
 
     @Override
     public String toString() {
-        String string = "";
-        string += username + ";";
-        string += fullname + ";";
-        string += instagramId + ";";
-        string += categoriesSize + ";";
-        string += followers + ";";
-        string += media + ";";
-        string += bio + ";";
-        string += profilePicUrl + ";";
-        string += active;
+        String string = "User[";
+        string += "username=" + username + ", ";
+        string += "fullname=" + fullname + ", ";
+        string += "instagramId=" + instagramId + ", ";
+        string += "categoriesSize=" + categoriesSize + ", ";
+        string += "followers=" + followers + ", ";
+        string += "media=" + media + ", ";
+        string += "bio=" + bio + ", ";
+        string += "profilePicUrl=" + profilePicUrl + ", ";
+        string += "active=" + active;
+        string += "]";
         return string;
     }
 
