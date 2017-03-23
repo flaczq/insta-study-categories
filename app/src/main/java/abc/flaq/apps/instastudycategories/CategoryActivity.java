@@ -1,10 +1,12 @@
 package abc.flaq.apps.instastudycategories;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
 
 import com.crystal.crystalpreloaders.widgets.CrystalPreloader;
 import com.etsy.android.grid.StaggeredGridView;
@@ -15,9 +17,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static abc.flaq.apps.instastudycategories.Constants.INTENT_CATEGORY_ID;
+
 public class CategoryActivity extends AppCompatActivity {
 
     private final Activity clazz = this;
+    private CategoryAdapter categoryAdapter;
+
     private StaggeredGridView gridView;
     private CrystalPreloader preloader;
 
@@ -35,6 +41,17 @@ public class CategoryActivity extends AppCompatActivity {
                 BuildConfig.VERSION_NAME
         );
 
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
+                String selected = categoryAdapter.getItemRealId(position);
+                Utils.log(Utils.LOG_DEBUG, clazz, "Selected position: " + position);
+                Intent nextIntent = new Intent(clazz, SubcategoryActivity.class);
+                nextIntent.putExtra(INTENT_CATEGORY_ID, selected);
+                clazz.startActivity(nextIntent);
+            }
+        });
+
         new ProcessCategories().execute();
     }
 
@@ -47,12 +64,12 @@ public class CategoryActivity extends AppCompatActivity {
         }
 
         @Override
-        protected List<Category> doInBackground(Void... voids) {
+        protected List<Category> doInBackground(Void... params) {
             List<Category> categories = new ArrayList<>();
 
             try {
                 Thread.sleep(5000); // FIXME: showing preloader, REMOVE
-                categories = Api.getCategories();
+                categories = Api.getAllCategories();
                 for (Category category : categories) {
                     Utils.log(Utils.LOG_DEBUG, clazz, category.toString());
                 }
@@ -75,7 +92,7 @@ public class CategoryActivity extends AppCompatActivity {
             super.onPostExecute(categories);
 
             preloader.setVisibility(View.GONE);
-            CategoryAdapter categoryAdapter = new CategoryAdapter(clazz, categories);
+            categoryAdapter = new CategoryAdapter(clazz, categories);
             gridView.setAdapter(categoryAdapter);
         }
     }

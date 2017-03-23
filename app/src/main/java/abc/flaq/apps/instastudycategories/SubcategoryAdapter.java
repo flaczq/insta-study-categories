@@ -1,7 +1,6 @@
 package abc.flaq.apps.instastudycategories;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +14,13 @@ public class SubcategoryAdapter extends BaseAdapter {
 
     private final Context context;
     private final List<Subcategory> subcategories;
+    private int maxSize;
 
     public SubcategoryAdapter(Context context, List<Subcategory> subcategories) {
         this.context = context;
         this.subcategories = subcategories;
+        // Assuming subcategories are sorted by size desc
+        this.maxSize = (subcategories.size() > 0 ? subcategories.get(0).getUsersSize() : 10);
     }
 
     @Override
@@ -27,18 +29,28 @@ public class SubcategoryAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int i) {
+    public Subcategory getItem(int position) {
+        if (position < subcategories.size()) {
+            return subcategories.get(position);
+        }
         return null;
     }
 
     @Override
-    public long getItemId(int i) {
+    public long getItemId(int position) {
         return 0;
     }
 
+    public String getItemRealId(int position) {
+        if (position < subcategories.size()) {
+            return subcategories.get(position).getId();
+        }
+        return null;
+    }
+
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
-        final Subcategory subcategory = subcategories.get(i);
+    public View getView(int position, View view, ViewGroup viewGroup) {
+        final Subcategory subcategory = subcategories.get(position);
 
         if (Utils.isEmpty(view)) {
             final LayoutInflater layoutInflater = LayoutInflater.from(context);
@@ -51,17 +63,7 @@ public class SubcategoryAdapter extends BaseAdapter {
         }
 
         final ViewHolder viewHolder = (ViewHolder) view.getTag();
-        if (i == 0) {
-            viewHolder.layout.setMinimumHeight(222);
-            viewHolder.layout.setBackgroundColor(Color.parseColor("#B176B1"));
-        } else if (i == 1) {
-            viewHolder.layout.setMinimumHeight(159);
-            viewHolder.layout.setBackgroundColor(Color.parseColor("#968089"));
-        } else if (i == 2) {
-            viewHolder.layout.setBackgroundColor(Color.parseColor("#F19C7F"));
-        } else {
-            viewHolder.layout.setBackgroundColor(Color.parseColor("#98CC9E"));
-        }
+        Utils.setGridDesign(position, subcategory.getUsersSize(), maxSize, viewHolder.layout);
         viewHolder.textView.setText(subcategory.getName());
 
         return view;

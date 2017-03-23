@@ -15,6 +15,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -27,6 +28,10 @@ public class Api {
 
     private static ObjectMapper mapper = new ObjectMapper();
     private static Calendar calendar = Calendar.getInstance();
+
+    private static List<Category> allCategories = new ArrayList<>();
+    private static List<Subcategory> allSubcategories = new ArrayList<>();
+    private static List<User> allUsers = new ArrayList<>();
 
     private static String readStream(InputStream is) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -64,7 +69,12 @@ public class Api {
         return jsonArray;
     }
 
-    public static List<Category> getCategories() throws IOException, JSONException {
+    // CATEGORIES
+    public static List<Category> getAllCategories() throws IOException, JSONException {
+        if (allCategories.size() > 0) {
+            return allCategories;
+        }
+
         InputStream is = getConnection(API_CATEGORIES_URL);
         String data = readStream(is);
         JSONArray jsonArray = getItems(data);
@@ -75,10 +85,41 @@ public class Api {
             correctDate(category);
             categories.add(category);
         }
+        Collections.sort(categories);
+        allCategories = categories;
 
         return categories;
     }
-    public static List<Subcategory> getSubcategories() throws IOException, JSONException {
+    public static Category getCategoryById(String id) throws IOException, JSONException {
+        if (allCategories.size() > 0) {
+            for (Category category : allCategories) {
+                if (id.equals(category.getId())) {
+                    return category;
+                }
+            }
+        }
+
+        InputStream is = getConnection(API_CATEGORIES_URL + "/" + id);
+        String data = readStream(is);
+        JSONArray jsonArray = getItems(data);
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+            Category category = mapper.readValue(jsonArray.getString(i), Category.class);
+            if (id.equals(category.getId())) {
+                correctDate(category);
+                return category;
+            }
+        }
+
+        return null;
+    }
+
+    // SUBCATEGORIES
+    public static List<Subcategory> getAllSubcategories() throws IOException, JSONException {
+        if (allSubcategories.size() > 0) {
+            return allSubcategories;
+        }
+
         InputStream is = getConnection(API_SUBCATEGORIES_URL);
         String data = readStream(is);
         JSONArray jsonArray = getItems(data);
@@ -89,10 +130,64 @@ public class Api {
             correctDate(subcategory);
             subcategories.add(subcategory);
         }
+        Collections.sort(subcategories);
+        allSubcategories = subcategories;
 
         return subcategories;
     }
-    public static List<User> getUsers() throws IOException, JSONException {
+    public static Subcategory getSubcategoryById(String id) throws IOException, JSONException {
+        if (allSubcategories.size() > 0) {
+            for (Subcategory subcategory : allSubcategories) {
+                if (id.equals(subcategory.getId())) {
+                    return subcategory;
+                }
+            }
+        }
+
+        InputStream is = getConnection(API_SUBCATEGORIES_URL + "/" + id);
+        String data = readStream(is);
+
+        Subcategory subcategory = mapper.readValue(data, Subcategory.class);
+        if (id.equals(subcategory.getId())) {
+            correctDate(subcategory);
+            return subcategory;
+        }
+
+        return null;
+    }
+    public static List<Subcategory> getSubcategoriesByCategoryId(String categoryId) throws IOException, JSONException {
+        // FIXME: odwrócić zależność - kategorie W podkategoriach
+        List<Subcategory> subcategories = new ArrayList<>();
+
+        if (allCategories.size() > 0) {
+            Category category = getCategoryById(categoryId);
+            if (Utils.isNotEmpty(category)) {
+                for (String subcategoryId : category.getSubcategories()) {
+                    subcategories.add(getSubcategoryById(subcategoryId));
+                }
+            }
+        } else {
+            // TODO: fix me
+            InputStream is = getConnection(API_SUBCATEGORIES_URL + "/" + categoryId);
+            String data = readStream(is);
+            JSONArray jsonArray = getItems(data);
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                Subcategory subcategory = mapper.readValue(jsonArray.getString(i), Subcategory.class);
+                correctDate(subcategory);
+                subcategories.add(subcategory);
+            }
+        }
+
+        return subcategories;
+    }
+
+    // USERS
+    public static List<User> getAllUsers() throws IOException, JSONException {
+        if (allUsers.size() > 0) {
+            return allUsers;
+        }
+
         InputStream is = getConnection(API_USERS_URL);
         String data = readStream(is);
         JSONArray jsonArray = getItems(data);
@@ -103,6 +198,8 @@ public class Api {
             correctDate(user);
             users.add(user);
         }
+        Collections.sort(users);
+        allUsers = users;
 
         return users;
     }

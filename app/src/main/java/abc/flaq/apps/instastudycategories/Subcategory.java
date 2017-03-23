@@ -2,7 +2,7 @@ package abc.flaq.apps.instastudycategories;
 
 import java.util.List;
 
-public class Subcategory extends EveObject {
+public class Subcategory extends EveObject implements Comparable<Subcategory> {
 
     private String name;
     private List<String> users;
@@ -55,6 +55,11 @@ public class Subcategory extends EveObject {
         string += "active=" + active;
         string += "]";
         return string;
+    }
+
+    @Override
+    public int compareTo(Subcategory subcategory) {
+        return (subcategory.getUsersSize() - this.usersSize);
     }
 
 }

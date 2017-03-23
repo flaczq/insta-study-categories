@@ -1,6 +1,6 @@
 package abc.flaq.apps.instastudycategories;
 
-public class User extends EveObject {
+public class User extends EveObject implements Comparable<User> {
 
     private String username;
     private String fullname;
@@ -89,6 +89,11 @@ public class User extends EveObject {
         string += "active=" + active;
         string += "]";
         return string;
+    }
+
+    @Override
+    public int compareTo(User user) {
+        return (user.getFollowers() - followers);
     }
 
 }

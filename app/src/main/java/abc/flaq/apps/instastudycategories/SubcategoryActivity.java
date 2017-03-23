@@ -1,10 +1,12 @@
 package abc.flaq.apps.instastudycategories;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
 
 import com.crystal.crystalpreloaders.widgets.CrystalPreloader;
 import com.etsy.android.grid.StaggeredGridView;
@@ -15,9 +17,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static abc.flaq.apps.instastudycategories.Constants.INTENT_CATEGORY_ID;
+
 public class SubcategoryActivity extends AppCompatActivity {
 
     private final Activity clazz = this;
+    private SubcategoryAdapter subcategoryAdapter;
+    private Intent intent;
+
     private StaggeredGridView gridView;
     private CrystalPreloader preloader;
 
@@ -29,10 +36,28 @@ public class SubcategoryActivity extends AppCompatActivity {
         gridView = (StaggeredGridView) findViewById(R.id.subcategory_gridview);
         preloader = (CrystalPreloader) findViewById(R.id.subcategory_preloader);
 
-        new ProcessSubcategories().execute();
+        intent = getIntent();
+        String categoryId = intent.getStringExtra(INTENT_CATEGORY_ID);
+
+        if (Utils.isEmpty(categoryId)) {
+            Utils.afterError(clazz);
+            finish();
+        } else {
+            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
+                    /*String selected = subcategoryAdapter.getItemRealId(position);
+                    Utils.log(Utils.LOG_DEBUG, clazz, "Selected position: " + position);
+                    Intent nextIntent = new Intent(clazz, UserActivity.class);
+                    nextIntent.putExtra(INTENT_SUBCATEGORY_ID, selected);
+                    clazz.startActivity(nextIntent);*/
+                }
+            });
+            new ProcessSubcategories().execute(categoryId);
+        }
     }
 
-    private class ProcessSubcategories extends AsyncTask<Void, Void, List<Subcategory>> {
+    private class ProcessSubcategories extends AsyncTask<String, Void, List<Subcategory>> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -41,12 +66,13 @@ public class SubcategoryActivity extends AppCompatActivity {
         }
 
         @Override
-        protected List<Subcategory> doInBackground(Void... voids) {
+        protected List<Subcategory> doInBackground(String... params) {
+            String categoryId = params[0];
             List<Subcategory> subcategories = new ArrayList<>();
 
             try {
                 Thread.sleep(5000); // FIXME: showing preloader, REMOVE
-                subcategories = Api.getSubcategories();
+                subcategories = Api.getSubcategoriesByCategoryId(categoryId);
                 for (Subcategory subcategory : subcategories) {
                     Utils.log(Utils.LOG_DEBUG, clazz, subcategory.toString());
                 }
@@ -69,7 +95,7 @@ public class SubcategoryActivity extends AppCompatActivity {
             super.onPostExecute(subcategories);
 
             preloader.setVisibility(View.GONE);
-            SubcategoryAdapter subcategoryAdapter = new SubcategoryAdapter(clazz, subcategories);
+            subcategoryAdapter = new SubcategoryAdapter(clazz, subcategories);
             gridView.setAdapter(subcategoryAdapter);
         }
     }
