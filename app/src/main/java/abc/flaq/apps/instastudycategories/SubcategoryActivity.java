@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static abc.flaq.apps.instastudycategories.Constants.INTENT_CATEGORY_ID;
+import static abc.flaq.apps.instastudycategories.Constants.INTENT_SUBCATEGORY_ID;
 
 public class SubcategoryActivity extends AppCompatActivity {
 
@@ -46,13 +47,14 @@ public class SubcategoryActivity extends AppCompatActivity {
             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
-                    /*String selected = subcategoryAdapter.getItemRealId(position);
+                    String selected = subcategoryAdapter.getItemRealId(position);
                     Utils.log(Utils.LOG_DEBUG, clazz, "Selected position: " + position);
                     Intent nextIntent = new Intent(clazz, UserActivity.class);
                     nextIntent.putExtra(INTENT_SUBCATEGORY_ID, selected);
-                    clazz.startActivity(nextIntent);*/
+                    clazz.startActivity(nextIntent);
                 }
             });
+
             new ProcessSubcategories().execute(categoryId);
         }
     }
@@ -71,31 +73,28 @@ public class SubcategoryActivity extends AppCompatActivity {
             List<Subcategory> subcategories = new ArrayList<>();
 
             try {
-                Thread.sleep(5000); // FIXME: showing preloader, REMOVE
+                Thread.sleep(1000); // FIXME: showing preloader, REMOVE
                 subcategories = Api.getSubcategoriesByCategoryId(categoryId);
                 for (Subcategory subcategory : subcategories) {
                     Utils.log(Utils.LOG_DEBUG, clazz, subcategory.toString());
                 }
             } catch (InterruptedException e) {
-                e.printStackTrace();
-                Utils.log(Utils.LOG_ERROR, clazz, e.getMessage());
+                Utils.log(Utils.LOG_ERROR, clazz, "InterruptedException: " + e.toString());
             } catch (JSONException e) {
-                e.printStackTrace();
-                Utils.log(Utils.LOG_ERROR, clazz, e.getMessage());
+                Utils.log(Utils.LOG_ERROR, clazz, "JSONException: " + e.toString());
             } catch (IOException e) {
-                e.printStackTrace();
-                Utils.log(Utils.LOG_ERROR, clazz, e.getMessage());
+                Utils.log(Utils.LOG_ERROR, clazz, "IOException: " + e.toString());
             }
 
             return subcategories;
         }
 
         @Override
-        protected void onPostExecute(List<Subcategory> subcategories) {
-            super.onPostExecute(subcategories);
+        protected void onPostExecute(List<Subcategory> result) {
+            super.onPostExecute(result);
 
             preloader.setVisibility(View.GONE);
-            subcategoryAdapter = new SubcategoryAdapter(clazz, subcategories);
+            subcategoryAdapter = new SubcategoryAdapter(clazz, result);
             gridView.setAdapter(subcategoryAdapter);
         }
     }

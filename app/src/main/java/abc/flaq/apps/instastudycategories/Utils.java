@@ -2,10 +2,15 @@ package abc.flaq.apps.instastudycategories;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.util.Log;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import java.util.List;
 
 import static abc.flaq.apps.instastudycategories.Constants.GRID_MAX_HEIGHT;
 
@@ -45,6 +50,12 @@ public class Utils {
 
     public static void afterError(Context context) {
         Toast.makeText(context, "Shit happend", Toast.LENGTH_LONG).show();
+    }
+
+    public static Boolean isIntentAvailable(Context context, Intent intent) {
+        final PackageManager packageManager = context.getPackageManager();
+        List<ResolveInfo> list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        return (list.size() > 0);
     }
 
     public static void setGridDesign(int position, int size, int maxSize, RelativeLayout layout) {

@@ -68,31 +68,28 @@ public class CategoryActivity extends AppCompatActivity {
             List<Category> categories = new ArrayList<>();
 
             try {
-                Thread.sleep(5000); // FIXME: showing preloader, REMOVE
+                Thread.sleep(1000); // FIXME: showing preloader, REMOVE
                 categories = Api.getAllCategories();
                 for (Category category : categories) {
                     Utils.log(Utils.LOG_DEBUG, clazz, category.toString());
                 }
             } catch (InterruptedException e) {
-                e.printStackTrace();
-                Utils.log(Utils.LOG_ERROR, clazz, e.getMessage());
+                Utils.log(Utils.LOG_ERROR, clazz, "InterruptedException: " + e.toString());
             } catch (JSONException e) {
-                e.printStackTrace();
-                Utils.log(Utils.LOG_ERROR, clazz, e.getMessage());
+                Utils.log(Utils.LOG_ERROR, clazz, "JSONException: " + e.toString());
             } catch (IOException e) {
-                e.printStackTrace();
-                Utils.log(Utils.LOG_ERROR, clazz, e.getMessage());
+                Utils.log(Utils.LOG_ERROR, clazz, "IOException: " + e.toString());
             }
 
             return categories;
         }
 
         @Override
-        protected void onPostExecute(List<Category> categories) {
-            super.onPostExecute(categories);
+        protected void onPostExecute(List<Category> result) {
+            super.onPostExecute(result);
 
             preloader.setVisibility(View.GONE);
-            categoryAdapter = new CategoryAdapter(clazz, categories);
+            categoryAdapter = new CategoryAdapter(clazz, result);
             gridView.setAdapter(categoryAdapter);
         }
     }

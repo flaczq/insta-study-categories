@@ -23,7 +23,8 @@
         <activity
             android:name=".CategoryActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".SubcategoryActivity"></activity>
+        <activity android:name=".SubcategoryActivity" />
+        <activity android:name=".UserActivity"></activity>
     </application>
 
 </manifest>

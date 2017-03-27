@@ -156,7 +156,6 @@ public class Api {
         return null;
     }
     public static List<Subcategory> getSubcategoriesByCategoryId(String categoryId) throws IOException, JSONException {
-        // FIXME: odwrócić zależność - kategorie W podkategoriach
         List<Subcategory> subcategories = new ArrayList<>();
 
         if (allCategories.size() > 0) {
@@ -200,6 +199,51 @@ public class Api {
         }
         Collections.sort(users);
         allUsers = users;
+
+        return users;
+    }
+    public static User getUserById(String id) throws IOException, JSONException {
+        if (allUsers.size() > 0) {
+            for (User user : allUsers) {
+                if (id.equals(user.getId())) {
+                    return user;
+                }
+            }
+        }
+
+        InputStream is = getConnection(API_USERS_URL + "/" + id);
+        String data = readStream(is);
+
+        User user = mapper.readValue(data, User.class);
+        if (id.equals(user.getId())) {
+            correctDate(user);
+            return user;
+        }
+
+        return null;
+    }
+    public static List<User> getUsersBySubcategoryId(String subcategoryId) throws IOException, JSONException {
+        List<User> users = new ArrayList<>();
+
+        if (allUsers.size() > 0) {
+            Subcategory subcategory = getSubcategoryById(subcategoryId);
+            if (Utils.isNotEmpty(subcategory)) {
+                for (String userId : subcategory.getUsers()) {
+                    users.add(getUserById(userId));
+                }
+            }
+        } else {
+            // fixme
+            InputStream is = getConnection(API_USERS_URL + "/" + subcategoryId);
+            String data = readStream(is);
+            JSONArray jsonArray = getItems(data);
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                User subcategory = mapper.readValue(jsonArray.getString(i), User.class);
+                correctDate(subcategory);
+                users.add(subcategory);
+            }
+        }
 
         return users;
     }
