@@ -1,22 +1,27 @@
 package abc.flaq.apps.instastudycategories;
 
+import java.util.List;
+
 public class User extends EveObject implements Comparable<User> {
 
-    private String username;
-    private String fullname;
     private String instagramId;
-    private Integer categoriesSize;
-    private Integer followers;
-    private Integer media;
+    private String fullname;
+    private String username;
     private String bio;
     private String profilePicUrl;
+    private Integer followers;
+    private Integer media;
+    private List<String> categories;
+    private Integer categoriesSize;
+    private List<String> subcategories;
+    private Integer subcategoriesSize;
     private Boolean active;
 
-    public String getUsername() {
-        return username;
+    public String getInstagramId() {
+        return instagramId;
     }
-    public void setUsername(String username) {
-        this.username = username;
+    public void setInstagramId(String instagramId) {
+        this.instagramId = instagramId;
     }
 
     public String getFullname() {
@@ -26,32 +31,11 @@ public class User extends EveObject implements Comparable<User> {
         this.fullname = fullname;
     }
 
-    public String getInstagramId() {
-        return instagramId;
+    public String getUsername() {
+        return username;
     }
-    public void setInstagramId(String instagramId) {
-        this.instagramId = instagramId;
-    }
-
-    public Integer getCategoriesSize() {
-        return categoriesSize;
-    }
-    public void setCategoriesSize(Integer categoriesSize) {
-        this.categoriesSize = categoriesSize;
-    }
-
-    public Integer getFollowers() {
-        return followers;
-    }
-    public void setFollowers(Integer followers) {
-        this.followers = followers;
-    }
-
-    public Integer getMedia() {
-        return media;
-    }
-    public void setMedia(Integer media) {
-        this.media = media;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getBio() {
@@ -68,7 +52,49 @@ public class User extends EveObject implements Comparable<User> {
         this.profilePicUrl = profilePicUrl;
     }
 
-    public Boolean getActive() {
+    public Integer getFollowers() {
+        return followers;
+    }
+    public void setFollowers(Integer followers) {
+        this.followers = followers;
+    }
+
+    public Integer getMedia() {
+        return media;
+    }
+    public void setMedia(Integer media) {
+        this.media = media;
+    }
+
+    public List<String> getCategories() {
+        return categories;
+    }
+    public void setCategories(List<String> categories) {
+        this.categories = categories;
+    }
+
+    public Integer getCategoriesSize() {
+        return categoriesSize;
+    }
+    public void setCategoriesSize(Integer categoriesSize) {
+        this.categoriesSize = categoriesSize;
+    }
+
+    public List<String> getSubcategories() {
+        return subcategories;
+    }
+    public void setSubcategories(List<String> subcategories) {
+        this.subcategories = subcategories;
+    }
+
+    public Integer getSubcategoriesSize() {
+        return subcategoriesSize;
+    }
+    public void setSubcategoriesSize(Integer subcategoriesSize) {
+        this.subcategoriesSize = subcategoriesSize;
+    }
+
+    public Boolean isActive() {
         return active;
     }
     public void setActive(Boolean active) {
@@ -78,14 +104,17 @@ public class User extends EveObject implements Comparable<User> {
     @Override
     public String toString() {
         String string = "User[";
-        string += "username=" + username + ", ";
-        string += "fullname=" + fullname + ", ";
         string += "instagramId=" + instagramId + ", ";
-        string += "categoriesSize=" + categoriesSize + ", ";
-        string += "followers=" + followers + ", ";
-        string += "media=" + media + ", ";
+        string += "fullname=" + fullname + ", ";
+        string += "username=" + username + ", ";
         string += "bio=" + bio + ", ";
         string += "profilePicUrl=" + profilePicUrl + ", ";
+        string += "followers=" + followers + ", ";
+        string += "media=" + media + ", ";
+        string += "categories=" + categories + ", ";
+        string += "categoriesSize=" + categoriesSize + ", ";
+        string += "subcategories=" + subcategories + ", ";
+        string += "subcategoriesSize=" + subcategoriesSize + ", ";
         string += "active=" + active;
         string += "]";
         return string;

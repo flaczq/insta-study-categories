@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -33,7 +34,7 @@ public class Api {
     private static List<Subcategory> allSubcategories = new ArrayList<>();
     private static List<User> allUsers = new ArrayList<>();
 
-    private static String readStream(InputStream is) throws IOException {
+    private static String getStream(InputStream is) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int i = is.read();
         while (i != -1) {
@@ -43,8 +44,60 @@ public class Api {
         return baos.toString();
     }
 
-    private static InputStream getConnection(String url) throws IOException {
+    // fixme: use library
+    private static InputStream getRequest(String url) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.setRequestProperty("Authorization", API_CREDENTIALS);
+        connection.connect();
+        InputStream is = new BufferedInputStream(connection.getInputStream());
+        return is;
+    }
+    private static InputStream postRequest(String url, String data) throws IOException {
+        byte[] byteData = data.getBytes();
+        int byteDataLength = byteData.length;
+
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.setDoOutput(true);
+        connection.setUseCaches(false);
+        connection.setInstanceFollowRedirects(false);
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setRequestProperty("Content-Length", Integer.toString(byteDataLength));
+        connection.setRequestProperty("Authorization", API_CREDENTIALS);
+        DataOutputStream dos = new DataOutputStream(connection.getOutputStream());
+        dos.write(byteData);
+        connection.connect();
+        InputStream is = new BufferedInputStream(connection.getInputStream());
+        dos.flush();
+        dos.close();
+        return is;
+    }
+    private static InputStream putRequest(String url, String etag, String data) throws IOException {
+        byte[] byteData = data.getBytes();
+        int byteDataLength = byteData.length;
+
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.setDoOutput(true);
+        connection.setUseCaches(false);
+        connection.setInstanceFollowRedirects(false);
+        connection.setRequestMethod("PUT");
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setRequestProperty("If-Match", etag);
+        connection.setRequestProperty("Content-Length", Integer.toString(byteDataLength));
+        connection.setRequestProperty("Authorization", API_CREDENTIALS);
+        DataOutputStream dos = new DataOutputStream(connection.getOutputStream());
+        dos.write(byteData);
+        connection.connect();
+        InputStream is = new BufferedInputStream(connection.getInputStream());
+        dos.flush();
+        dos.close();
+        return is;
+    }
+    private static InputStream deleteRequest(String url, String etag) throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.setRequestMethod("DELETE");
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setRequestProperty("If-Match", etag);
         connection.setRequestProperty("Authorization", API_CREDENTIALS);
         connection.connect();
         InputStream is = new BufferedInputStream(connection.getInputStream());
@@ -69,14 +122,18 @@ public class Api {
         return jsonArray;
     }
 
+    private static String getWhere(String field, String value) {
+        return "?where='" + field + "': '" + value + "'}";
+    }
+
     // CATEGORIES
-    public static List<Category> getAllCategories() throws IOException, JSONException {
-        if (allCategories.size() > 0) {
+    public static List<Category> getAllCategories(boolean force) throws IOException, JSONException {
+        if (false && !force && allCategories.size() > 0) {
             return allCategories;
         }
 
-        InputStream is = getConnection(API_CATEGORIES_URL);
-        String data = readStream(is);
+        InputStream is = getRequest(API_CATEGORIES_URL);
+        String data = getStream(is);
         JSONArray jsonArray = getItems(data);
 
         List<Category> categories = new ArrayList<>();
@@ -91,7 +148,7 @@ public class Api {
         return categories;
     }
     public static Category getCategoryById(String id) throws IOException, JSONException {
-        if (allCategories.size() > 0) {
+        if (false && allCategories.size() > 0) {
             for (Category category : allCategories) {
                 if (id.equals(category.getId())) {
                     return category;
@@ -99,8 +156,8 @@ public class Api {
             }
         }
 
-        InputStream is = getConnection(API_CATEGORIES_URL + "/" + id);
-        String data = readStream(is);
+        InputStream is = getRequest(API_CATEGORIES_URL + "/" + id);
+        String data = getStream(is);
         JSONArray jsonArray = getItems(data);
 
         for (int i = 0; i < jsonArray.length(); i++) {
@@ -115,13 +172,13 @@ public class Api {
     }
 
     // SUBCATEGORIES
-    public static List<Subcategory> getAllSubcategories() throws IOException, JSONException {
-        if (allSubcategories.size() > 0) {
+    public static List<Subcategory> getAllSubcategories(boolean force) throws IOException, JSONException {
+        if (false && !force && allSubcategories.size() > 0) {
             return allSubcategories;
         }
 
-        InputStream is = getConnection(API_SUBCATEGORIES_URL);
-        String data = readStream(is);
+        InputStream is = getRequest(API_SUBCATEGORIES_URL);
+        String data = getStream(is);
         JSONArray jsonArray = getItems(data);
 
         List<Subcategory> subcategories = new ArrayList<>();
@@ -136,7 +193,7 @@ public class Api {
         return subcategories;
     }
     public static Subcategory getSubcategoryById(String id) throws IOException, JSONException {
-        if (allSubcategories.size() > 0) {
+        if (false && allSubcategories.size() > 0) {
             for (Subcategory subcategory : allSubcategories) {
                 if (id.equals(subcategory.getId())) {
                     return subcategory;
@@ -144,8 +201,8 @@ public class Api {
             }
         }
 
-        InputStream is = getConnection(API_SUBCATEGORIES_URL + "/" + id);
-        String data = readStream(is);
+        InputStream is = getRequest(API_SUBCATEGORIES_URL + "/" + id);
+        String data = getStream(is);
 
         Subcategory subcategory = mapper.readValue(data, Subcategory.class);
         if (id.equals(subcategory.getId())) {
@@ -158,17 +215,15 @@ public class Api {
     public static List<Subcategory> getSubcategoriesByCategoryId(String categoryId) throws IOException, JSONException {
         List<Subcategory> subcategories = new ArrayList<>();
 
-        if (allCategories.size() > 0) {
-            Category category = getCategoryById(categoryId);
-            if (Utils.isNotEmpty(category)) {
-                for (String subcategoryId : category.getSubcategories()) {
-                    subcategories.add(getSubcategoryById(subcategoryId));
+        if (false && allCategories.size() > 0) {
+            for (Subcategory subcategory : allSubcategories) {
+                if (subcategory.getCategories().contains(categoryId)) {
+                    subcategories.add(subcategory);
                 }
             }
         } else {
-            // TODO: fix me
-            InputStream is = getConnection(API_SUBCATEGORIES_URL + "/" + categoryId);
-            String data = readStream(is);
+            InputStream is = getRequest(API_SUBCATEGORIES_URL + getWhere("categories", categoryId));
+            String data = getStream(is);
             JSONArray jsonArray = getItems(data);
 
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -182,13 +237,13 @@ public class Api {
     }
 
     // USERS
-    public static List<User> getAllUsers() throws IOException, JSONException {
-        if (allUsers.size() > 0) {
+    public static List<User> getAllUsers(boolean force) throws IOException, JSONException {
+        if (false && !force && allUsers.size() > 0) {
             return allUsers;
         }
 
-        InputStream is = getConnection(API_USERS_URL);
-        String data = readStream(is);
+        InputStream is = getRequest(API_USERS_URL);
+        String data = getStream(is);
         JSONArray jsonArray = getItems(data);
 
         List<User> users = new ArrayList<>();
@@ -203,7 +258,7 @@ public class Api {
         return users;
     }
     public static User getUserById(String id) throws IOException, JSONException {
-        if (allUsers.size() > 0) {
+        if (false && allUsers.size() > 0) {
             for (User user : allUsers) {
                 if (id.equals(user.getId())) {
                     return user;
@@ -211,8 +266,8 @@ public class Api {
             }
         }
 
-        InputStream is = getConnection(API_USERS_URL + "/" + id);
-        String data = readStream(is);
+        InputStream is = getRequest(API_USERS_URL + "/" + id);
+        String data = getStream(is);
 
         User user = mapper.readValue(data, User.class);
         if (id.equals(user.getId())) {
@@ -222,30 +277,38 @@ public class Api {
 
         return null;
     }
-    public static List<User> getUsersBySubcategoryId(String subcategoryId) throws IOException, JSONException {
+    public static List<User> getUsersByCategorySubcategoryId(String categorySubcategoryId, Boolean asSubcategory) throws IOException, JSONException {
         List<User> users = new ArrayList<>();
 
-        if (allUsers.size() > 0) {
-            Subcategory subcategory = getSubcategoryById(subcategoryId);
-            if (Utils.isNotEmpty(subcategory)) {
-                for (String userId : subcategory.getUsers()) {
-                    users.add(getUserById(userId));
+        if (false && allUsers.size() > 0) {
+            for (User user : allUsers) {
+                List<String> list = (asSubcategory ? user.getSubcategories() : user.getCategories());
+                if (list.contains(categorySubcategoryId)) {
+                    users.add(user);
                 }
             }
         } else {
-            // fixme
-            InputStream is = getConnection(API_USERS_URL + "/" + subcategoryId);
-            String data = readStream(is);
+            String field = (asSubcategory ? "subcategories" : "categories");
+            InputStream is = getRequest(API_USERS_URL + getWhere(field, categorySubcategoryId));
+            String data = getStream(is);
             JSONArray jsonArray = getItems(data);
 
             for (int i = 0; i < jsonArray.length(); i++) {
-                User subcategory = mapper.readValue(jsonArray.getString(i), User.class);
-                correctDate(subcategory);
-                users.add(subcategory);
+                User user = mapper.readValue(jsonArray.getString(i), User.class);
+                correctDate(user);
+                users.add(user);
             }
         }
 
         return users;
+    }
+    public static Boolean deleteUserById(User user) throws IOException, JSONException {
+        InputStream is = deleteRequest(API_USERS_URL + "/" + user.getId(), user.getEtag());
+        String data = getStream(is);
+        // todo: try to change local data first, if not - call api
+        //getAllUsers(Boolean.TRUE);
+
+        return Boolean.FALSE;
     }
 
 }

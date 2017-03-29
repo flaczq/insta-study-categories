@@ -5,11 +5,10 @@ import java.util.List;
 public class Category extends EveObject implements Comparable<Category> {
 
     private String name;
-    private List<String> users;
     private Integer usersSize;
-    private List<String> subcategories;
     private Integer subcategoriesSize;
     private List<String> hashtags;
+    private Boolean asSubcategory;
     private Boolean active;
 
     public String getName() {
@@ -19,25 +18,11 @@ public class Category extends EveObject implements Comparable<Category> {
         this.name = name;
     }
 
-    public List<String> getUsers() {
-        return users;
-    }
-    public void setUsers(List<String> users) {
-        this.users = users;
-    }
-
     public Integer getUsersSize() {
         return usersSize;
     }
     public void setUsersSize(Integer usersSize) {
         this.usersSize = usersSize;
-    }
-
-    public List<String> getSubcategories() {
-        return subcategories;
-    }
-    public void setSubcategories(List<String> subcategories) {
-        this.subcategories = subcategories;
     }
 
     public Integer getSubcategoriesSize() {
@@ -54,7 +39,14 @@ public class Category extends EveObject implements Comparable<Category> {
         this.hashtags = hashtags;
     }
 
-    public Boolean getActive() {
+    public Boolean isAsSubcategory() {
+        return asSubcategory;
+    }
+    public void setAsSubcategory(Boolean asSubcategory) {
+        this.asSubcategory = asSubcategory;
+    }
+
+    public Boolean isActive() {
         return active;
     }
     public void setActive(Boolean active) {
@@ -65,11 +57,10 @@ public class Category extends EveObject implements Comparable<Category> {
     public String toString() {
         String string = "Category[";
         string += "name=" + name + ", ";
-        string += "users=" + users + ", ";
         string += "usersSize=" + usersSize + ", ";
-        string += "subcategories=" + subcategories + ", ";
         string += "subcategoriesSize=" + subcategoriesSize + ", ";
         string += "hashtags=" + hashtags + ", ";
+        string += "asSubcategory=" + asSubcategory + ", ";
         string += "active=" + active;
         string += "]";
         return string;

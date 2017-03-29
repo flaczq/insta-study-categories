@@ -5,8 +5,8 @@ import java.util.List;
 public class Subcategory extends EveObject implements Comparable<Subcategory> {
 
     private String name;
-    private List<String> users;
     private Integer usersSize;
+    private List<String> categories;
     private List<String> hashtags;
     private Boolean active;
 
@@ -17,18 +17,18 @@ public class Subcategory extends EveObject implements Comparable<Subcategory> {
         this.name = name;
     }
 
-    public List<String> getUsers() {
-        return users;
-    }
-    public void setUsers(List<String> users) {
-        this.users = users;
-    }
-
     public Integer getUsersSize() {
         return usersSize;
     }
     public void setUsersSize(Integer usersSize) {
         this.usersSize = usersSize;
+    }
+
+    public List<String> getCategories() {
+        return categories;
+    }
+    public void setCategories(List<String> categories) {
+        this.categories = categories;
     }
 
     public List<String> getHashtags() {
@@ -38,7 +38,7 @@ public class Subcategory extends EveObject implements Comparable<Subcategory> {
         this.hashtags = hashtags;
     }
 
-    public Boolean getActive() {
+    public Boolean isActive() {
         return active;
     }
     public void setActive(Boolean active) {
@@ -49,8 +49,8 @@ public class Subcategory extends EveObject implements Comparable<Subcategory> {
     public String toString() {
         String string = "Subcategory[";
         string += "name=" + name + ", ";
-        string += "users=" + users + ", ";
         string += "usersSize=" + usersSize + ", ";
+        string += "categories=" + categories + ", ";
         string += "hashtags=" + hashtags + ", ";
         string += "active=" + active;
         string += "]";
