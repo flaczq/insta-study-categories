@@ -2,7 +2,6 @@ package abc.flaq.apps.instastudycategories;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -18,9 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static abc.flaq.apps.instastudycategories.Constants.INSTAGRAM_URL;
 import static abc.flaq.apps.instastudycategories.Constants.INTENT_SUBCATEGORY_ID;
-import static abc.flaq.apps.instastudycategories.Constants.PACKAGE_INSTAGRAM;
 
 public class UserActivity extends AppCompatActivity {
 
@@ -49,19 +46,21 @@ public class UserActivity extends AppCompatActivity {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
-                    String selected = userAdapter.getUsername(position);
+                    /*String selected = userAdapter.getUsername(position);
                     Utils.log(Utils.LOG_DEBUG, clazz, "Selected position: " + position);
                     Uri instagramUri = Uri.parse(INSTAGRAM_URL + "_u/" + selected);
                     Intent nextIntent = new Intent(Intent.ACTION_VIEW, instagramUri);
                     nextIntent.setPackage(PACKAGE_INSTAGRAM);
 
                     if (Utils.isIntentAvailable(clazz, nextIntent)) {
-                        Utils.log(Utils.LOG_DEBUG, clazz, "Intent is available");
+                        Utils.log(Utils.LOG_DEBUG, clazz, "Instagram intent is available");
                         clazz.startActivity(nextIntent);
                     } else {
-                        Utils.log(Utils.LOG_DEBUG, clazz, "Intent is NOT available");
+                        Utils.log(Utils.LOG_DEBUG, clazz, "Instagram intent is NOT available");
                         clazz.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + selected)));
-                    }
+                    }*/
+                    User selected = userAdapter.getItem(position);
+                    new ProcessDeleteUser().execute(selected);
                 }
             });
 
@@ -84,7 +83,8 @@ public class UserActivity extends AppCompatActivity {
 
             try {
                 Thread.sleep(1000); // FIXME: showing preloader, REMOVE
-                users = Api.getUsersBySubcategoryId(subcategoryId);
+                //users = Api.getUsersByCategorySubcategoryId(subcategoryId, false);
+                users = Api.getAllUsers(false);
                 for (User user : users) {
                     Utils.log(Utils.LOG_DEBUG, clazz, user.toString());
                 }
@@ -106,6 +106,37 @@ public class UserActivity extends AppCompatActivity {
             preloader.setVisibility(View.GONE);
             userAdapter = new UserAdapter(clazz, result);
             listView.setAdapter(userAdapter);
+        }
+    }
+
+    private class ProcessDeleteUser extends AsyncTask<User, Void, Boolean> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            preloader.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected Boolean doInBackground(User... params) {
+            User user = params[0];
+            Boolean result = Boolean.FALSE;
+            try {
+                result = Api.deleteUser(user);
+            } catch (IOException e) {
+                Utils.log(Utils.LOG_ERROR, clazz, "IOException: " + e.toString());
+            } catch (JSONException e) {
+                Utils.log(Utils.LOG_ERROR, clazz, "JSONException: " + e.toString());
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+
+            preloader.setVisibility(View.GONE);
+            Utils.log(Utils.LOG_INFO, clazz, "User deleted: " + result);
         }
     }
 

@@ -4,11 +4,11 @@ import java.util.List;
 
 public class User extends EveObject implements Comparable<User> {
 
-    private String instagramId;
-    private String fullname;
-    private String username;
-    private String bio;
-    private String profilePicUrl;
+    private String instagramId = "";
+    private String fullname = "";
+    private String username = "";
+    private String bio = "";
+    private String profilePicUrl = "";
     private Integer followers;
     private Integer media;
     private List<String> categories;
@@ -104,18 +104,18 @@ public class User extends EveObject implements Comparable<User> {
     @Override
     public String toString() {
         String string = "User[";
-        string += "instagramId=" + instagramId + ", ";
-        string += "fullname=" + fullname + ", ";
-        string += "username=" + username + ", ";
-        string += "bio=" + bio + ", ";
-        string += "profilePicUrl=" + profilePicUrl + ", ";
-        string += "followers=" + followers + ", ";
-        string += "media=" + media + ", ";
-        string += "categories=" + categories + ", ";
-        string += "categoriesSize=" + categoriesSize + ", ";
-        string += "subcategories=" + subcategories + ", ";
-        string += "subcategoriesSize=" + subcategoriesSize + ", ";
-        string += "active=" + active;
+        string += "instagramId: " + instagramId + ", ";
+        string += "fullname: " + fullname + ", ";
+        string += "username: " + username + ", ";
+        string += "bio: " + bio + ", ";
+        string += "profilePicUrl: " + profilePicUrl + ", ";
+        string += "followers: " + followers + ", ";
+        string += "media: " + media + ", ";
+        string += "categories: " + categories + ", ";
+        string += "categoriesSize: " + categoriesSize + ", ";
+        string += "subcategories: " + subcategories + ", ";
+        string += "subcategoriesSize: " + subcategoriesSize + ", ";
+        string += "active: " + active;
         string += "]";
         return string;
     }

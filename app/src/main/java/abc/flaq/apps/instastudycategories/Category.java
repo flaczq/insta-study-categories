@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Category extends EveObject implements Comparable<Category> {
 
-    private String name;
+    private String name = "";
     private Integer usersSize;
     private Integer subcategoriesSize;
     private List<String> hashtags;
@@ -56,12 +56,12 @@ public class Category extends EveObject implements Comparable<Category> {
     @Override
     public String toString() {
         String string = "Category[";
-        string += "name=" + name + ", ";
-        string += "usersSize=" + usersSize + ", ";
-        string += "subcategoriesSize=" + subcategoriesSize + ", ";
-        string += "hashtags=" + hashtags + ", ";
-        string += "asSubcategory=" + asSubcategory + ", ";
-        string += "active=" + active;
+        string += "name: " + name + ", ";
+        string += "usersSize: " + usersSize + ", ";
+        string += "subcategoriesSize: " + subcategoriesSize + ", ";
+        string += "hashtags: " + hashtags + ", ";
+        string += "asSubcategory: " + asSubcategory + ", ";
+        string += "active: " + active;
         string += "]";
         return string;
     }

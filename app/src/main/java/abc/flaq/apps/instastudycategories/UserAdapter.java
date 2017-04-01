@@ -26,7 +26,7 @@ public class UserAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
+    public User getItem(int position) {
         if (position < users.size()) {
             return users.get(position);
         }

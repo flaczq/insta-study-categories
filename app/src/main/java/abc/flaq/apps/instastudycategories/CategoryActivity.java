@@ -69,7 +69,7 @@ public class CategoryActivity extends AppCompatActivity {
 
             try {
                 Thread.sleep(1000); // FIXME: showing preloader, REMOVE
-                categories = Api.getAllCategories();
+                categories = Api.getAllCategories(false);
                 for (Category category : categories) {
                     Utils.log(Utils.LOG_DEBUG, clazz, category.toString());
                 }

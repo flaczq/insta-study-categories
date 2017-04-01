@@ -50,4 +50,9 @@ public class EveObject {
         this.updated = updated;
     }
 
+    public void update(EveObject object) {
+        etag = object.getEtag();
+        updated = object.getUpdated();
+    }
+
 }

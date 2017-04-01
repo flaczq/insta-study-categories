@@ -74,7 +74,8 @@ public class SubcategoryActivity extends AppCompatActivity {
 
             try {
                 Thread.sleep(1000); // FIXME: showing preloader, REMOVE
-                subcategories = Api.getSubcategoriesByCategoryId(categoryId);
+                //subcategories = Api.getSubcategoriesByCategoryId(categoryId);
+                subcategories = Api.getAllSubcategories(false);
                 for (Subcategory subcategory : subcategories) {
                     Utils.log(Utils.LOG_DEBUG, clazz, subcategory.toString());
                 }

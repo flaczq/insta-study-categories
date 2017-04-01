@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Subcategory extends EveObject implements Comparable<Subcategory> {
 
-    private String name;
+    private String name = "";
     private Integer usersSize;
     private List<String> categories;
     private List<String> hashtags;

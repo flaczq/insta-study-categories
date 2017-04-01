@@ -1,6 +1,5 @@
 package abc.flaq.apps.instastudycategories;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,18 +19,22 @@ public class Utils {
     public static final int LOG_ERROR = 1;
     public static final int LOG_INFO = 2;
 
-    public static void log(int type, Activity activity, String msg) {
-        if (isNotEmpty(activity.getClass())) {
+    public static void log(int type, Object activity, String msg) {
+        String className = (activity instanceof String ?
+                (String) activity :
+                (isEmpty(activity.getClass()) ? null : activity.getClass().getSimpleName())
+        );
+        if (isNotEmpty(className)) {
             switch (type) {
                 case LOG_DEBUG:
-                    Log.d("\t\t" + activity.getClass().getSimpleName(), msg);
+                    Log.d("\t\t" + className, msg);
                     break;
                 case LOG_ERROR:
-                    Log.e("\t\t" + activity.getClass().getSimpleName(), msg);
+                    Log.e("\t\t" + className, msg);
                     break;
                 case LOG_INFO:
                 default:
-                    Log.i("\t\t" + activity.getClass().getSimpleName(), msg);
+                    Log.i("\t\t" + className, msg);
                     break;
             }
         }
