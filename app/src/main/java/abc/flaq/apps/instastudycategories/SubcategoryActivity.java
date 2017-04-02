@@ -34,7 +34,7 @@ public class SubcategoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_subcategory);
-        gridView = (StaggeredGridView) findViewById(R.id.subcategory_gridview);
+        gridView = (StaggeredGridView) findViewById(R.id.subcategory_grid);
         preloader = (CrystalPreloader) findViewById(R.id.subcategory_preloader);
 
         intent = getIntent();
@@ -74,7 +74,7 @@ public class SubcategoryActivity extends AppCompatActivity {
 
             try {
                 Thread.sleep(1000); // FIXME: showing preloader, REMOVE
-                //subcategories = Api.getSubcategoriesByCategoryId(categoryId);
+                subcategories = Api.getSubcategoriesByCategoryId(categoryId);
                 subcategories = Api.getAllSubcategories(false);
                 for (Subcategory subcategory : subcategories) {
                     Utils.log(Utils.LOG_DEBUG, clazz, subcategory.toString());

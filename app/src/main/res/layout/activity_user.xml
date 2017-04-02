@@ -7,9 +7,10 @@
     android:layout_height="match_parent"
     tools:context="abc.flaq.apps.instastudycategories.UserActivity">
 
-    <ListView android:id="@+id/user_listview"
+    <ListView android:id="@+id/user_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_margin="2dp" />
 
     <com.crystal.crystalpreloaders.widgets.CrystalPreloader android:id="@+id/user_preloader"
         android:layout_width="match_parent"

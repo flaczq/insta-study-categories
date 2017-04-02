@@ -64,4 +64,5 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.0.pr1'
     compile 'com.etsy.android.grid:library:1.0.5'
     compile 'com.crystal:crystalpreloaders:1.0.0'
+    compile 'com.koushikdutta.urlimageviewhelper:urlimageviewhelper:1.0.4'
 }

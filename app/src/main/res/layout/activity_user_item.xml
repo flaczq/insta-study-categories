@@ -5,12 +5,23 @@
     android:background="@color/colorPrimaryDark"
     android:id="@+id/user_item_layout">
 
-    <TextView android:id="@+id/user_item_textview"
+    <ImageView android:id="@+id/user_item_profile_pic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/splash_image"
+        android:gravity="center_vertical"
+        android:layout_centerVertical="true" />
+
+    <TextView android:id="@+id/user_item_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="User 1"
-        android:textSize="16dp"
+        android:textSize="16sp"
         android:textColor="#FFF"
+        android:layout_toRightOf="@+id/user_item_profile_pic"
+        android:layout_toEndOf="@+id/user_item_profile_pic"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
         android:gravity="center_vertical"
         android:layout_centerVertical="true" />
 

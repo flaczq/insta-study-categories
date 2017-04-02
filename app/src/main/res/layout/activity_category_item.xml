@@ -5,11 +5,11 @@
     android:layout_height="match_parent"
     android:background="@color/colorAccent">
 
-    <TextView android:id="@+id/category_item_textview"
+    <TextView android:id="@+id/category_item_name"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:text="College"
-        android:textSize="26dp"
+        android:textSize="26sp"
         android:textColor="#FFF"
         android:textStyle="bold"
         android:gravity="center"

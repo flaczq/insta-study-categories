@@ -32,7 +32,7 @@ public class CategoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_category);
-        gridView = (StaggeredGridView) findViewById(R.id.category_gridview);
+        gridView = (StaggeredGridView) findViewById(R.id.category_grid);
         preloader = (CrystalPreloader) findViewById(R.id.category_preloader);
 
         Utils.log(Utils.LOG_DEBUG, clazz, "Build data: " +
@@ -44,10 +44,16 @@ public class CategoryActivity extends AppCompatActivity {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
-                String selected = categoryAdapter.getItemRealId(position);
+                Category selected = categoryAdapter.getItem(position);
                 Utils.log(Utils.LOG_DEBUG, clazz, "Selected position: " + position);
-                Intent nextIntent = new Intent(clazz, SubcategoryActivity.class);
-                nextIntent.putExtra(INTENT_CATEGORY_ID, selected);
+
+                Intent nextIntent;
+                if (selected.isAsSubcategory()) {
+                    nextIntent = new Intent(clazz, UserActivity.class);
+                } else {
+                    nextIntent = new Intent(clazz, SubcategoryActivity.class);
+                }
+                nextIntent.putExtra(INTENT_CATEGORY_ID, selected.getId());
                 clazz.startActivity(nextIntent);
             }
         });

@@ -57,7 +57,7 @@ public class SubcategoryAdapter extends BaseAdapter {
             view = layoutInflater.inflate(R.layout.activity_subcategory_item, viewGroup, false);
 
             final RelativeLayout layout = (RelativeLayout) view.findViewById(R.id.subcategory_item_layout);
-            final TextView textView = (TextView) view.findViewById(R.id.subcategory_item_textview);
+            final TextView textView = (TextView) view.findViewById(R.id.subcategory_item_name);
             final SubcategoryAdapter.ViewHolder viewHolder = new ViewHolder(layout, textView);
             view.setTag(viewHolder);
         }

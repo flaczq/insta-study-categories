@@ -12,6 +12,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -124,16 +125,16 @@ public class Api {
         return jsonArray;
     }
 
-    private static String getWhere(Map<String, String> conditions) {
+    private static String getWhere(Map<String, String> conditions) throws UnsupportedEncodingException {
         String where = "?where={";
         for (Map.Entry<String, String> entry : conditions.entrySet()) {
-            where += "'" + entry.getKey() + "': '" + entry.getValue() + "', ";
+            where += "\"" + entry.getKey() + "\": \"" + entry.getValue() + "\", ";
         }
         if (where.endsWith(", ")) {
             where = where.substring(0, where.lastIndexOf(", "));
         }
         where += "}";
-        return where;
+        return where.replace(" ", "%20");
     }
 
     // CATEGORIES
@@ -289,20 +290,43 @@ public class Api {
 
         return null;
     }
-    public static List<User> getUsersByCategorySubcategoryId(String categorySubcategoryId, boolean asSubcategory) throws IOException, JSONException {
+    public static List<User> getUsersByCategoryId(String categoryId) throws IOException, JSONException {
         List<User> users = new ArrayList<>();
 
         if (allUsers.size() > 0) {
             for (User user : allUsers) {
-                List<String> list = (asSubcategory ? user.getSubcategories() : user.getCategories());
-                if (list.contains(categorySubcategoryId)) {
+                if (user.getCategories().contains(categoryId)) {
                     users.add(user);
                 }
             }
         } else {
-            String field = (asSubcategory ? "subcategories" : "categories");
             Map<String, String> conditions = new HashMap<>();
-            conditions.put(field, categorySubcategoryId);
+            conditions.put("categories", categoryId);
+            InputStream is = getRequest(API_USERS_URL + getWhere(conditions));
+            String data = getStream(is);
+            JSONArray jsonArray = getItems(data);
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                User user = mapper.readValue(jsonArray.getString(i), User.class);
+                correctDate(user);
+                users.add(user);
+            }
+        }
+
+        return users;
+    }
+    public static List<User> getUsersBySubcategoryId(String subcategoryId) throws IOException, JSONException {
+        List<User> users = new ArrayList<>();
+
+        if (allUsers.size() > 0) {
+            for (User user : allUsers) {
+                if (user.getSubcategories().contains(subcategoryId)) {
+                    users.add(user);
+                }
+            }
+        } else {
+            Map<String, String> conditions = new HashMap<>();
+            conditions.put("subcategories", subcategoryId);
             InputStream is = getRequest(API_USERS_URL + getWhere(conditions));
             String data = getStream(is);
             JSONArray jsonArray = getItems(data);

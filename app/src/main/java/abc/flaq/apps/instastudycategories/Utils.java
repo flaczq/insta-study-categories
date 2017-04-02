@@ -51,6 +51,11 @@ public class Utils {
         return !isEmpty(element);
     }
 
+    public static int getDrawableByName(Context context, String name) {
+        int drawableId = context.getResources().getIdentifier(name, "drawable", context.getPackageName());
+        return drawableId;
+    }
+
     public static void afterError(Context context) {
         Toast.makeText(context, "Shit happend", Toast.LENGTH_LONG).show();
     }

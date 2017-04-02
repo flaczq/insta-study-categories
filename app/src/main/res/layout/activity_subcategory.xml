@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context="abc.flaq.apps.instastudycategories.SubcategoryActivity">
 
-    <com.etsy.android.grid.StaggeredGridView android:id="@+id/subcategory_gridview"
+    <com.etsy.android.grid.StaggeredGridView android:id="@+id/subcategory_grid"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:item_margin="2dp"

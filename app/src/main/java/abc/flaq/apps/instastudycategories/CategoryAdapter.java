@@ -57,7 +57,7 @@ public class CategoryAdapter extends BaseAdapter {
             view = layoutInflater.inflate(R.layout.activity_category_item, viewGroup, false);
 
             final RelativeLayout layout = (RelativeLayout) view.findViewById(R.id.category_item_layout);
-            final TextView textView = (TextView) view.findViewById(R.id.category_item_textview);
+            final TextView textView = (TextView) view.findViewById(R.id.category_item_name);
             final ViewHolder viewHolder = new ViewHolder(layout, textView);
             view.setTag(viewHolder);
         }

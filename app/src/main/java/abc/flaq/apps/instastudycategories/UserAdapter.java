@@ -5,8 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 
 import java.util.List;
 
@@ -61,24 +64,31 @@ public class UserAdapter extends BaseAdapter {
             view = layoutInflater.inflate(R.layout.activity_user_item, viewGroup, false);
 
             final RelativeLayout layout = (RelativeLayout) view.findViewById(R.id.user_item_layout);
-            final TextView textView = (TextView) view.findViewById(R.id.user_item_textview);
-            final UserAdapter.ViewHolder viewHolder = new UserAdapter.ViewHolder(layout, textView);
+            final TextView username = (TextView) view.findViewById(R.id.user_item_username);
+            final ImageView profilePic = (ImageView) view.findViewById(R.id.user_item_profile_pic);
+            final UserAdapter.ViewHolder viewHolder = new UserAdapter.ViewHolder(layout, username, profilePic);
             view.setTag(viewHolder);
         }
 
         final ViewHolder viewHolder = (ViewHolder) view.getTag();
-        viewHolder.textView.setText(user.getUsername());
+        viewHolder.username.setText(user.getUsername());
+        String profilePicUrl = user.getProfilePicUrl();
+        if (Utils.isNotEmpty(profilePicUrl)) {
+            UrlImageViewHelper.setUrlDrawable(viewHolder.profilePic, profilePicUrl, R.drawable.splash_image);
+        }
 
         return view;
     }
 
     private class ViewHolder {
         private final RelativeLayout layout;
-        private final TextView textView;
+        private final TextView username;
+        private final ImageView profilePic;
 
-        public ViewHolder(RelativeLayout layout, TextView textView) {
+        public ViewHolder(RelativeLayout layout, TextView username, ImageView profilePic) {
             this.layout = layout;
-            this.textView = textView;
+            this.username = username;
+            this.profilePic = profilePic;
         }
     }
 
