@@ -37,7 +37,7 @@ public class Api {
     private static List<Subcategory> allSubcategories = new ArrayList<>();
     private static List<User> allUsers = new ArrayList<>();
 
-    private static String getStream(InputStream is) throws IOException {
+    public static String getStream(InputStream is) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int i = is.read();
         while (i != -1) {
@@ -46,7 +46,21 @@ public class Api {
         }
         return baos.toString();
     }
+    public static InputStream post(String url, String data) throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Accept", "application/json");
+        connection.setRequestProperty("Content-Length", Integer.toString(data.getBytes().length));
+        connection.setDoInput(true);
+        connection.setDoOutput(true);
+        connection.setUseCaches(false);
 
+        OutputStream os = connection.getOutputStream();
+        os.write(data.getBytes("UTF-8"));
+        os.close();
+
+        return handleResponse(connection);
+    }
     private static InputStream handleResponse(HttpURLConnection connection) throws IOException {
         InputStream inputStream;
         int responseCode = connection.getResponseCode();
@@ -61,6 +75,7 @@ public class Api {
         InputStream bufferedInputStream = new BufferedInputStream(inputStream);
         return bufferedInputStream;
     }
+
     private static InputStream getRequest(String url) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         connection.setRequestProperty("Accept", "application/json");

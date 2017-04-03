@@ -6,9 +6,13 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.crystal.crystalpreloaders.widgets.CrystalPreloader;
 
@@ -81,6 +85,31 @@ public class UserActivity extends AppCompatActivity {
 
             new ProcessUsers().execute(id);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu, menu);
+        menu.findItem(R.id.menu_add).setVisible(false);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_add:
+                // HIDDEN
+                break;
+            case R.id.menu_join:
+                Toast.makeText(clazz, "joining", Toast.LENGTH_LONG).show();
+                break;
+            case R.id.menu_info:
+                Toast.makeText(clazz, "infoing", Toast.LENGTH_LONG).show();
+                break;
+            default:
+                break;
+        }
+        return true;
     }
 
     private class ProcessUsers extends AsyncTask<String, Void, List<User>> {
