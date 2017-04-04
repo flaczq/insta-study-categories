@@ -5,7 +5,7 @@
     android:id="@+id/activity_category"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="abc.flaq.apps.instastudycategories.CategoryActivity">
+    tools:context="abc.flaq.apps.instastudycategories.activity.CategoryActivity">
 
     <com.etsy.android.grid.StaggeredGridView android:id="@+id/category_grid"
         android:layout_width="match_parent"

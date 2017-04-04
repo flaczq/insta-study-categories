@@ -11,5 +11,8 @@
     <item android:id="@+id/menu_info"
         android:title="Info"
         app:showAsAction="ifRoom" />
+    <item android:id="@+id/menu_login"
+        android:title="Login"
+        app:showAsAction="ifRoom" />
 
 </menu>

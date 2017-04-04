@@ -1,4 +1,4 @@
-package abc.flaq.apps.instastudycategories;
+package abc.flaq.apps.instastudycategories.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,6 +12,10 @@ import android.widget.TextView;
 import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 
 import java.util.List;
+
+import abc.flaq.apps.instastudycategories.R;
+import abc.flaq.apps.instastudycategories.pojo.User;
+import abc.flaq.apps.instastudycategories.utils.GeneralUtils;
 
 public class UserAdapter extends BaseAdapter {
 
@@ -59,7 +63,7 @@ public class UserAdapter extends BaseAdapter {
     public View getView(int position, View view, ViewGroup viewGroup) {
         final User user = users.get(position);
 
-        if (Utils.isEmpty(view)) {
+        if (GeneralUtils.isEmpty(view)) {
             final LayoutInflater layoutInflater = LayoutInflater.from(context);
             view = layoutInflater.inflate(R.layout.activity_user_item, viewGroup, false);
 
@@ -73,7 +77,7 @@ public class UserAdapter extends BaseAdapter {
         final ViewHolder viewHolder = (ViewHolder) view.getTag();
         viewHolder.username.setText(user.getUsername());
         String profilePicUrl = user.getProfilePicUrl();
-        if (Utils.isNotEmpty(profilePicUrl)) {
+        if (GeneralUtils.isNotEmpty(profilePicUrl)) {
             UrlImageViewHelper.setUrlDrawable(viewHolder.profilePic, profilePicUrl, R.drawable.splash_image);
         }
 

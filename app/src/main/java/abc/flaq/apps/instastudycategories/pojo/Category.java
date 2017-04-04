@@ -1,4 +1,4 @@
-package abc.flaq.apps.instastudycategories;
+package abc.flaq.apps.instastudycategories.pojo;
 
 import java.util.List;
 

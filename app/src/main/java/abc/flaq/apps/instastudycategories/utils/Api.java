@@ -1,4 +1,4 @@
-package abc.flaq.apps.instastudycategories;
+package abc.flaq.apps.instastudycategories.utils;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,15 +18,20 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static abc.flaq.apps.instastudycategories.Constants.API_CATEGORIES_URL;
-import static abc.flaq.apps.instastudycategories.Constants.API_CREDENTIALS;
-import static abc.flaq.apps.instastudycategories.Constants.API_SUBCATEGORIES_URL;
-import static abc.flaq.apps.instastudycategories.Constants.API_USERS_URL;
+import abc.flaq.apps.instastudycategories.pojo.Category;
+import abc.flaq.apps.instastudycategories.pojo.EveObject;
+import abc.flaq.apps.instastudycategories.pojo.Response;
+import abc.flaq.apps.instastudycategories.pojo.Subcategory;
+import abc.flaq.apps.instastudycategories.pojo.User;
+
+import static abc.flaq.apps.instastudycategories.utils.Constants.API_CATEGORIES_URL;
+import static abc.flaq.apps.instastudycategories.utils.Constants.API_CREDENTIALS;
+import static abc.flaq.apps.instastudycategories.utils.Constants.API_SUBCATEGORIES_URL;
+import static abc.flaq.apps.instastudycategories.utils.Constants.API_USERS_URL;
 
 public class Api {
 
@@ -46,21 +51,6 @@ public class Api {
         }
         return baos.toString();
     }
-    public static InputStream post(String url, String data) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-        connection.setRequestMethod("POST");
-        connection.setRequestProperty("Accept", "application/json");
-        connection.setRequestProperty("Content-Length", Integer.toString(data.getBytes().length));
-        connection.setDoInput(true);
-        connection.setDoOutput(true);
-        connection.setUseCaches(false);
-
-        OutputStream os = connection.getOutputStream();
-        os.write(data.getBytes("UTF-8"));
-        os.close();
-
-        return handleResponse(connection);
-    }
     private static InputStream handleResponse(HttpURLConnection connection) throws IOException {
         InputStream inputStream;
         int responseCode = connection.getResponseCode();
@@ -69,11 +59,25 @@ public class Api {
             inputStream = connection.getInputStream();
         } else {
             inputStream = connection.getErrorStream();
-            Utils.log(Utils.LOG_ERROR, "Api", responseCode + "/" + connection.getResponseMessage());
+            GeneralUtils.logError("Api", responseCode + "/" + connection.getResponseMessage());
         }
 
         InputStream bufferedInputStream = new BufferedInputStream(inputStream);
         return bufferedInputStream;
+    }
+    public static InputStream post(String url, String data) throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Accept", "application/json");
+        connection.setRequestProperty("Content-Length", Integer.toString(data.getBytes().length));
+        connection.setDoInput(true);
+        connection.setUseCaches(false);
+
+        OutputStream os = connection.getOutputStream();
+        os.write(data.getBytes("UTF-8"));
+        os.close();
+
+        return handleResponse(connection);
     }
 
     private static InputStream getRequest(String url) throws IOException {
@@ -89,12 +93,11 @@ public class Api {
         connection.setRequestProperty("Accept", "application/json");
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("Content-Length", Integer.toString(data.getBytes().length));
-        if (Utils.isNotEmpty(etag)) {
+        if (GeneralUtils.isNotEmpty(etag)) {
             connection.setRequestProperty("If-Match", etag);
         }
         connection.setRequestProperty("Authorization", API_CREDENTIALS);
         connection.setDoInput(true);
-        connection.setDoOutput(true);
         connection.setUseCaches(false);
         connection.setAllowUserInteraction(false);
         connection.setInstanceFollowRedirects(false);
@@ -123,7 +126,8 @@ public class Api {
     }
 
     private static void correctDate(EveObject eveObject) {
-        Date date = eveObject.getCreated();
+        // is it necessary
+        /*Date date = eveObject.getCreated();
         calendar.setTime(date);
         calendar.add(Calendar.HOUR_OF_DAY, 1);
         eveObject.setCreated(calendar.getTime());
@@ -131,7 +135,7 @@ public class Api {
         date = eveObject.getUpdated();
         calendar.setTime(date);
         calendar.add(Calendar.HOUR_OF_DAY, 1);
-        eveObject.setUpdated(calendar.getTime());
+        eveObject.setUpdated(calendar.getTime());*/
     }
 
     private static JSONArray getItems(String data) throws JSONException {
@@ -361,7 +365,7 @@ public class Api {
 
         Response response = mapper.readValue(data, Response.class);
         if (response.isError()) {
-            Utils.log(Utils.LOG_ERROR, "Api", response.toString());
+            GeneralUtils.logError("Api", response.toString());
             return Boolean.FALSE;
         }
         // SAFE but slower

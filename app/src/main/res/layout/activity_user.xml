@@ -5,7 +5,7 @@
     android:id="@+id/activity_user"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="abc.flaq.apps.instastudycategories.UserActivity">
+    tools:context="abc.flaq.apps.instastudycategories.activity.UserActivity">
 
     <ListView android:id="@+id/user_list"
         android:layout_width="match_parent"

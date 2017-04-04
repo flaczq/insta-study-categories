@@ -1,16 +1,12 @@
-package abc.flaq.apps.instastudycategories;
+package abc.flaq.apps.instastudycategories.activity;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Toast;
 
 import com.crystal.crystalpreloaders.widgets.CrystalPreloader;
 import com.etsy.android.grid.StaggeredGridView;
@@ -21,10 +17,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static abc.flaq.apps.instastudycategories.Constants.INTENT_CATEGORY_ID;
-import static abc.flaq.apps.instastudycategories.Constants.INTENT_SUBCATEGORY_ID;
+import abc.flaq.apps.instastudycategories.R;
+import abc.flaq.apps.instastudycategories.adapter.MenuActivity;
+import abc.flaq.apps.instastudycategories.adapter.SubcategoryAdapter;
+import abc.flaq.apps.instastudycategories.pojo.Subcategory;
+import abc.flaq.apps.instastudycategories.utils.Api;
+import abc.flaq.apps.instastudycategories.utils.GeneralUtils;
 
-public class SubcategoryActivity extends AppCompatActivity {
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_ID;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_ID;
+
+public class SubcategoryActivity extends MenuActivity {
 
     private final Activity clazz = this;
     private SubcategoryAdapter subcategoryAdapter;
@@ -44,15 +47,15 @@ public class SubcategoryActivity extends AppCompatActivity {
         intent = getIntent();
         String categoryId = intent.getStringExtra(INTENT_CATEGORY_ID);
 
-        if (Utils.isEmpty(categoryId)) {
-            Utils.afterError(clazz);
+        if (GeneralUtils.isEmpty(categoryId)) {
+            GeneralUtils.afterError(clazz, "categoryId is empty");
             finish();
         } else {
             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
                     String selected = subcategoryAdapter.getItemRealId(position);
-                    Utils.log(Utils.LOG_DEBUG, clazz, "Selected position: " + position);
+                    GeneralUtils.logDebug(clazz, "Selected position: " + position);
                     Intent nextIntent = new Intent(clazz, UserActivity.class);
                     nextIntent.putExtra(INTENT_SUBCATEGORY_ID, selected);
                     clazz.startActivity(nextIntent);
@@ -65,26 +68,7 @@ public class SubcategoryActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.menu, menu);
-        menu.findItem(R.id.menu_info).setVisible(false);
-        return true;
-    }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_add:
-                Toast.makeText(clazz, "adding", Toast.LENGTH_LONG).show();
-                break;
-            case R.id.menu_join:
-                Toast.makeText(clazz, "joining", Toast.LENGTH_LONG).show();
-                break;
-            case R.id.menu_info:
-                // HIDDEN
-                break;
-            default:
-                break;
-        }
+        super.onCreateOptionsMenu(menu);
         return true;
     }
 
@@ -106,14 +90,14 @@ public class SubcategoryActivity extends AppCompatActivity {
                 subcategories = Api.getSubcategoriesByCategoryId(categoryId);
                 subcategories = Api.getAllSubcategories(false);
                 for (Subcategory subcategory : subcategories) {
-                    Utils.log(Utils.LOG_DEBUG, clazz, subcategory.toString());
+                    GeneralUtils.logInfo(clazz, subcategory.toString());
                 }
             } catch (InterruptedException e) {
-                Utils.log(Utils.LOG_ERROR, clazz, "InterruptedException: " + e.toString());
+                GeneralUtils.logError(clazz, "InterruptedException: " + e.toString());
             } catch (JSONException e) {
-                Utils.log(Utils.LOG_ERROR, clazz, "JSONException: " + e.toString());
+                GeneralUtils.logError(clazz, "JSONException: " + e.toString());
             } catch (IOException e) {
-                Utils.log(Utils.LOG_ERROR, clazz, "IOException: " + e.toString());
+                GeneralUtils.logError(clazz, "IOException: " + e.toString());
             }
 
             return subcategories;

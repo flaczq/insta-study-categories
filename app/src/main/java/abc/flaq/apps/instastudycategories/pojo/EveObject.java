@@ -1,4 +1,4 @@
-package abc.flaq.apps.instastudycategories;
+package abc.flaq.apps.instastudycategories.pojo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
 
-import static abc.flaq.apps.instastudycategories.Constants.DATE_TIMEZONE;
+import static abc.flaq.apps.instastudycategories.utils.Constants.DATE_TIMEZONE;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EveObject {

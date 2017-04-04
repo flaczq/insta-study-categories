@@ -1,4 +1,4 @@
-package abc.flaq.apps.instastudycategories;
+package abc.flaq.apps.instastudycategories.utils;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,29 +9,26 @@ import android.util.Log;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
-import static abc.flaq.apps.instastudycategories.Constants.GRID_MAX_HEIGHT;
-import static abc.flaq.apps.instastudycategories.Constants.INSTAGRAM_ACCESS_TOKEN_URL;
-import static abc.flaq.apps.instastudycategories.Constants.INSTAGRAM_AUTH_AUTHORITY;
-import static abc.flaq.apps.instastudycategories.Constants.INSTAGRAM_AUTH_PATH;
-import static abc.flaq.apps.instastudycategories.Constants.INSTAGRAM_AUTH_REDIRECT_URI;
-import static abc.flaq.apps.instastudycategories.Constants.INSTAGRAM_AUTH_RESPONSE_TYPE_CLIENT_ID;
-import static abc.flaq.apps.instastudycategories.Constants.INSTAGRAM_AUTH_SCHEME;
-import static abc.flaq.apps.instastudycategories.Constants.INSTAGRAM_AUTH_SCOPE;
-import static abc.flaq.apps.instastudycategories.Constants.INSTAGRAM_CLIENT_ID;
-import static abc.flaq.apps.instastudycategories.Constants.INSTAGRAM_CODE_URL;
-import static abc.flaq.apps.instastudycategories.Constants.INSTAGRAM_REDIRECT_URL;
+import static abc.flaq.apps.instastudycategories.utils.Constants.GRID_MAX_HEIGHT;
 
-public class Utils {
+public class GeneralUtils {
 
     public static final int LOG_DEBUG = 0;
     public static final int LOG_ERROR = 1;
     public static final int LOG_INFO = 2;
 
-    public static void log(int type, Object activity, String msg) {
+    public static void logDebug(Object activity, String message) {
+        log(LOG_DEBUG, activity, message);
+    }
+    public static void logError(Object activity, String message) {
+        log(LOG_ERROR, activity, message);
+    }
+    public static void logInfo(Object activity, String message) {
+        log(LOG_INFO, activity, message);
+    }
+    private static void log(int type, Object activity, String message) {
         String className = (activity instanceof String ?
                 (String) activity :
                 (isEmpty(activity.getClass()) ? null : activity.getClass().getSimpleName())
@@ -39,14 +36,14 @@ public class Utils {
         if (isNotEmpty(className)) {
             switch (type) {
                 case LOG_DEBUG:
-                    Log.d("\t\t" + className, msg);
+                    Log.d("\t\t" + className, message);
                     break;
                 case LOG_ERROR:
-                    Log.e("\t\t" + className, msg);
+                    Log.e("\t\t" + className, message);
                     break;
                 case LOG_INFO:
                 default:
-                    Log.i("\t\t" + className, msg);
+                    Log.i("\t\t" + className, message);
                     break;
             }
         }
@@ -62,45 +59,13 @@ public class Utils {
         return !isEmpty(element);
     }
 
-    public static String getInstagramAuthUrl(Constants.INSTAGRAM_SCOPES... scopes) throws URISyntaxException {
-        String authUrl = (
-                INSTAGRAM_AUTH_RESPONSE_TYPE_CLIENT_ID +
-                INSTAGRAM_CLIENT_ID +
-                INSTAGRAM_AUTH_REDIRECT_URI +
-                INSTAGRAM_REDIRECT_URL +
-                INSTAGRAM_AUTH_SCOPE
-        );
-        for (int i = 0; i < scopes.length; i++) {
-            authUrl += scopes[i];
-            if (i < scopes.length - 1) {
-                authUrl += "+";
-            }
-        }
-        return new URI(INSTAGRAM_AUTH_SCHEME, INSTAGRAM_AUTH_AUTHORITY, INSTAGRAM_AUTH_PATH, authUrl, null).toString();
-    }
-    public static String getInstagramAccessToken(String url) {
-        if (isNotEmpty(url)) {
-            // TODO: check for error
-            String accessToken = url.replace(INSTAGRAM_REDIRECT_URL + INSTAGRAM_ACCESS_TOKEN_URL, "");
-            return accessToken;
-        }
-        return null;
-    }
-    public static String getInstagramCode(String url) {
-        if (isNotEmpty(url)) {
-            // TODO: check for error
-            String code = url.replace(INSTAGRAM_REDIRECT_URL + INSTAGRAM_CODE_URL, "");
-            return code;
-        }
-        return null;
-    }
-
     public static int getDrawableByName(Context context, String name) {
         int drawableId = context.getResources().getIdentifier(name, "drawable", context.getPackageName());
         return drawableId;
     }
 
-    public static void afterError(Context context) {
+    public static void afterError(Context context, String message) {
+        GeneralUtils.log(LOG_ERROR, context, message);
         Toast.makeText(context, "Shit happens", Toast.LENGTH_LONG).show();
     }
 

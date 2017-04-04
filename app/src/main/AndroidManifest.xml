@@ -11,21 +11,25 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".CategoryActivity"
+            android:name=".activity.CategoryActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".SubcategoryActivity"
+        <activity
+            android:name=".activity.SubcategoryActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".UserActivity"
+        <activity
+            android:name=".activity.UserActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".adapter.MenuActivity"></activity>
     </application>
 
 </manifest>

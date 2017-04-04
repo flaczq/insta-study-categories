@@ -1,4 +1,4 @@
-package abc.flaq.apps.instastudycategories;
+package abc.flaq.apps.instastudycategories.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,6 +9,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
+
+import abc.flaq.apps.instastudycategories.R;
+import abc.flaq.apps.instastudycategories.pojo.Subcategory;
+import abc.flaq.apps.instastudycategories.utils.GeneralUtils;
 
 public class SubcategoryAdapter extends BaseAdapter {
 
@@ -52,7 +56,7 @@ public class SubcategoryAdapter extends BaseAdapter {
     public View getView(int position, View view, ViewGroup viewGroup) {
         final Subcategory subcategory = subcategories.get(position);
 
-        if (Utils.isEmpty(view)) {
+        if (GeneralUtils.isEmpty(view)) {
             final LayoutInflater layoutInflater = LayoutInflater.from(context);
             view = layoutInflater.inflate(R.layout.activity_subcategory_item, viewGroup, false);
 
@@ -63,7 +67,7 @@ public class SubcategoryAdapter extends BaseAdapter {
         }
 
         final ViewHolder viewHolder = (ViewHolder) view.getTag();
-        Utils.setGridDesign(position, subcategory.getUsersSize(), maxSize, viewHolder.layout);
+        GeneralUtils.setGridDesign(position, subcategory.getUsersSize(), maxSize, viewHolder.layout);
         viewHolder.textView.setText(subcategory.getName());
 
         return view;
