@@ -65,7 +65,7 @@ public class Api {
         InputStream bufferedInputStream = new BufferedInputStream(inputStream);
         return bufferedInputStream;
     }
-    public static InputStream post(String url, String data) throws IOException {
+    public static InputStream simplePost(String url, String data) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Accept", "application/json");
@@ -79,19 +79,25 @@ public class Api {
 
         return handleResponse(connection);
     }
+    public static InputStream simpleGet(String url) throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.setRequestProperty("Accept", "application/json");
 
-    private static InputStream getRequest(String url) throws IOException {
+        return handleResponse(connection);
+    }
+
+    private static InputStream getAuthorizedRequest(String url) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         connection.setRequestProperty("Accept", "application/json");
         connection.setRequestProperty("Authorization", API_CREDENTIALS);
 
         return handleResponse(connection);
     }
-    private static InputStream sendRequest(String method, String url, String etag, String data) throws IOException {
+    private static InputStream sendAuthorizedRequest(String method, String url, String etag, String data) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         connection.setRequestMethod(method);
         connection.setRequestProperty("Accept", "application/json");
-        connection.setRequestProperty("Content-Type", "application/json");
+        //connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("Content-Length", Integer.toString(data.getBytes().length));
         if (GeneralUtils.isNotEmpty(etag)) {
             connection.setRequestProperty("If-Match", etag);
@@ -109,16 +115,16 @@ public class Api {
         return handleResponse(connection);
     }
     private static InputStream postRequest(String url, String data) throws IOException {
-        return sendRequest("POST", url, null, data);
+        return sendAuthorizedRequest("POST", url, null, data);
     }
     private static InputStream patchRequest(String url, String etag, String data) throws IOException {
-        return sendRequest("PATCH", url, etag, data);
+        return sendAuthorizedRequest("PATCH", url, etag, data);
     }
     private static InputStream deleteRequest(String url, String etag) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         connection.setRequestMethod("DELETE");
         connection.setRequestProperty("Accept", "application/json");
-        connection.setRequestProperty("Content-Type", "application/json");
+        //connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("If-Match", etag);
         connection.setRequestProperty("Authorization", API_CREDENTIALS);
 
@@ -162,9 +168,9 @@ public class Api {
             return allCategories;
         }
 
-        InputStream is = getRequest(API_CATEGORIES_URL);
-        String data = getStream(is);
-        JSONArray jsonArray = getItems(data);
+        InputStream is = getAuthorizedRequest(API_CATEGORIES_URL);
+        String stream = getStream(is);
+        JSONArray jsonArray = getItems(stream);
 
         List<Category> categories = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
@@ -186,9 +192,9 @@ public class Api {
             }
         }
 
-        InputStream is = getRequest(API_CATEGORIES_URL + "/" + id);
-        String data = getStream(is);
-        JSONArray jsonArray = getItems(data);
+        InputStream is = getAuthorizedRequest(API_CATEGORIES_URL + "/" + id);
+        String stream = getStream(is);
+        JSONArray jsonArray = getItems(stream);
 
         for (int i = 0; i < jsonArray.length(); i++) {
             Category category = mapper.readValue(jsonArray.getString(i), Category.class);
@@ -207,9 +213,9 @@ public class Api {
             return allSubcategories;
         }
 
-        InputStream is = getRequest(API_SUBCATEGORIES_URL);
-        String data = getStream(is);
-        JSONArray jsonArray = getItems(data);
+        InputStream is = getAuthorizedRequest(API_SUBCATEGORIES_URL);
+        String stream = getStream(is);
+        JSONArray jsonArray = getItems(stream);
 
         List<Subcategory> subcategories = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
@@ -231,10 +237,10 @@ public class Api {
             }
         }
 
-        InputStream is = getRequest(API_SUBCATEGORIES_URL + "/" + id);
-        String data = getStream(is);
+        InputStream is = getAuthorizedRequest(API_SUBCATEGORIES_URL + "/" + id);
+        String stream = getStream(is);
 
-        Subcategory subcategory = mapper.readValue(data, Subcategory.class);
+        Subcategory subcategory = mapper.readValue(stream, Subcategory.class);
         if (id.equals(subcategory.getId())) {
             correctDate(subcategory);
             return subcategory;
@@ -254,9 +260,9 @@ public class Api {
         } else {
             Map<String, String> conditions = new HashMap<>();
             conditions.put("categories", categoryId);
-            InputStream is = getRequest(API_SUBCATEGORIES_URL + getWhere(conditions));
-            String data = getStream(is);
-            JSONArray jsonArray = getItems(data);
+            InputStream is = getAuthorizedRequest(API_SUBCATEGORIES_URL + getWhere(conditions));
+            String stream = getStream(is);
+            JSONArray jsonArray = getItems(stream);
 
             for (int i = 0; i < jsonArray.length(); i++) {
                 Subcategory subcategory = mapper.readValue(jsonArray.getString(i), Subcategory.class);
@@ -274,9 +280,9 @@ public class Api {
             return allUsers;
         }
 
-        InputStream is = getRequest(API_USERS_URL);
-        String data = getStream(is);
-        JSONArray jsonArray = getItems(data);
+        InputStream is = getAuthorizedRequest(API_USERS_URL);
+        String stream = getStream(is);
+        JSONArray jsonArray = getItems(stream);
 
         List<User> users = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
@@ -298,10 +304,10 @@ public class Api {
             }
         }
 
-        InputStream is = getRequest(API_USERS_URL + "/" + id);
-        String data = getStream(is);
+        InputStream is = getAuthorizedRequest(API_USERS_URL + "/" + id);
+        String stream = getStream(is);
 
-        User user = mapper.readValue(data, User.class);
+        User user = mapper.readValue(stream, User.class);
         if (id.equals(user.getId())) {
             correctDate(user);
             return user;
@@ -321,9 +327,9 @@ public class Api {
         } else {
             Map<String, String> conditions = new HashMap<>();
             conditions.put("categories", categoryId);
-            InputStream is = getRequest(API_USERS_URL + getWhere(conditions));
-            String data = getStream(is);
-            JSONArray jsonArray = getItems(data);
+            InputStream is = getAuthorizedRequest(API_USERS_URL + getWhere(conditions));
+            String stream = getStream(is);
+            JSONArray jsonArray = getItems(stream);
 
             for (int i = 0; i < jsonArray.length(); i++) {
                 User user = mapper.readValue(jsonArray.getString(i), User.class);
@@ -346,9 +352,9 @@ public class Api {
         } else {
             Map<String, String> conditions = new HashMap<>();
             conditions.put("subcategories", subcategoryId);
-            InputStream is = getRequest(API_USERS_URL + getWhere(conditions));
-            String data = getStream(is);
-            JSONArray jsonArray = getItems(data);
+            InputStream is = getAuthorizedRequest(API_USERS_URL + getWhere(conditions));
+            String stream = getStream(is);
+            JSONArray jsonArray = getItems(stream);
 
             for (int i = 0; i < jsonArray.length(); i++) {
                 User user = mapper.readValue(jsonArray.getString(i), User.class);
@@ -360,10 +366,10 @@ public class Api {
         return users;
     }
     public static Boolean deleteUser(User user) throws IOException, JSONException {
-        InputStream is = patchRequest(API_USERS_URL + "/" + user.getId(), user.getEtag(), "{ \"active\": false }");
-        String data = getStream(is);
+        InputStream is = patchRequest(API_USERS_URL + "/" + user.getId(), user.getEtag(), "active=false");
+        String stream = getStream(is);
 
-        Response response = mapper.readValue(data, Response.class);
+        Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
             GeneralUtils.logError("Api", response.toString());
             return Boolean.FALSE;

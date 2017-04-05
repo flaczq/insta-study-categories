@@ -1,35 +1,20 @@
-package abc.flaq.apps.instastudycategories.pojo;
+package abc.flaq.apps.instastudycategories.pojo.instagram;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.net.HttpURLConnection;
+
 import abc.flaq.apps.instastudycategories.utils.GeneralUtils;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class InstagramOAuthResponse {
+public class InstagramResponse {
 
-    @JsonProperty("access_token")
-    private String accessToken;
-    private InstagramUser user;
     private Integer code;
     @JsonProperty("error_type")
     private String type;
     @JsonProperty("error_message")
     private String message;
-
-    public String getAccessToken() {
-        return accessToken;
-    }
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
-
-    public InstagramUser getUser() {
-        return user;
-    }
-    public void setUser(InstagramUser user) {
-        this.user = user;
-    }
 
     public Integer getCode() {
         return code;
@@ -56,20 +41,18 @@ public class InstagramOAuthResponse {
         if (GeneralUtils.isEmpty(code)) {
             return true;
         }
-        return (code == 200);
+        return (code == HttpURLConnection.HTTP_OK);
     }
     public Boolean isError() {
         if (GeneralUtils.isEmpty(code)) {
             return false;
         }
-        return (code != 200);
+        return (code != HttpURLConnection.HTTP_OK);
     }
 
     @Override
     public String toString() {
-        String string = "InstagramOAuthResponse[";
-        string += "accessToken: " + accessToken + ", ";
-        string += "user: " + (GeneralUtils.isEmpty(user) ? null : user.toString()) + ", ";
+        String string = "InstagramResponse[";
         string += "code: " + code + ", ";
         string += "type: " + type + ", ";
         string += "message: " + message;

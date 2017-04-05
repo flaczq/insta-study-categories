@@ -2,6 +2,7 @@ package abc.flaq.apps.instastudycategories.adapter;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
 
 import com.crystal.crystalpreloaders.widgets.CrystalPreloader;
 
@@ -22,28 +22,40 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import abc.flaq.apps.instastudycategories.R;
-import abc.flaq.apps.instastudycategories.pojo.InstagramOAuthResponse;
-import abc.flaq.apps.instastudycategories.pojo.InstagramUser;
 import abc.flaq.apps.instastudycategories.pojo.User;
+import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramAccessToken;
+import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramUser;
 import abc.flaq.apps.instastudycategories.utils.Api;
 import abc.flaq.apps.instastudycategories.utils.Constants;
 import abc.flaq.apps.instastudycategories.utils.GeneralUtils;
 import abc.flaq.apps.instastudycategories.utils.InstagramUtils;
 
 import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_REDIRECT_URL;
+import static abc.flaq.apps.instastudycategories.utils.Constants.SETTINGS_ACCESS_TOKEN;
+import static abc.flaq.apps.instastudycategories.utils.Constants.SETTINGS_NAME;
 
+// todo: delete all log.infos!
+// todo: save all log.debugs to database
 public class MenuActivity extends AppCompatActivity {
 
     private final Activity clazz = this;
+    private SharedPreferences settings;
 
     private Dialog instagramDialog;
     private InstagramUser instagramUser;
-    private Boolean isAuthenticated;
     private Menu mainMenu;
+    private String accessToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        settings = getSharedPreferences(SETTINGS_NAME, MODE_PRIVATE);
+        accessToken = settings.getString(SETTINGS_ACCESS_TOKEN, null);
+        GeneralUtils.logInfo(clazz, "Settings access token: " + accessToken);
+        if (GeneralUtils.isNotEmpty(accessToken)) {
+
+        }
 
         instagramDialog = new Dialog(clazz);
     }
@@ -54,30 +66,41 @@ public class MenuActivity extends AppCompatActivity {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.main_menu, menu);
         mainMenu = menu;
-        setAuthenticated(false);
+        handleLogin(accessToken);
         return true;
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (GeneralUtils.isEmpty(settings)) {
+            settings = getSharedPreferences(SETTINGS_NAME, MODE_PRIVATE);
+        }
+
         switch (item.getItemId()) {
             case R.id.menu_add:
-                Toast.makeText(clazz, "adding", Toast.LENGTH_LONG).show();
+                GeneralUtils.showMessage(clazz, "adding");
                 break;
             case R.id.menu_join:
-                Toast.makeText(clazz, "joining", Toast.LENGTH_LONG).show();
+                GeneralUtils.showMessage(clazz, "joining");
                 break;
             case R.id.menu_info:
-                if (GeneralUtils.isNotEmpty(instagramUser)) {
-                    Toast.makeText(clazz, instagramUser.toString(), Toast.LENGTH_LONG).show();
+                if (GeneralUtils.isEmpty(instagramUser)) {
+                    //GeneralUtils.showMessage(clazz, instagramUser.toString());
+                } else {
+                    GeneralUtils.showMessage(clazz, instagramUser.toString());
                 }
                 break;
             case R.id.menu_login:
-                Toast.makeText(clazz, "Login in...", Toast.LENGTH_SHORT).show();
-                try {
-                    String instagramAuthUrl = InstagramUtils.getAuthUrl(Constants.INSTAGRAM_SCOPES.public_content);
-                    createInstagramDialog(instagramAuthUrl);
-                } catch (URISyntaxException e) {
-                    e.printStackTrace();
+                if (GeneralUtils.isNotEmpty(accessToken)) {
+                    GeneralUtils.logDebug(clazz, "Access token is not empty, but login icon is available");
+                    handleLogin(accessToken);
+                } else {
+                    GeneralUtils.showMessage(clazz, "Logging in...");
+                    try {
+                        String instagramAuthUrl = InstagramUtils.getAuthUrl(Constants.INSTAGRAM_SCOPES.public_content);
+                        createInstagramDialog(instagramAuthUrl);
+                    } catch (URISyntaxException e) {
+                        e.printStackTrace();
+                    }
                 }
                 break;
             default:
@@ -103,7 +126,7 @@ public class MenuActivity extends AppCompatActivity {
                         GeneralUtils.afterError(clazz, "Instagram code is empty");
                         instagramDialog.dismiss();
                     } else {
-                        GeneralUtils.logDebug(clazz, "Collected instagram code: " + code);
+                        GeneralUtils.logInfo(clazz, "Collected instagram code: " + code);
                         preloader.setVisibility(View.VISIBLE);
                         new ProcessHandleCode().execute(code);
                     }
@@ -117,33 +140,39 @@ public class MenuActivity extends AppCompatActivity {
         instagramDialog.show();
     }
 
-    private void setAuthenticated(Boolean authenticated) {
-        isAuthenticated = authenticated;
-        if (authenticated) {
-            mainMenu.findItem(R.id.menu_login).setVisible(false);
-            mainMenu.findItem(R.id.menu_add).setVisible(true);
-            mainMenu.findItem(R.id.menu_join).setVisible(true);
-            mainMenu.findItem(R.id.menu_info).setVisible(true);
-        } else {
-            mainMenu.findItem(R.id.menu_login).setVisible(true);
-            mainMenu.findItem(R.id.menu_add).setVisible(false);
-            mainMenu.findItem(R.id.menu_join).setVisible(false);
-            mainMenu.findItem(R.id.menu_info).setVisible(false);
-        }
+    private void handleLogin(String accessToken) {
+        Boolean isAuthenticated = GeneralUtils.isNotEmpty(accessToken);
+        mainMenu.findItem(R.id.menu_login).setVisible(!isAuthenticated);
+        mainMenu.findItem(R.id.menu_add).setVisible(isAuthenticated);
+        mainMenu.findItem(R.id.menu_join).setVisible(isAuthenticated);
+        mainMenu.findItem(R.id.menu_info).setVisible(isAuthenticated);
     }
 
-    private class ProcessHandleCode extends AsyncTask<String, Void, InstagramOAuthResponse> {
+    private void saveAccessToken(String accessToken) {
+        if (GeneralUtils.isEmpty(settings)) {
+            settings = getSharedPreferences(SETTINGS_NAME, MODE_PRIVATE);
+        }
+        settings.edit()
+                .putString(SETTINGS_ACCESS_TOKEN, accessToken)
+                .apply();
+    }
+
+    public void resetAuthentication() {
+        GeneralUtils.afterError(clazz, "Resetting authentication");
+        accessToken = null;
+        handleLogin(null);
+    }
+
+    private class ProcessHandleCode extends AsyncTask<String, Void, InstagramAccessToken> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
-            //preloader.setVisibility(View.VISIBLE);
         }
 
         @Override
-        protected InstagramOAuthResponse doInBackground(String... params) {
+        protected InstagramAccessToken doInBackground(String... params) {
             String code = params[0];
-            InstagramOAuthResponse instagramToken = null;
+            InstagramAccessToken instagramToken = null;
             try {
                 instagramToken = InstagramUtils.getAccessTokenByCode(code);
             } catch (IOException e) {
@@ -153,20 +182,22 @@ public class MenuActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(InstagramOAuthResponse result) {
+        protected void onPostExecute(InstagramAccessToken result) {
             super.onPostExecute(result);
 
-            //preloader.setVisibility(View.GONE);
             if (GeneralUtils.isNotEmpty(result)) {
-                if (result.isError()) {
+                if (result.isError() || GeneralUtils.isEmpty(result.getAccessToken())) {
                     GeneralUtils.afterError(clazz, result.toString());
                     instagramUser = null;
-                    setAuthenticated(false);
+                    accessToken = null;
+                    handleLogin(null);
                 } else {
-                    GeneralUtils.logDebug(clazz, "Collected instagram access token: " + result.getAccessToken());
+                    GeneralUtils.logInfo(clazz, "Collected instagram access token: " + result.getAccessToken());
                     GeneralUtils.showMessage(clazz, "zalogowany");
                     instagramUser = result.getUser();
-                    setAuthenticated(true);
+                    accessToken = result.getAccessToken();
+                    saveAccessToken(result.getAccessToken());
+                    handleLogin(result.getAccessToken());
                 }
                 instagramDialog.dismiss();
             }

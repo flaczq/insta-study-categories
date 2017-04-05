@@ -1,4 +1,4 @@
-package abc.flaq.apps.instastudycategories.pojo;
+package abc.flaq.apps.instastudycategories.pojo.instagram;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
