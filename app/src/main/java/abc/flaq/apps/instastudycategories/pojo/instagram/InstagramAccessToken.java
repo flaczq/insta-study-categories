@@ -6,11 +6,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import abc.flaq.apps.instastudycategories.utils.GeneralUtils;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class InstagramAccessToken extends InstagramResponse {
+public class InstagramAccessToken extends InstagramMeta {
 
     @JsonProperty("access_token")
     private String accessToken;
-    private InstagramUser user;
+    private InstagramOAuthUser user;
 
     public String getAccessToken() {
         return accessToken;
@@ -19,10 +19,10 @@ public class InstagramAccessToken extends InstagramResponse {
         this.accessToken = accessToken;
     }
 
-    public InstagramUser getUser() {
+    public InstagramOAuthUser getUser() {
         return user;
     }
-    public void setUser(InstagramUser user) {
+    public void setUser(InstagramOAuthUser user) {
         this.user = user;
     }
 
@@ -30,7 +30,10 @@ public class InstagramAccessToken extends InstagramResponse {
     public String toString() {
         String string = "InstagramAccessToken[";
         string += "accessToken: " + accessToken + ", ";
-        string += "user: " + (GeneralUtils.isEmpty(user) ? null : user.toString());
+        string += "user: " + (GeneralUtils.isEmpty(user) ? null : user.toString()) + ", ";
+        string += "code: " + getCode() + ", ";
+        string += "type: " + getType() + ", ";
+        string += "message: " + getMessage();
         string += "]";
         return string;
     }

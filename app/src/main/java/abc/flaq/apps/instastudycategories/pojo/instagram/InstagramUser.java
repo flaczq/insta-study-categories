@@ -1,73 +1,61 @@
 package abc.flaq.apps.instastudycategories.pojo.instagram;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
+import abc.flaq.apps.instastudycategories.utils.GeneralUtils;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InstagramUser {
 
-    private String id = "";
-    private String username = "";
-    @JsonProperty("full_name")
-    private String fullname = "";
-    @JsonProperty("profile_picture")
-    private String profilePicUrl = "";
-    private String bio = "";
-    private String website = "";
+    private InstagramUserData data;
+    private InstagramMeta meta;
 
-    public String getId() {
-        return id;
+    public InstagramUserData getData() {
+        return data;
     }
-    public void setId(String id) {
-        this.id = id;
+    public void setData(InstagramUserData data) {
+        this.data = data;
     }
 
-    public String getUsername() {
-        return username;
+    public InstagramMeta getMeta() {
+        return meta;
     }
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getFullname() {
-        return fullname;
-    }
-    public void setFullname(String fullname) {
-        this.fullname = fullname;
-    }
-
-    public String getProfilePicUrl() {
-        return profilePicUrl;
-    }
-    public void setProfilePicUrl(String profilePicUrl) {
-        this.profilePicUrl = profilePicUrl;
-    }
-
-    public String getBio() {
-        return bio;
-    }
-    public void setBio(String bio) {
-        this.bio = bio;
-    }
-
-    public String getWebsite() {
-        return website;
-    }
-    public void setWebsite(String website) {
-        this.website = website;
+    public void setMeta(InstagramMeta meta) {
+        this.meta = meta;
     }
 
     @Override
     public String toString() {
         String string = "InstagramUser[";
-        string += "id: " + id + ", ";
-        string += "username: " + username + ", ";
-        string += "fullname: " + fullname + ", ";
-        string += "profilePicUrl: " + profilePicUrl + ", ";
-        string += "bio: " + bio + ", ";
-        string += "website: " + website;
+        string += "data: " + (GeneralUtils.isEmpty(data) ? null : data.toString()) + ", ";
+        string += "meta: " + (GeneralUtils.isEmpty(meta) ? null : meta.toString());
         string += "]";
         return string;
+    }
+
+    static public class InstagramUserData extends InstagramOAuthUser {
+        private InstagramCounts counts;
+
+        public InstagramCounts getCounts() {
+            return counts;
+        }
+        public void setCounts(InstagramCounts counts) {
+            this.counts = counts;
+        }
+
+        @Override
+        public String toString() {
+            String string = "InstagramUserData[";
+            string += "counts: " + (GeneralUtils.isEmpty(counts) ? null : counts.toString()) + ", ";
+            string += "id: " + getId() + ", ";
+            string += "username: " + getUsername() + ", ";
+            string += "fullname: " + getFullname() + ", ";
+            string += "profilePicUrl: " + getProfilePicUrl() + ", ";
+            string += "bio: " + getBio() + ", ";
+            string += "website: " + getWebsite() + ", ";
+            string += "]";
+            return string;
+        }
     }
 
 }

@@ -8,7 +8,7 @@ import java.net.HttpURLConnection;
 import abc.flaq.apps.instastudycategories.utils.GeneralUtils;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class InstagramResponse {
+public class InstagramMeta {
 
     private Integer code;
     @JsonProperty("error_type")
@@ -52,7 +52,7 @@ public class InstagramResponse {
 
     @Override
     public String toString() {
-        String string = "InstagramResponse[";
+        String string = "InstagramMeta[";
         string += "code: " + code + ", ";
         string += "type: " + type + ", ";
         string += "message: " + message;

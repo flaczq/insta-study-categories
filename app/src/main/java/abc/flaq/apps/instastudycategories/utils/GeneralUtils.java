@@ -66,7 +66,7 @@ public class GeneralUtils {
 
     public static void afterError(Context context, String message) {
         GeneralUtils.log(LOG_ERROR, context, message);
-        Toast.makeText(context, "Shit happens", Toast.LENGTH_LONG).show();
+        showMessage(context, "General error");
     }
 
     public static Boolean isIntentAvailable(Context context, Intent intent) {
