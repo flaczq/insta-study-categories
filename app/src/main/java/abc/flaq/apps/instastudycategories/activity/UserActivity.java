@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -15,11 +16,9 @@ import com.crystal.crystalpreloaders.widgets.CrystalPreloader;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import abc.flaq.apps.instastudycategories.R;
-import abc.flaq.apps.instastudycategories.adapter.MenuActivity;
 import abc.flaq.apps.instastudycategories.adapter.UserAdapter;
 import abc.flaq.apps.instastudycategories.pojo.User;
 import abc.flaq.apps.instastudycategories.utils.Api;
@@ -35,7 +34,6 @@ public class UserActivity extends MenuActivity {
     private final Activity clazz = this;
     private UserAdapter userAdapter;
     private Intent intent;
-
     private ListView listView;
     private CrystalPreloader preloader;
 
@@ -44,7 +42,6 @@ public class UserActivity extends MenuActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_user);
         listView = (ListView) findViewById(R.id.user_list);
         preloader = (CrystalPreloader) findViewById(R.id.user_preloader);
@@ -93,22 +90,41 @@ public class UserActivity extends MenuActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
+        menu.findItem(R.id.menu_add).setVisible(false);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_add:
+                // not available from here
+                break;
+            case R.id.menu_join:
+                GeneralUtils.showMessage(clazz, "joining");
+                new ProcessAddUser().execute();
+                break;
+            case R.id.menu_info:
+                return super.onOptionsItemSelected(item);
+            case R.id.menu_login:
+                return super.onOptionsItemSelected(item);
+            default:
+                break;
+        }
         return true;
     }
 
-    private class ProcessUsers extends AsyncTask<String, Void, List<User>> {
+    private class ProcessUsers extends AsyncTask<String, Void, Void> {
+        private List<User> users;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
             preloader.setVisibility(View.VISIBLE);
         }
 
         @Override
-        protected List<User> doInBackground(String... params) {
+        protected Void doInBackground(String... params) {
             String id = params[0];
-            List<User> users = new ArrayList<>();
-
             try {
                 Thread.sleep(1000); // FIXME: showing preloader, REMOVE!
                 if (isCategory) {
@@ -116,7 +132,7 @@ public class UserActivity extends MenuActivity {
                 } else {
                     users = Api.getUsersBySubcategoryId(id);
                 }
-                users = Api.getAllUsers(false);
+                users = Api.getAllUsers(true); // fixme: testing
                 for (User user : users) {
                     GeneralUtils.logInfo(clazz, user.toString());
                 }
@@ -127,17 +143,53 @@ public class UserActivity extends MenuActivity {
             } catch (IOException e) {
                 GeneralUtils.logError(clazz, "IOException: " + e.toString());
             }
-
-            return users;
+            return null;
         }
 
         @Override
-        protected void onPostExecute(List<User> result) {
+        protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-
             preloader.setVisibility(View.GONE);
-            userAdapter = new UserAdapter(clazz, result);
+            userAdapter = new UserAdapter(clazz, users);
             listView.setAdapter(userAdapter);
+        }
+    }
+
+    private class ProcessAddUser extends AsyncTask<Void, Void, Boolean> {
+        private User user;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            preloader.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            Boolean result = Boolean.FALSE;
+            user = getUser();
+            try {
+                Thread.sleep(1000); // FIXME: showing preloader, REMOVE!
+                result = Api.addUser(user);
+            } catch (InterruptedException e) {
+                GeneralUtils.logError(clazz, "InterruptedException: " + e.toString());
+            } catch (JSONException e) {
+                GeneralUtils.logError(clazz, "JSONException: " + e.toString());
+            } catch (IOException e) {
+                GeneralUtils.logError(clazz, "IOException: " + e.toString());
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            preloader.setVisibility(View.GONE);
+            if (result) {
+                GeneralUtils.showMessage(clazz, "User successfully added to the category");
+                userAdapter.addItem(user);
+                userAdapter.notifyDataSetChanged();
+            }
         }
     }
 

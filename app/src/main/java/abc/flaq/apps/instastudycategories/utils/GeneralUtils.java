@@ -64,11 +64,6 @@ public class GeneralUtils {
         return drawableId;
     }
 
-    public static void afterError(Context context, String message) {
-        GeneralUtils.log(LOG_ERROR, context, message);
-        showMessage(context, "General error");
-    }
-
     public static Boolean isIntentAvailable(Context context, Intent intent) {
         final PackageManager packageManager = context.getPackageManager();
         List<ResolveInfo> list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
@@ -99,6 +94,25 @@ public class GeneralUtils {
                 layout.setBackgroundColor(Color.parseColor("#F19C7F"));
                 break;
         }
+    }
+
+    public static String listToString(List<String> list) {
+        String string = "[";
+        for (int i = 0; i < list.size(); i++) {
+            string += "\"";
+            string += list.get(i);
+            string += "\"";
+            if (i < list.size() - 1) {
+                string += ",";
+            }
+        }
+        string += "]";
+        return string;
+    }
+
+    public static void afterError(Context context, String message) {
+        GeneralUtils.log(LOG_ERROR, context, message);
+        showMessage(context, "General error");
     }
 
     // FIXME: better!

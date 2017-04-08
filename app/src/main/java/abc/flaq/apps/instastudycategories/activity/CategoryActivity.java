@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -14,13 +15,11 @@ import com.etsy.android.grid.StaggeredGridView;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import abc.flaq.apps.instastudycategories.BuildConfig;
-import abc.flaq.apps.instastudycategories.adapter.CategoryAdapter;
-import abc.flaq.apps.instastudycategories.adapter.MenuActivity;
 import abc.flaq.apps.instastudycategories.R;
+import abc.flaq.apps.instastudycategories.adapter.CategoryAdapter;
 import abc.flaq.apps.instastudycategories.pojo.Category;
 import abc.flaq.apps.instastudycategories.utils.Api;
 import abc.flaq.apps.instastudycategories.utils.GeneralUtils;
@@ -31,14 +30,12 @@ public class CategoryActivity extends MenuActivity {
 
     private final Activity clazz = this;
     private CategoryAdapter categoryAdapter;
-
     private StaggeredGridView gridView;
     private CrystalPreloader preloader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_category);
         gridView = (StaggeredGridView) findViewById(R.id.category_grid);
         preloader = (CrystalPreloader) findViewById(R.id.category_preloader);
@@ -75,22 +72,39 @@ public class CategoryActivity extends MenuActivity {
         menu.findItem(R.id.menu_join).setVisible(false);
         return true;
     }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_add:
+                GeneralUtils.showMessage(clazz, "adding");
+                break;
+            case R.id.menu_join:
+                // not available from here
+                break;
+            case R.id.menu_info:
+                return super.onOptionsItemSelected(item);
+            case R.id.menu_login:
+                return super.onOptionsItemSelected(item);
+            default:
+                break;
+        }
+        return true;
+    }
 
-    private class ProcessCategories extends AsyncTask<Void, Void, List<Category>> {
+    private class ProcessCategories extends AsyncTask<Void, Void, Void> {
+        private List<Category> categories;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
             preloader.setVisibility(View.VISIBLE);
         }
 
         @Override
-        protected List<Category> doInBackground(Void... params) {
-            List<Category> categories = new ArrayList<>();
-
+        protected Void doInBackground(Void... params) {
             try {
                 Thread.sleep(1000); // FIXME: showing preloader, REMOVE
-                categories = Api.getAllCategories(false);
+                categories = Api.getAllCategories(true);    // fixme: testing
                 for (Category category : categories) {
                     GeneralUtils.logInfo(clazz, category.toString());
                 }
@@ -101,16 +115,14 @@ public class CategoryActivity extends MenuActivity {
             } catch (IOException e) {
                 GeneralUtils.logError(clazz, "IOException: " + e.toString());
             }
-
-            return categories;
+            return null;
         }
 
         @Override
-        protected void onPostExecute(List<Category> result) {
+        protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-
             preloader.setVisibility(View.GONE);
-            categoryAdapter = new CategoryAdapter(clazz, result);
+            categoryAdapter = new CategoryAdapter(clazz, categories);
             gridView.setAdapter(categoryAdapter);
         }
     }

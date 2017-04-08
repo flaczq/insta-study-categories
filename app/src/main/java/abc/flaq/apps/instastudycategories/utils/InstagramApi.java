@@ -9,7 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -79,8 +79,8 @@ public class InstagramApi {
     public static Map<String, Object> getDataToMap(String url) throws IOException, JSONException {
         Map<String, Object> values;
         ObjectMapper mapper = new ObjectMapper();
-        InputStream is = Api.simpleGet(url);
-        String stream = Api.getStream(is);
+        InputStreamReader isr = Api.simpleGet(url);
+        String stream = Api.getStream(isr);
 
         JSONObject jsonObject = new JSONObject(stream);
         String meta = jsonObject.getString("meta");
@@ -143,8 +143,8 @@ public class InstagramApi {
     }
 
     public static InstagramAccessToken getAccessTokenByCode(String code) throws IOException {
-        InputStream is = Api.simplePost(INSTAGRAM_REQUEST_ACCESS_TOKEN_URL, INSTAGRAM_CODE_URL + code);
-        String stream = Api.getStream(is);
+        InputStreamReader isr = Api.simplePost(INSTAGRAM_REQUEST_ACCESS_TOKEN_URL, INSTAGRAM_CODE_URL + code);
+        String stream = Api.getStream(isr);
 
         InstagramAccessToken accessToken = mapper.readValue(stream, InstagramAccessToken.class);
         if (accessToken.isError()) {
@@ -176,16 +176,16 @@ public class InstagramApi {
     }
 
     public static <T extends InstagramMeta> InstagramMeta postDataToClass(Class<T> clazz, String url, String data) throws IOException, JSONException {
-        InputStream is = Api.simplePost(url, data);
-        String stream = Api.getStream(is);
+        InputStreamReader isr = Api.simplePost(url, data);
+        String stream = Api.getStream(isr);
 
         T response = mapper.readValue(stream, clazz);
         return response;
     }
 
     public static <T> T getDataToClass(Class<T> clazz, String url) throws IOException, JSONException {
-        InputStream is = Api.simpleGet(url);
-        String stream = Api.getStream(is);
+        InputStreamReader isr = Api.simpleGet(url);
+        String stream = Api.getStream(isr);
 
         T response = mapper.readValue(stream, clazz);
         return response;

@@ -1,6 +1,9 @@
 package abc.flaq.apps.instastudycategories.pojo;
 
 import java.util.List;
+import java.util.Random;
+
+import abc.flaq.apps.instastudycategories.utils.GeneralUtils;
 
 public class User extends EveObject implements Comparable<User> {
 
@@ -123,6 +126,25 @@ public class User extends EveObject implements Comparable<User> {
     @Override
     public int compareTo(User user) {
         return (user.getFollowers() - followers);
+    }
+
+    public String toPostJson() {
+        Random rand = new Random();
+        String json = "{";
+        json += "\"instagramId\":\"" + instagramId + rand.nextInt(999) + "\","; // fixme: testing
+        json += "\"fullname\":\"" + fullname + "\",";
+        json += "\"username\":\"" + username + "\",";
+        json += "\"bio\":\"" + bio + "\",";
+        json += "\"profilePicUrl\":\"" + profilePicUrl + "\",";
+        json += "\"followers\":" + followers + ",";
+        json += "\"media\":" + media + ",";
+        json += "\"categories\":" + GeneralUtils.listToString(categories) + ",";
+        json += "\"categoriesSize\":" + categoriesSize + ",";
+        json += "\"subcategories\":" + GeneralUtils.listToString(subcategories) + ",";
+        json += "\"subcategoriesSize\":" + subcategoriesSize + ",";
+        json += "\"active\":" + active;
+        json += "}";
+        return json;
     }
 
 }

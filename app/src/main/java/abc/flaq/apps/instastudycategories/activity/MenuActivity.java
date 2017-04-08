@@ -1,4 +1,4 @@
-package abc.flaq.apps.instastudycategories.adapter;
+package abc.flaq.apps.instastudycategories.activity;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -29,6 +29,7 @@ import abc.flaq.apps.instastudycategories.utils.Api;
 import abc.flaq.apps.instastudycategories.utils.Constants;
 import abc.flaq.apps.instastudycategories.utils.GeneralUtils;
 import abc.flaq.apps.instastudycategories.utils.InstagramApi;
+import abc.flaq.apps.instastudycategories.utils.InstagramUtils;
 
 import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_ENDPOINT_USER_SELF;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_REDIRECT_URL;
@@ -43,21 +44,27 @@ public class MenuActivity extends AppCompatActivity {
     private SharedPreferences settings;
 
     private Dialog instagramDialog;
-    private InstagramUser instagramUser;
+    private User user;
     private Menu mainMenu;
     private String accessToken;
 
+    public SharedPreferences getSettings() {
+        return settings;
+    }
+    public User getUser() {
+        return user;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // fixme: this will init every activity - what to do?
         super.onCreate(savedInstanceState);
-
         settings = getSharedPreferences(SETTINGS_NAME, MODE_PRIVATE);
         accessToken = settings.getString(SETTINGS_ACCESS_TOKEN, null);
         GeneralUtils.logInfo(clazz, "Settings access token: " + accessToken);
         if (GeneralUtils.isNotEmpty(accessToken)) {
             new ProcessGetUser().execute();
         }
-
         instagramDialog = new Dialog(clazz);
     }
 
@@ -78,17 +85,17 @@ public class MenuActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case R.id.menu_add:
-                GeneralUtils.showMessage(clazz, "adding");
+                // not available from here
                 break;
             case R.id.menu_join:
-                GeneralUtils.showMessage(clazz, "joining");
+                // not available from here
                 break;
             case R.id.menu_info:
-                if (GeneralUtils.isEmpty(instagramUser)) {
+                if (GeneralUtils.isEmpty(user)) {
                     GeneralUtils.logDebug(clazz, "Instagram user data is empty");
                     new ProcessGetUser().execute();
                 } else {
-                    GeneralUtils.showMessage(clazz, instagramUser.getData().toString());
+                    GeneralUtils.showMessage(clazz, user.toString());
                 }
                 break;
             case R.id.menu_login:
@@ -192,7 +199,7 @@ public class MenuActivity extends AppCompatActivity {
             if (GeneralUtils.isNotEmpty(result)) {
                 if (result.isError() || GeneralUtils.isEmpty(result.getAccessToken())) {
                     GeneralUtils.afterError(clazz, result.toString());
-                    instagramUser = null;
+                    user = null;
                     accessToken = null;
                     handleLogin(null);
                 } else {
@@ -217,28 +224,37 @@ public class MenuActivity extends AppCompatActivity {
 
         @Override
         protected InstagramUser doInBackground(Void... params) {
-            InstagramUser result = null;
+            InstagramUser instagramUser = null;
             try {
-                result = InstagramApi.getDataToClass(InstagramUser.class, INSTAGRAM_ENDPOINT_USER_SELF + accessToken);
+                instagramUser = InstagramApi.getDataToClass(InstagramUser.class, INSTAGRAM_ENDPOINT_USER_SELF + accessToken);
+                if (GeneralUtils.isNotEmpty(instagramUser) &&
+                        GeneralUtils.isNotEmpty(instagramUser.getData())) {
+                    user = Api.getUserByInstagramId(instagramUser.getData().getId());
+                    if (GeneralUtils.isEmpty(user)) {
+                        // New user
+                        user = InstagramUtils.instagramUserToUser(instagramUser.getData());
+                    } else {
+                        GeneralUtils.logInfo(clazz, "User already exists: " + user);
+                    }
+                }
             } catch (IOException e) {
                 GeneralUtils.logError(clazz, "IOException: " + e.toString());
             } catch (JSONException e) {
                 GeneralUtils.logError(clazz, "JSONException: " + e.toString());
             }
-            return result;
+            return instagramUser;
         }
 
         @Override
         protected void onPostExecute(InstagramUser result) {
             super.onPostExecute(result);
-
-            if (GeneralUtils.isNotEmpty(result) && GeneralUtils.isNotEmpty(result.getMeta()) && GeneralUtils.isNotEmpty(result.getData())) {
+            if (GeneralUtils.isNotEmpty(result) &&
+                    GeneralUtils.isNotEmpty(result.getMeta()) &&
+                    GeneralUtils.isNotEmpty(result.getData())) {
                 if (result.getMeta().isError()) {
                     GeneralUtils.afterError(clazz, result.toString());
-                    instagramUser = null;
                 } else {
                     GeneralUtils.logInfo(clazz, "Collected instagram user data: " + result.toString());
-                    instagramUser = result;
                 }
             }
         }
@@ -267,7 +283,6 @@ public class MenuActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
-
             GeneralUtils.logDebug(clazz, "User deleted: " + result);
         }
     }

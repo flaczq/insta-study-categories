@@ -3,8 +3,6 @@ package abc.flaq.apps.instastudycategories.pojo.instagram;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.net.HttpURLConnection;
-
 import abc.flaq.apps.instastudycategories.utils.GeneralUtils;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -41,13 +39,10 @@ public class InstagramMeta {
         if (GeneralUtils.isEmpty(code)) {
             return true;
         }
-        return (code == HttpURLConnection.HTTP_OK);
+        return (code >= 200 && code <= 299);
     }
     public Boolean isError() {
-        if (GeneralUtils.isEmpty(code)) {
-            return false;
-        }
-        return (code != HttpURLConnection.HTTP_OK);
+        return !isOk();
     }
 
     @Override

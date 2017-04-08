@@ -7,10 +7,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -42,30 +42,39 @@ public class Api {
     private static List<Subcategory> allSubcategories = new ArrayList<>();
     private static List<User> allUsers = new ArrayList<>();
 
-    public static String getStream(InputStream is) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        int i = is.read();
-        while (i != -1) {
-            baos.write(i);
-            i = is.read();
+    public static String getStream(InputStreamReader isr) throws IOException {
+        BufferedReader br = new BufferedReader(isr);
+        StringBuffer sb = new StringBuffer();
+        String line;
+        while ((line = br.readLine()) != null) {
+            sb.append(line);
+            if (!br.ready()) {
+                break;
+            }
         }
-        return baos.toString();
+        br.close();
+        return sb.toString();
     }
-    private static InputStream handleResponse(HttpURLConnection connection) throws IOException {
+    private static InputStreamReader handleResponse(HttpURLConnection connection) throws IOException {
         InputStream inputStream;
         int responseCode = connection.getResponseCode();
 
-        if (responseCode == HttpURLConnection.HTTP_OK) {
+        if (responseCode >= 200 && responseCode <= 299) {
             inputStream = connection.getInputStream();
         } else {
             inputStream = connection.getErrorStream();
-            GeneralUtils.logError("Api", responseCode + "/" + connection.getResponseMessage());
+            // Just in case
+            if (GeneralUtils.isEmpty(inputStream)) {
+                inputStream = connection.getInputStream();
+            } else {
+                GeneralUtils.logError("Api", responseCode + "/" + connection.getResponseMessage());
+            }
         }
 
-        InputStream bufferedInputStream = new BufferedInputStream(inputStream);
-        return bufferedInputStream;
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+        return inputStreamReader;
     }
-    public static InputStream simplePost(String url, String data) throws IOException {
+    public static InputStreamReader simplePost(String url, String data) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Accept", "application/json");
@@ -79,25 +88,25 @@ public class Api {
 
         return handleResponse(connection);
     }
-    public static InputStream simpleGet(String url) throws IOException {
+    public static InputStreamReader simpleGet(String url) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         connection.setRequestProperty("Accept", "application/json");
 
         return handleResponse(connection);
     }
 
-    private static InputStream getAuthorizedRequest(String url) throws IOException {
+    private static InputStreamReader getAuthorizedRequest(String url) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         connection.setRequestProperty("Accept", "application/json");
         connection.setRequestProperty("Authorization", API_CREDENTIALS);
 
         return handleResponse(connection);
     }
-    private static InputStream sendAuthorizedRequest(String method, String url, String etag, String data) throws IOException {
+    private static InputStreamReader sendAuthorizedRequest(String method, String url, String etag, String data) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         connection.setRequestMethod(method);
         connection.setRequestProperty("Accept", "application/json");
-        //connection.setRequestProperty("Content-Type", "application/json");
+        connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("Content-Length", Integer.toString(data.getBytes().length));
         if (GeneralUtils.isNotEmpty(etag)) {
             connection.setRequestProperty("If-Match", etag);
@@ -114,17 +123,17 @@ public class Api {
 
         return handleResponse(connection);
     }
-    private static InputStream postRequest(String url, String data) throws IOException {
+    private static InputStreamReader postRequest(String url, String data) throws IOException {
         return sendAuthorizedRequest("POST", url, null, data);
     }
-    private static InputStream patchRequest(String url, String etag, String data) throws IOException {
+    private static InputStreamReader patchRequest(String url, String etag, String data) throws IOException {
         return sendAuthorizedRequest("PATCH", url, etag, data);
     }
-    private static InputStream deleteRequest(String url, String etag) throws IOException {
+    private static InputStreamReader deleteRequest(String url, String etag) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         connection.setRequestMethod("DELETE");
         connection.setRequestProperty("Accept", "application/json");
-        //connection.setRequestProperty("Content-Type", "application/json");
+        connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("If-Match", etag);
         connection.setRequestProperty("Authorization", API_CREDENTIALS);
 
@@ -146,8 +155,8 @@ public class Api {
 
     private static JSONArray getItems(String data) throws JSONException {
         JSONObject jsonObject = new JSONObject(data);
-        JSONArray jsonArray = jsonObject.getJSONArray("_items");
-        return jsonArray;
+        JSONArray items = jsonObject.getJSONArray("_items");
+        return items;
     }
 
     private static String getWhere(Map<String, String> conditions) throws UnsupportedEncodingException {
@@ -168,7 +177,7 @@ public class Api {
             return allCategories;
         }
 
-        InputStream is = getAuthorizedRequest(API_CATEGORIES_URL);
+        InputStreamReader is = getAuthorizedRequest(API_CATEGORIES_URL);
         String stream = getStream(is);
         JSONArray jsonArray = getItems(stream);
 
@@ -192,7 +201,7 @@ public class Api {
             }
         }
 
-        InputStream is = getAuthorizedRequest(API_CATEGORIES_URL + "/" + id);
+        InputStreamReader is = getAuthorizedRequest(API_CATEGORIES_URL + "/" + id);
         String stream = getStream(is);
         JSONArray jsonArray = getItems(stream);
 
@@ -213,7 +222,7 @@ public class Api {
             return allSubcategories;
         }
 
-        InputStream is = getAuthorizedRequest(API_SUBCATEGORIES_URL);
+        InputStreamReader is = getAuthorizedRequest(API_SUBCATEGORIES_URL);
         String stream = getStream(is);
         JSONArray jsonArray = getItems(stream);
 
@@ -237,7 +246,7 @@ public class Api {
             }
         }
 
-        InputStream is = getAuthorizedRequest(API_SUBCATEGORIES_URL + "/" + id);
+        InputStreamReader is = getAuthorizedRequest(API_SUBCATEGORIES_URL + "/" + id);
         String stream = getStream(is);
 
         Subcategory subcategory = mapper.readValue(stream, Subcategory.class);
@@ -260,7 +269,7 @@ public class Api {
         } else {
             Map<String, String> conditions = new HashMap<>();
             conditions.put("categories", categoryId);
-            InputStream is = getAuthorizedRequest(API_SUBCATEGORIES_URL + getWhere(conditions));
+            InputStreamReader is = getAuthorizedRequest(API_SUBCATEGORIES_URL + getWhere(conditions));
             String stream = getStream(is);
             JSONArray jsonArray = getItems(stream);
 
@@ -280,7 +289,7 @@ public class Api {
             return allUsers;
         }
 
-        InputStream is = getAuthorizedRequest(API_USERS_URL);
+        InputStreamReader is = getAuthorizedRequest(API_USERS_URL);
         String stream = getStream(is);
         JSONArray jsonArray = getItems(stream);
 
@@ -304,11 +313,34 @@ public class Api {
             }
         }
 
-        InputStream is = getAuthorizedRequest(API_USERS_URL + "/" + id);
+        InputStreamReader is = getAuthorizedRequest(API_USERS_URL + "/" + id);
         String stream = getStream(is);
 
         User user = mapper.readValue(stream, User.class);
         if (id.equals(user.getId())) {
+            correctDate(user);
+            return user;
+        }
+
+        return null;
+    }
+    public static User getUserByInstagramId(String instagramId) throws IOException, JSONException {
+        if (allUsers.size() > 0) {
+            for (User user : allUsers) {
+                if (instagramId.equals(user.getInstagramId())) {
+                    return user;
+                }
+            }
+        }
+
+        Map<String, String> conditions = new HashMap<>();
+        conditions.put("instagramId", instagramId);
+        InputStreamReader is = getAuthorizedRequest(API_USERS_URL + getWhere(conditions));
+        String stream = getStream(is);
+
+        User user = mapper.readValue(stream, User.class);
+        // fixme: check for errors
+        if (instagramId.equals(user.getInstagramId())) {
             correctDate(user);
             return user;
         }
@@ -327,7 +359,7 @@ public class Api {
         } else {
             Map<String, String> conditions = new HashMap<>();
             conditions.put("categories", categoryId);
-            InputStream is = getAuthorizedRequest(API_USERS_URL + getWhere(conditions));
+            InputStreamReader is = getAuthorizedRequest(API_USERS_URL + getWhere(conditions));
             String stream = getStream(is);
             JSONArray jsonArray = getItems(stream);
 
@@ -352,7 +384,7 @@ public class Api {
         } else {
             Map<String, String> conditions = new HashMap<>();
             conditions.put("subcategories", subcategoryId);
-            InputStream is = getAuthorizedRequest(API_USERS_URL + getWhere(conditions));
+            InputStreamReader is = getAuthorizedRequest(API_USERS_URL + getWhere(conditions));
             String stream = getStream(is);
             JSONArray jsonArray = getItems(stream);
 
@@ -365,8 +397,8 @@ public class Api {
 
         return users;
     }
-    public static Boolean deleteUser(User user) throws IOException, JSONException {
-        InputStream is = patchRequest(API_USERS_URL + "/" + user.getId(), user.getEtag(), "active=false");
+    public static Boolean addUser(User user) throws IOException, JSONException {
+        InputStreamReader is = postRequest(API_USERS_URL, user.toPostJson());
         String stream = getStream(is);
 
         Response response = mapper.readValue(stream, Response.class);
@@ -374,9 +406,21 @@ public class Api {
             GeneralUtils.logError("Api", response.toString());
             return Boolean.FALSE;
         }
-        // SAFE but slower
         getAllUsers(true);
-        // maybe NOT SAFE but faster
+
+        return Boolean.TRUE;
+    }
+    public static Boolean deleteUser(User user) throws IOException, JSONException {
+        InputStreamReader is = patchRequest(API_USERS_URL + "/" + user.getId(), user.getEtag(), "{\"active\":true}");
+        String stream = getStream(is);
+
+        Response response = mapper.readValue(stream, Response.class);
+        if (response.isError()) {
+            GeneralUtils.logError("Api", response.toString());
+            return Boolean.FALSE;
+        }
+
+        getAllUsers(true);
         user.setActive(Boolean.FALSE);
         user.update(response);
 

@@ -59,6 +59,10 @@ public class UserAdapter extends BaseAdapter {
         return null;
     }
 
+    public void addItem(User user) {
+        users.add(0, user);
+    }
+
     @Override
     public View getView(int position, View view, ViewGroup viewGroup) {
         final User user = users.get(position);
@@ -77,7 +81,9 @@ public class UserAdapter extends BaseAdapter {
         final ViewHolder viewHolder = (ViewHolder) view.getTag();
         viewHolder.username.setText(user.getUsername());
         String profilePicUrl = user.getProfilePicUrl();
-        if (GeneralUtils.isNotEmpty(profilePicUrl)) {
+        if (GeneralUtils.isEmpty(profilePicUrl)) {
+            viewHolder.profilePic.setImageResource(R.drawable.splash_image);
+        } else {
             UrlImageViewHelper.setUrlDrawable(viewHolder.profilePic, profilePicUrl, R.drawable.splash_image);
         }
 
