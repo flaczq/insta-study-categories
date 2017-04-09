@@ -65,7 +65,6 @@ public class MenuActivity extends AppCompatActivity {
         if (GeneralUtils.isNotEmpty(accessToken)) {
             new ProcessGetUser().execute();
         }
-        instagramDialog = new Dialog(clazz);
     }
 
 
@@ -119,6 +118,7 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     private void createInstagramDialog(String url) {
+        instagramDialog = new Dialog(clazz);
         // fixme: better preloader
         final CrystalPreloader preloader = new CrystalPreloader(clazz);
         WebView webView = new WebView(clazz);
@@ -204,19 +204,19 @@ public class MenuActivity extends AppCompatActivity {
                     handleLogin(null);
                 } else {
                     GeneralUtils.logInfo(clazz, "Collected instagram access token: " + result.getAccessToken());
-                    GeneralUtils.showMessage(clazz, "zalogowany");
                     accessToken = result.getAccessToken();
-                    saveAccessToken(result.getAccessToken());
-                    handleLogin(result.getAccessToken());
                     new ProcessGetUser().execute();
                 }
-
-                instagramDialog.dismiss();
+                if (GeneralUtils.isNotEmpty(instagramDialog)) {
+                    instagramDialog.dismiss();
+                }
             }
         }
     }
 
     private class ProcessGetUser extends AsyncTask<Void, Void, InstagramUser> {
+        private Boolean isNewUser = false;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -231,7 +231,7 @@ public class MenuActivity extends AppCompatActivity {
                         GeneralUtils.isNotEmpty(instagramUser.getData())) {
                     user = Api.getUserByInstagramId(instagramUser.getData().getId());
                     if (GeneralUtils.isEmpty(user)) {
-                        // New user
+                        isNewUser = true;
                         user = InstagramUtils.instagramUserToUser(instagramUser.getData());
                     } else {
                         GeneralUtils.logInfo(clazz, "User already exists: " + user);
@@ -255,7 +255,43 @@ public class MenuActivity extends AppCompatActivity {
                     GeneralUtils.afterError(clazz, result.toString());
                 } else {
                     GeneralUtils.logInfo(clazz, "Collected instagram user data: " + result.toString());
+                    if (isNewUser) {
+                        new ProcessAddUser().execute();
+                    }
                 }
+            }
+        }
+    }
+
+    private class ProcessAddUser extends AsyncTask<Void, Void, Boolean> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            Boolean result = Boolean.FALSE;
+            try {
+                Thread.sleep(1000); // FIXME: showing preloader, REMOVE!
+                result = Api.addUser(user);
+            } catch (InterruptedException e) {
+                GeneralUtils.logError(clazz, "InterruptedException: " + e.toString());
+            } catch (JSONException e) {
+                GeneralUtils.logError(clazz, "JSONException: " + e.toString());
+            } catch (IOException e) {
+                GeneralUtils.logError(clazz, "IOException: " + e.toString());
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            if (result) {
+                handleLogin(accessToken);
+                saveAccessToken(accessToken);
+                GeneralUtils.showMessage(clazz, "Logged in");
             }
         }
     }

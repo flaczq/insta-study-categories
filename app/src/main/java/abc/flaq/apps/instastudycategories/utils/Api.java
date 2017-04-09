@@ -179,11 +179,11 @@ public class Api {
 
         InputStreamReader is = getAuthorizedRequest(API_CATEGORIES_URL);
         String stream = getStream(is);
-        JSONArray jsonArray = getItems(stream);
+        JSONArray items = getItems(stream);
 
         List<Category> categories = new ArrayList<>();
-        for (int i = 0; i < jsonArray.length(); i++) {
-            Category category = mapper.readValue(jsonArray.getString(i), Category.class);
+        for (int i = 0; i < items.length(); i++) {
+            Category category = mapper.readValue(items.getString(i), Category.class);
             correctDate(category);
             categories.add(category);
         }
@@ -203,10 +203,10 @@ public class Api {
 
         InputStreamReader is = getAuthorizedRequest(API_CATEGORIES_URL + "/" + id);
         String stream = getStream(is);
-        JSONArray jsonArray = getItems(stream);
+        JSONArray items = getItems(stream);
 
-        for (int i = 0; i < jsonArray.length(); i++) {
-            Category category = mapper.readValue(jsonArray.getString(i), Category.class);
+        for (int i = 0; i < items.length(); i++) {
+            Category category = mapper.readValue(items.getString(i), Category.class);
             if (id.equals(category.getId())) {
                 correctDate(category);
                 return category;
@@ -224,11 +224,11 @@ public class Api {
 
         InputStreamReader is = getAuthorizedRequest(API_SUBCATEGORIES_URL);
         String stream = getStream(is);
-        JSONArray jsonArray = getItems(stream);
+        JSONArray items = getItems(stream);
 
         List<Subcategory> subcategories = new ArrayList<>();
-        for (int i = 0; i < jsonArray.length(); i++) {
-            Subcategory subcategory = mapper.readValue(jsonArray.getString(i), Subcategory.class);
+        for (int i = 0; i < items.length(); i++) {
+            Subcategory subcategory = mapper.readValue(items.getString(i), Subcategory.class);
             correctDate(subcategory);
             subcategories.add(subcategory);
         }
@@ -271,10 +271,10 @@ public class Api {
             conditions.put("categories", categoryId);
             InputStreamReader is = getAuthorizedRequest(API_SUBCATEGORIES_URL + getWhere(conditions));
             String stream = getStream(is);
-            JSONArray jsonArray = getItems(stream);
+            JSONArray items = getItems(stream);
 
-            for (int i = 0; i < jsonArray.length(); i++) {
-                Subcategory subcategory = mapper.readValue(jsonArray.getString(i), Subcategory.class);
+            for (int i = 0; i < items.length(); i++) {
+                Subcategory subcategory = mapper.readValue(items.getString(i), Subcategory.class);
                 correctDate(subcategory);
                 subcategories.add(subcategory);
             }
@@ -291,11 +291,11 @@ public class Api {
 
         InputStreamReader is = getAuthorizedRequest(API_USERS_URL);
         String stream = getStream(is);
-        JSONArray jsonArray = getItems(stream);
+        JSONArray items = getItems(stream);
 
         List<User> users = new ArrayList<>();
-        for (int i = 0; i < jsonArray.length(); i++) {
-            User user = mapper.readValue(jsonArray.getString(i), User.class);
+        for (int i = 0; i < items.length(); i++) {
+            User user = mapper.readValue(items.getString(i), User.class);
             correctDate(user);
             users.add(user);
         }
@@ -315,11 +315,14 @@ public class Api {
 
         InputStreamReader is = getAuthorizedRequest(API_USERS_URL + "/" + id);
         String stream = getStream(is);
+        JSONArray items = getItems(stream);
 
-        User user = mapper.readValue(stream, User.class);
-        if (id.equals(user.getId())) {
-            correctDate(user);
-            return user;
+        for (int i = 0; i < items.length(); i++) {
+            User user = mapper.readValue(items.getString(i), User.class);
+            if (id.equals(user.getId())) {
+                correctDate(user);
+                return user;
+            }
         }
 
         return null;
@@ -337,12 +340,14 @@ public class Api {
         conditions.put("instagramId", instagramId);
         InputStreamReader is = getAuthorizedRequest(API_USERS_URL + getWhere(conditions));
         String stream = getStream(is);
+        JSONArray items = getItems(stream);
 
-        User user = mapper.readValue(stream, User.class);
-        // fixme: check for errors
-        if (instagramId.equals(user.getInstagramId())) {
-            correctDate(user);
-            return user;
+        for (int i = 0; i < items.length(); i++) {
+            User user = mapper.readValue(items.getString(i), User.class);
+            if (instagramId.equals(user.getInstagramId())) {
+                correctDate(user);
+                return user;
+            }
         }
 
         return null;
@@ -361,10 +366,10 @@ public class Api {
             conditions.put("categories", categoryId);
             InputStreamReader is = getAuthorizedRequest(API_USERS_URL + getWhere(conditions));
             String stream = getStream(is);
-            JSONArray jsonArray = getItems(stream);
+            JSONArray items = getItems(stream);
 
-            for (int i = 0; i < jsonArray.length(); i++) {
-                User user = mapper.readValue(jsonArray.getString(i), User.class);
+            for (int i = 0; i < items.length(); i++) {
+                User user = mapper.readValue(items.getString(i), User.class);
                 correctDate(user);
                 users.add(user);
             }
@@ -386,10 +391,10 @@ public class Api {
             conditions.put("subcategories", subcategoryId);
             InputStreamReader is = getAuthorizedRequest(API_USERS_URL + getWhere(conditions));
             String stream = getStream(is);
-            JSONArray jsonArray = getItems(stream);
+            JSONArray items = getItems(stream);
 
-            for (int i = 0; i < jsonArray.length(); i++) {
-                User user = mapper.readValue(jsonArray.getString(i), User.class);
+            for (int i = 0; i < items.length(); i++) {
+                User user = mapper.readValue(items.getString(i), User.class);
                 correctDate(user);
                 users.add(user);
             }
@@ -399,6 +404,37 @@ public class Api {
     }
     public static Boolean addUser(User user) throws IOException, JSONException {
         InputStreamReader is = postRequest(API_USERS_URL, user.toPostJson());
+        String stream = getStream(is);
+
+        Response response = mapper.readValue(stream, Response.class);
+        if (response.isError()) {
+            GeneralUtils.logError("Api", response.toString());
+            return Boolean.FALSE;
+        }
+        getAllUsers(true);
+
+        return Boolean.TRUE;
+    }
+    // fixme: increase sizes
+    public static Boolean addUserToCategory(User user, String categoryId) throws IOException, JSONException {
+        List<String> categories = user.getCategories();
+        categories.add(categoryId);
+        InputStreamReader is = patchRequest(API_USERS_URL + "/" + user.getId(), user.getEtag(), "{\"categories\":" + GeneralUtils.listToString(categories) + "}");
+        String stream = getStream(is);
+
+        Response response = mapper.readValue(stream, Response.class);
+        if (response.isError()) {
+            GeneralUtils.logError("Api", response.toString());
+            return Boolean.FALSE;
+        }
+        getAllUsers(true);
+
+        return Boolean.TRUE;
+    }
+    public static Boolean addUserToSubcategory(User user, String subcategoryId) throws IOException, JSONException {
+        List<String> subcategories = user.getSubcategories();
+        subcategories.add(subcategoryId);
+        InputStreamReader is = patchRequest(API_USERS_URL + "/" + user.getId(), user.getEtag(), "{\"subcategories\":" + GeneralUtils.listToString(subcategories) + "}");
         String stream = getStream(is);
 
         Response response = mapper.readValue(stream, Response.class);

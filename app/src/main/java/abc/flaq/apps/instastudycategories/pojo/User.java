@@ -1,7 +1,6 @@
 package abc.flaq.apps.instastudycategories.pojo;
 
 import java.util.List;
-import java.util.Random;
 
 import abc.flaq.apps.instastudycategories.utils.GeneralUtils;
 
@@ -129,9 +128,8 @@ public class User extends EveObject implements Comparable<User> {
     }
 
     public String toPostJson() {
-        Random rand = new Random();
         String json = "{";
-        json += "\"instagramId\":\"" + instagramId + rand.nextInt(999) + "\","; // fixme: testing
+        json += "\"instagramId\":\"" + instagramId + "\",";
         json += "\"fullname\":\"" + fullname + "\",";
         json += "\"username\":\"" + username + "\",";
         json += "\"bio\":\"" + bio + "\",";

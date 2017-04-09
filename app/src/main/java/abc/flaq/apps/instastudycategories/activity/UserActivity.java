@@ -37,6 +37,7 @@ public class UserActivity extends MenuActivity {
     private ListView listView;
     private CrystalPreloader preloader;
 
+    private String id;
     private Boolean isCategory = false;
 
     @Override
@@ -49,7 +50,7 @@ public class UserActivity extends MenuActivity {
         intent = getIntent();
         // Check if passed id is from category or subcategory
         String categoryId = intent.getStringExtra(INTENT_CATEGORY_ID);
-        String id = null;
+        id = null;
         if (GeneralUtils.isNotEmpty(categoryId)) {
             isCategory = true;
             id = categoryId;
@@ -83,7 +84,7 @@ public class UserActivity extends MenuActivity {
                 }
             });
 
-            new ProcessUsers().execute(id);
+            new ProcessUsers().execute();
         }
     }
 
@@ -101,7 +102,7 @@ public class UserActivity extends MenuActivity {
                 break;
             case R.id.menu_join:
                 GeneralUtils.showMessage(clazz, "joining");
-                new ProcessAddUser().execute();
+                new ProcessAddUserToCategory().execute();
                 break;
             case R.id.menu_info:
                 return super.onOptionsItemSelected(item);
@@ -113,7 +114,7 @@ public class UserActivity extends MenuActivity {
         return true;
     }
 
-    private class ProcessUsers extends AsyncTask<String, Void, Void> {
+    private class ProcessUsers extends AsyncTask<Void, Void, Void> {
         private List<User> users;
 
         @Override
@@ -123,8 +124,7 @@ public class UserActivity extends MenuActivity {
         }
 
         @Override
-        protected Void doInBackground(String... params) {
-            String id = params[0];
+        protected Void doInBackground(Void... params) {
             try {
                 Thread.sleep(1000); // FIXME: showing preloader, REMOVE!
                 if (isCategory) {
@@ -132,7 +132,7 @@ public class UserActivity extends MenuActivity {
                 } else {
                     users = Api.getUsersBySubcategoryId(id);
                 }
-                users = Api.getAllUsers(true); // fixme: testing
+                //users = Api.getAllUsers(true); // fixme: testing
                 for (User user : users) {
                     GeneralUtils.logInfo(clazz, user.toString());
                 }
@@ -155,13 +155,12 @@ public class UserActivity extends MenuActivity {
         }
     }
 
-    private class ProcessAddUser extends AsyncTask<Void, Void, Boolean> {
+    private class ProcessAddUserToCategory extends AsyncTask<Void, Void, Boolean> {
         private User user;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            preloader.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -170,7 +169,11 @@ public class UserActivity extends MenuActivity {
             user = getUser();
             try {
                 Thread.sleep(1000); // FIXME: showing preloader, REMOVE!
-                result = Api.addUser(user);
+                if (isCategory) {
+                    result = Api.addUserToCategory(user, id);
+                } else {
+                    result = Api.addUserToSubcategory(user, id);
+                }
             } catch (InterruptedException e) {
                 GeneralUtils.logError(clazz, "InterruptedException: " + e.toString());
             } catch (JSONException e) {
@@ -184,11 +187,10 @@ public class UserActivity extends MenuActivity {
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
-            preloader.setVisibility(View.GONE);
             if (result) {
                 GeneralUtils.showMessage(clazz, "User successfully added to the category");
                 userAdapter.addItem(user);
-                userAdapter.notifyDataSetChanged();
+                userAdapter.notifyDataSetChanged();// fixme: etag...?
             }
         }
     }
