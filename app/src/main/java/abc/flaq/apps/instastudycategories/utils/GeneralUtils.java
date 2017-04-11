@@ -23,9 +23,11 @@ public class GeneralUtils {
         log(LOG_DEBUG, activity, message);
     }
     public static void logError(Object activity, String message) {
+        // TODO: save to database
         log(LOG_ERROR, activity, message);
     }
     public static void logInfo(Object activity, String message) {
+        // TODO: disable before release
         log(LOG_INFO, activity, message);
     }
     private static void log(int type, Object activity, String message) {
@@ -59,15 +61,15 @@ public class GeneralUtils {
         return !isEmpty(element);
     }
 
-    public static int getDrawableByName(Context context, String name) {
-        int drawableId = context.getResources().getIdentifier(name, "drawable", context.getPackageName());
-        return drawableId;
-    }
-
     public static Boolean isIntentAvailable(Context context, Intent intent) {
         final PackageManager packageManager = context.getPackageManager();
         List<ResolveInfo> list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         return (list.size() > 0);
+    }
+
+    public static int getDrawableByName(Context context, String name) {
+        int drawableId = context.getResources().getIdentifier(name, "drawable", context.getPackageName());
+        return drawableId;
     }
 
     public static void setGridDesign(int position, int size, int maxSize, RelativeLayout layout) {
@@ -114,8 +116,7 @@ public class GeneralUtils {
         GeneralUtils.log(LOG_ERROR, context, message);
         showMessage(context, "General error");
     }
-
-    // FIXME: better!
+    // FIXME: better - snackbar https://lab.getbase.com/introduction-to-coordinator-layout-on-android/
     public static void showMessage(Context context, String message) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }

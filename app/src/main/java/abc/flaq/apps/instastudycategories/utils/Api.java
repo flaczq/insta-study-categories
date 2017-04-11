@@ -162,13 +162,13 @@ public class Api {
     private static String getWhere(Map<String, String> conditions) throws UnsupportedEncodingException {
         String where = "?where={";
         for (Map.Entry<String, String> entry : conditions.entrySet()) {
-            where += "\"" + entry.getKey() + "\": \"" + entry.getValue() + "\", ";
+            where += "\"" + entry.getKey() + "\":\"" + entry.getValue() + "\",";
         }
-        if (where.endsWith(", ")) {
-            where = where.substring(0, where.lastIndexOf(", "));
+        if (where.endsWith(",")) {
+            where = where.substring(0, where.lastIndexOf(","));
         }
         where += "}";
-        return where.replace(" ", "%20");
+        return where;
     }
 
     // CATEGORIES
@@ -405,51 +405,74 @@ public class Api {
     public static Boolean addUser(User user) throws IOException, JSONException {
         InputStreamReader is = postRequest(API_USERS_URL, user.toPostJson());
         String stream = getStream(is);
-
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
             GeneralUtils.logError("Api", response.toString());
             return Boolean.FALSE;
         }
         getAllUsers(true);
+        // Not needed
+        //user.update(response);
 
         return Boolean.TRUE;
     }
-    // fixme: increase sizes
     public static Boolean addUserToCategory(User user, String categoryId) throws IOException, JSONException {
         List<String> categories = user.getCategories();
-        categories.add(categoryId);
-        InputStreamReader is = patchRequest(API_USERS_URL + "/" + user.getId(), user.getEtag(), "{\"categories\":" + GeneralUtils.listToString(categories) + "}");
-        String stream = getStream(is);
+        if (categories.contains(categoryId)) {
+            GeneralUtils.logDebug("Api", "The user: " + user.toString() + " is already in category: " + categoryId);
+            return Boolean.FALSE;
+        } else {
+            categories.add(categoryId);
+        }
 
+        InputStreamReader is = patchRequest(
+                API_USERS_URL + "/" + user.getId(),
+                user.getEtag(),
+                "{\"categories\":" + GeneralUtils.listToString(categories) + "," +
+                "\"categoriesSize\":" + categories.size() + "}"
+        );
+        String stream = getStream(is);
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
             GeneralUtils.logError("Api", response.toString());
             return Boolean.FALSE;
         }
+
         getAllUsers(true);
+        user.update(response);
 
         return Boolean.TRUE;
     }
     public static Boolean addUserToSubcategory(User user, String subcategoryId) throws IOException, JSONException {
         List<String> subcategories = user.getSubcategories();
-        subcategories.add(subcategoryId);
-        InputStreamReader is = patchRequest(API_USERS_URL + "/" + user.getId(), user.getEtag(), "{\"subcategories\":" + GeneralUtils.listToString(subcategories) + "}");
-        String stream = getStream(is);
+        if (subcategories.contains(subcategoryId)) {
+            GeneralUtils.logDebug("Api", "User " + user.getUsername() + " is already in subcategory " + subcategoryId);
+            return Boolean.FALSE;
+        } else {
+            subcategories.add(subcategoryId);
+        }
 
+        InputStreamReader is = patchRequest(
+                API_USERS_URL + "/" + user.getId(),
+                user.getEtag(),
+                "{\"subcategories\":" + GeneralUtils.listToString(subcategories) + "," +
+                "\"subcategoriesSize\":" + subcategories.size() + "}"
+        );
+        String stream = getStream(is);
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
             GeneralUtils.logError("Api", response.toString());
             return Boolean.FALSE;
         }
+
         getAllUsers(true);
+        user.update(response);
 
         return Boolean.TRUE;
     }
     public static Boolean deleteUser(User user) throws IOException, JSONException {
-        InputStreamReader is = patchRequest(API_USERS_URL + "/" + user.getId(), user.getEtag(), "{\"active\":true}");
+        InputStreamReader is = patchRequest(API_USERS_URL + "/" + user.getId(), user.getEtag(), "{\"active\":false}");
         String stream = getStream(is);
-
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
             GeneralUtils.logError("Api", response.toString());
@@ -457,7 +480,8 @@ public class Api {
         }
 
         getAllUsers(true);
-        user.setActive(Boolean.FALSE);
+        // TODO: check if needed
+        //user.setActive(Boolean.FALSE);
         user.update(response);
 
         return Boolean.TRUE;

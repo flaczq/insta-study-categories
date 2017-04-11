@@ -39,6 +39,7 @@ public class UserActivity extends MenuActivity {
 
     private String id;
     private Boolean isCategory = false;
+    private Boolean hasNotJoined = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +93,7 @@ public class UserActivity extends MenuActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         menu.findItem(R.id.menu_add).setVisible(false);
+        menu.findItem(R.id.menu_join).setVisible(hasNotJoined);
         return true;
     }
     @Override
@@ -132,7 +134,6 @@ public class UserActivity extends MenuActivity {
                 } else {
                     users = Api.getUsersBySubcategoryId(id);
                 }
-                //users = Api.getAllUsers(true); // fixme: testing
                 for (User user : users) {
                     GeneralUtils.logInfo(clazz, user.toString());
                 }
@@ -161,12 +162,12 @@ public class UserActivity extends MenuActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            user = getUser();
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
             Boolean result = Boolean.FALSE;
-            user = getUser();
             try {
                 Thread.sleep(1000); // FIXME: showing preloader, REMOVE!
                 if (isCategory) {
@@ -190,7 +191,12 @@ public class UserActivity extends MenuActivity {
             if (result) {
                 GeneralUtils.showMessage(clazz, "User successfully added to the category");
                 userAdapter.addItem(user);
-                userAdapter.notifyDataSetChanged();// fixme: etag...?
+                userAdapter.notifyDataSetChanged();
+
+                Menu mainMenu = getMainMenu();
+                mainMenu.findItem(R.id.menu_join).setVisible(false);
+            } else {
+                GeneralUtils.afterError(clazz, "Can't add user to category");
             }
         }
     }

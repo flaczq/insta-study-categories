@@ -104,7 +104,7 @@ public class CategoryActivity extends MenuActivity {
         protected Void doInBackground(Void... params) {
             try {
                 Thread.sleep(1000); // FIXME: showing preloader, REMOVE
-                categories = Api.getAllCategories(true);    // fixme: testing
+                categories = Api.getAllCategories(true);    // FIXME: testing
                 for (Category category : categories) {
                     GeneralUtils.logInfo(clazz, category.toString());
                 }

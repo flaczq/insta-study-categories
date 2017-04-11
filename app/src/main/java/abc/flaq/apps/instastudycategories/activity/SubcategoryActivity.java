@@ -103,7 +103,7 @@ public class SubcategoryActivity extends MenuActivity {
             try {
                 Thread.sleep(1000); // FIXME: showing preloader, REMOVE
                 subcategories = Api.getSubcategoriesByCategoryId(categoryId);
-                subcategories = Api.getAllSubcategories(true); // fixme: testing
+                subcategories = Api.getAllSubcategories(true); // FIXME: testing
                 for (Subcategory subcategory : subcategories) {
                     GeneralUtils.logInfo(clazz, subcategory.toString());
                 }

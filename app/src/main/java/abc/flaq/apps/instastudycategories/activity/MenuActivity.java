@@ -36,8 +36,7 @@ import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_REDIR
 import static abc.flaq.apps.instastudycategories.utils.Constants.SETTINGS_ACCESS_TOKEN;
 import static abc.flaq.apps.instastudycategories.utils.Constants.SETTINGS_NAME;
 
-// todo: delete all log.infos!
-// todo: save all log.debugs to database
+// FIXME: make it singleton!
 public class MenuActivity extends AppCompatActivity {
 
     private final Activity clazz = this;
@@ -54,12 +53,18 @@ public class MenuActivity extends AppCompatActivity {
     public User getUser() {
         return user;
     }
+    public Menu getMainMenu() {
+        return mainMenu;
+    }
+    public String getAccessToken() {
+        return accessToken;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // fixme: this will init every activity - what to do?
         super.onCreate(savedInstanceState);
         settings = getSharedPreferences(SETTINGS_NAME, MODE_PRIVATE);
+        // FIXME: maybe call this once in CategoryActivity and pass User data in intent
         accessToken = settings.getString(SETTINGS_ACCESS_TOKEN, null);
         GeneralUtils.logInfo(clazz, "Settings access token: " + accessToken);
         if (GeneralUtils.isNotEmpty(accessToken)) {
@@ -78,10 +83,6 @@ public class MenuActivity extends AppCompatActivity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (GeneralUtils.isEmpty(settings)) {
-            settings = getSharedPreferences(SETTINGS_NAME, MODE_PRIVATE);
-        }
-
         switch (item.getItemId()) {
             case R.id.menu_add:
                 // not available from here
@@ -119,7 +120,7 @@ public class MenuActivity extends AppCompatActivity {
 
     private void createInstagramDialog(String url) {
         instagramDialog = new Dialog(clazz);
-        // fixme: better preloader
+        // FIXME: better preloader
         final CrystalPreloader preloader = new CrystalPreloader(clazz);
         WebView webView = new WebView(clazz);
         webView.loadUrl(url);
@@ -214,7 +215,7 @@ public class MenuActivity extends AppCompatActivity {
         }
     }
 
-    private class ProcessGetUser extends AsyncTask<Void, Void, InstagramUser> {
+    public class ProcessGetUser extends AsyncTask<Void, Void, InstagramUser> {
         private Boolean isNewUser = false;
 
         @Override
