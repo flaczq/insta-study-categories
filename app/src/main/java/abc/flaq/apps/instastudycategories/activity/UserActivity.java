@@ -23,6 +23,7 @@ import abc.flaq.apps.instastudycategories.adapter.UserAdapter;
 import abc.flaq.apps.instastudycategories.pojo.User;
 import abc.flaq.apps.instastudycategories.utils.Api;
 import abc.flaq.apps.instastudycategories.utils.GeneralUtils;
+import abc.flaq.apps.instastudycategories.utils.Session;
 
 import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_URL;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_ID;
@@ -37,6 +38,7 @@ public class UserActivity extends MenuActivity {
     private ListView listView;
     private CrystalPreloader preloader;
 
+    private Menu mainMenu;
     private String id;
     private Boolean isCategory = false;
     private Boolean hasNotJoined = false;
@@ -92,6 +94,7 @@ public class UserActivity extends MenuActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
+        mainMenu = menu;
         menu.findItem(R.id.menu_add).setVisible(false);
         menu.findItem(R.id.menu_join).setVisible(hasNotJoined);
         return true;
@@ -157,12 +160,9 @@ public class UserActivity extends MenuActivity {
     }
 
     private class ProcessAddUserToCategory extends AsyncTask<Void, Void, Boolean> {
-        private User user;
-
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            user = getUser();
         }
 
         @Override
@@ -171,9 +171,9 @@ public class UserActivity extends MenuActivity {
             try {
                 Thread.sleep(1000); // FIXME: showing preloader, REMOVE!
                 if (isCategory) {
-                    result = Api.addUserToCategory(user, id);
+                    result = Api.addUserToCategory(Session.getInstance().getUser(), id);
                 } else {
-                    result = Api.addUserToSubcategory(user, id);
+                    result = Api.addUserToSubcategory(Session.getInstance().getUser(), id);
                 }
             } catch (InterruptedException e) {
                 GeneralUtils.logError(clazz, "InterruptedException: " + e.toString());
@@ -190,10 +190,8 @@ public class UserActivity extends MenuActivity {
             super.onPostExecute(result);
             if (result) {
                 GeneralUtils.showMessage(clazz, "User successfully added to the category");
-                userAdapter.addItem(user);
+                userAdapter.addItem(Session.getInstance().getUser());
                 userAdapter.notifyDataSetChanged();
-
-                Menu mainMenu = getMainMenu();
                 mainMenu.findItem(R.id.menu_join).setVisible(false);
             } else {
                 GeneralUtils.afterError(clazz, "Can't add user to category");

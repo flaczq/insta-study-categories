@@ -2,7 +2,6 @@ package abc.flaq.apps.instastudycategories.activity;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -30,44 +29,26 @@ import abc.flaq.apps.instastudycategories.utils.Constants;
 import abc.flaq.apps.instastudycategories.utils.GeneralUtils;
 import abc.flaq.apps.instastudycategories.utils.InstagramApi;
 import abc.flaq.apps.instastudycategories.utils.InstagramUtils;
+import abc.flaq.apps.instastudycategories.utils.Session;
 
 import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_ENDPOINT_USER_SELF;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_REDIRECT_URL;
 import static abc.flaq.apps.instastudycategories.utils.Constants.SETTINGS_ACCESS_TOKEN;
-import static abc.flaq.apps.instastudycategories.utils.Constants.SETTINGS_NAME;
 
-// FIXME: make it singleton!
 public class MenuActivity extends AppCompatActivity {
 
     private final Activity clazz = this;
-    private SharedPreferences settings;
 
     private Dialog instagramDialog;
-    private User user;
     private Menu mainMenu;
     private String accessToken;
-
-    public SharedPreferences getSettings() {
-        return settings;
-    }
-    public User getUser() {
-        return user;
-    }
-    public Menu getMainMenu() {
-        return mainMenu;
-    }
-    public String getAccessToken() {
-        return accessToken;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        settings = getSharedPreferences(SETTINGS_NAME, MODE_PRIVATE);
-        // FIXME: maybe call this once in CategoryActivity and pass User data in intent
-        accessToken = settings.getString(SETTINGS_ACCESS_TOKEN, null);
-        GeneralUtils.logInfo(clazz, "Settings access token: " + accessToken);
-        if (GeneralUtils.isNotEmpty(accessToken)) {
+        accessToken = Session.getInstance().getSettings().getString(SETTINGS_ACCESS_TOKEN, null);
+        GeneralUtils.logInfo(clazz, "Session access token: " + accessToken);
+        if (GeneralUtils.isEmpty(Session.getInstance().getUser()) && GeneralUtils.isNotEmpty(accessToken)) { //move this to category
             new ProcessGetUser().execute();
         }
     }
@@ -78,7 +59,7 @@ public class MenuActivity extends AppCompatActivity {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.main_menu, menu);
         mainMenu = menu;
-        handleLogin(accessToken);
+        handleLogin();
         return true;
     }
     @Override
@@ -91,17 +72,17 @@ public class MenuActivity extends AppCompatActivity {
                 // not available from here
                 break;
             case R.id.menu_info:
-                if (GeneralUtils.isEmpty(user)) {
+                if (GeneralUtils.isEmpty(Session.getInstance().getUser())) {
                     GeneralUtils.logDebug(clazz, "Instagram user data is empty");
                     new ProcessGetUser().execute();
                 } else {
-                    GeneralUtils.showMessage(clazz, user.toString());
+                    GeneralUtils.showMessage(clazz, Session.getInstance().getUser().toString());
                 }
                 break;
             case R.id.menu_login:
-                if (GeneralUtils.isNotEmpty(accessToken)) {
-                    GeneralUtils.logDebug(clazz, "Access token is not empty, but login icon is available");
-                    handleLogin(accessToken);
+                if (GeneralUtils.isNotEmpty(Session.getInstance().getUser())) {
+                    GeneralUtils.logDebug(clazz, "User is not empty, but login icon is available");
+                    handleLogin();
                 } else {
                     GeneralUtils.showMessage(clazz, "Logging in...");
                     try {
@@ -152,8 +133,8 @@ public class MenuActivity extends AppCompatActivity {
         instagramDialog.show();
     }
 
-    private void handleLogin(String accessToken) {
-        Boolean isAuthenticated = GeneralUtils.isNotEmpty(accessToken);
+    private void handleLogin() {
+        Boolean isAuthenticated = GeneralUtils.isNotEmpty(Session.getInstance().getUser());
         mainMenu.findItem(R.id.menu_login).setVisible(!isAuthenticated);
         mainMenu.findItem(R.id.menu_add).setVisible(isAuthenticated);
         mainMenu.findItem(R.id.menu_join).setVisible(isAuthenticated);
@@ -161,18 +142,21 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     private void saveAccessToken(String accessToken) {
-        if (GeneralUtils.isEmpty(settings)) {
-            settings = getSharedPreferences(SETTINGS_NAME, MODE_PRIVATE);
-        }
-        settings.edit()
+        Session.getInstance().getSettings().edit()
                 .putString(SETTINGS_ACCESS_TOKEN, accessToken)
+                .apply();
+    }
+    private void removeAccessToken() {
+        Session.getInstance().getSettings().edit()
+                .remove(SETTINGS_ACCESS_TOKEN)
                 .apply();
     }
 
     public void resetAuthentication() {
         GeneralUtils.afterError(clazz, "Resetting authentication");
+        Session.getInstance().setUser(null);
         accessToken = null;
-        handleLogin(null);
+        handleLogin();
     }
 
     private class ProcessGetAccessToken extends AsyncTask<String, Void, InstagramAccessToken> {
@@ -200,9 +184,9 @@ public class MenuActivity extends AppCompatActivity {
             if (GeneralUtils.isNotEmpty(result)) {
                 if (result.isError() || GeneralUtils.isEmpty(result.getAccessToken())) {
                     GeneralUtils.afterError(clazz, result.toString());
-                    user = null;
+                    Session.getInstance().setUser(null);
                     accessToken = null;
-                    handleLogin(null);
+                    handleLogin();
                 } else {
                     GeneralUtils.logInfo(clazz, "Collected instagram access token: " + result.getAccessToken());
                     accessToken = result.getAccessToken();
@@ -216,6 +200,7 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     public class ProcessGetUser extends AsyncTask<Void, Void, InstagramUser> {
+        private User user;
         private Boolean isNewUser = false;
 
         @Override
@@ -256,8 +241,11 @@ public class MenuActivity extends AppCompatActivity {
                     GeneralUtils.afterError(clazz, result.toString());
                 } else {
                     GeneralUtils.logInfo(clazz, "Collected instagram user data: " + result.toString());
+                    Session.getInstance().setUser(user);
                     if (isNewUser) {
                         new ProcessAddUser().execute();
+                    } else {
+                        handleLogin();
                     }
                 }
             }
@@ -275,7 +263,7 @@ public class MenuActivity extends AppCompatActivity {
             Boolean result = Boolean.FALSE;
             try {
                 Thread.sleep(1000); // FIXME: showing preloader, REMOVE!
-                result = Api.addUser(user);
+                result = Api.addUser(Session.getInstance().getUser());
             } catch (InterruptedException e) {
                 GeneralUtils.logError(clazz, "InterruptedException: " + e.toString());
             } catch (JSONException e) {
@@ -290,7 +278,7 @@ public class MenuActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
             if (result) {
-                handleLogin(accessToken);
+                handleLogin();
                 saveAccessToken(accessToken);
                 GeneralUtils.showMessage(clazz, "Logged in");
             }
@@ -321,6 +309,8 @@ public class MenuActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
             GeneralUtils.logDebug(clazz, "User deleted: " + result);
+            resetAuthentication();
+            removeAccessToken();
         }
     }
 
