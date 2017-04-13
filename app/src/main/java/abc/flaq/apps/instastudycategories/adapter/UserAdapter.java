@@ -52,13 +52,6 @@ public class UserAdapter extends BaseAdapter {
         return null;
     }
 
-    public String getUsername(int position) {
-        if (position < users.size()) {
-            return users.get(position).getUsername();
-        }
-        return null;
-    }
-
     public void addItem(User user) {
         users.add(0, user);
     }

@@ -45,11 +45,15 @@ public class SubcategoryAdapter extends BaseAdapter {
         return 0;
     }
 
-    public String getItemRealId(int position) {
+    public String getForeignId(int position) {
         if (position < subcategories.size()) {
-            return subcategories.get(position).getId();
+            return subcategories.get(position).getForeignId();
         }
         return null;
+    }
+
+    public void addItem(Subcategory subcategory) {
+        subcategories.add(subcategory);
     }
 
     @Override

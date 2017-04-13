@@ -45,11 +45,15 @@ public class CategoryAdapter extends BaseAdapter {
         return 0;
     }
 
-    public String getItemRealId(int position) {
+    public String getForeignId(int position) {
         if (position < categories.size()) {
-            return categories.get(position).getId();
+            return categories.get(position).getForeignId();
         }
         return null;
+    }
+
+    public void addItem(Category category) {
+        categories.add(category);
     }
 
     @Override

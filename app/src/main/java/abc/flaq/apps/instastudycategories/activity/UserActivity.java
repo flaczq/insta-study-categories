@@ -71,9 +71,9 @@ public class UserActivity extends MenuActivity {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
-                    String selected = userAdapter.getUsername(position);
+                    User selected = userAdapter.getItem(position);
                     Utils.logDebug(clazz, "Selected position: " + position);
-                    Uri instagramUri = Uri.parse(INSTAGRAM_URL + "_u/" + selected);
+                    Uri instagramUri = Uri.parse(INSTAGRAM_URL + "_u/" + selected.getUsername());
                     Intent nextIntent = new Intent(Intent.ACTION_VIEW, instagramUri);
                     nextIntent.setPackage(PACKAGE_INSTAGRAM);
 
@@ -82,7 +82,7 @@ public class UserActivity extends MenuActivity {
                         clazz.startActivity(nextIntent);
                     } else {
                         Utils.logDebug(clazz, "Instagram intent is NOT available");
-                        clazz.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + selected)));
+                        clazz.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + selected.getUsername())));
                     }
                 }
             });

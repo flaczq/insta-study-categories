@@ -9,6 +9,7 @@ public class InstagramUtils {
 
     public static User instagramUserToUser(InstagramUser.InstagramUserData instagramUser) {
         User user = new User();
+        user.setForeignId(Utils.createForeignId(instagramUser.getId()));    // Update with _id after creating
         user.setInstagramId(instagramUser.getId());
         user.setFullname(instagramUser.getFullname());
         user.setUsername(instagramUser.getUsername());

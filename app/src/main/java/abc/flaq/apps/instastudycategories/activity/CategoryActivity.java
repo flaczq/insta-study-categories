@@ -60,7 +60,7 @@ public class CategoryActivity extends MenuActivity {
                 } else {
                     nextIntent = new Intent(clazz, SubcategoryActivity.class);
                 }
-                nextIntent.putExtra(INTENT_CATEGORY_ID, selected.getId());
+                nextIntent.putExtra(INTENT_CATEGORY_ID, selected.getForeignId());
                 clazz.startActivity(nextIntent);
             }
         });

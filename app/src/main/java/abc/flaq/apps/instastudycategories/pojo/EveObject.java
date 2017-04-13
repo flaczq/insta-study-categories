@@ -11,6 +11,7 @@ import static abc.flaq.apps.instastudycategories.utils.Constants.DATE_TIMEZONE;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EveObject {
 
+    private String foreignId;
     @JsonProperty("_id")
     private String id;
     @JsonProperty("_etag")
@@ -21,6 +22,13 @@ public class EveObject {
     @JsonProperty("_updated")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIMEZONE, timezone = "Poland")
     private Date updated;
+
+    public String getForeignId() {
+        return foreignId;
+    }
+    public void setForeignId(String foreignId) {
+        this.foreignId = foreignId;
+    }
 
     public String getId() {
         return id;

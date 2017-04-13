@@ -54,10 +54,10 @@ public class SubcategoryActivity extends MenuActivity {
             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
-                    String selected = subcategoryAdapter.getItemRealId(position);
+                    Subcategory selected = subcategoryAdapter.getItem(position);
                     Utils.logDebug(clazz, "Selected position: " + position);
                     Intent nextIntent = new Intent(clazz, UserActivity.class);
-                    nextIntent.putExtra(INTENT_SUBCATEGORY_ID, selected);
+                    nextIntent.putExtra(INTENT_SUBCATEGORY_ID, selected.getForeignId());
                     clazz.startActivity(nextIntent);
                 }
             });

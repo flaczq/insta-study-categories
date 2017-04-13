@@ -61,6 +61,10 @@ public class Utils {
         return !isEmpty(element);
     }
 
+    public static String createForeignId(String id) {
+        return "fq" + id;
+    }
+
     public static Boolean isIntentAvailable(Context context, Intent intent) {
         final PackageManager packageManager = context.getPackageManager();
         List<ResolveInfo> list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);

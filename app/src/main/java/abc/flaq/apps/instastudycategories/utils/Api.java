@@ -257,18 +257,18 @@ public class Api {
 
         return null;
     }
-    public static List<Subcategory> getSubcategoriesByCategoryId(String categoryId) throws IOException, JSONException {
+    public static List<Subcategory> getSubcategoriesByCategoryId(String categoryForeignId) throws IOException, JSONException {
         List<Subcategory> subcategories = new ArrayList<>();
 
         if (allCategories.size() > 0) {
             for (Subcategory subcategory : allSubcategories) {
-                if (subcategory.getCategories().contains(categoryId)) {
+                if (subcategory.getCategories().contains(categoryForeignId)) {
                     subcategories.add(subcategory);
                 }
             }
         } else {
             Map<String, String> conditions = new HashMap<>();
-            conditions.put("categories", categoryId);
+            conditions.put("categories", categoryForeignId);
             InputStreamReader is = getAuthorizedRequest(API_SUBCATEGORIES_URL + getWhere(conditions));
             String stream = getStream(is);
             JSONArray items = getItems(stream);
@@ -352,18 +352,18 @@ public class Api {
 
         return null;
     }
-    public static List<User> getUsersByCategoryId(String categoryId) throws IOException, JSONException {
+    public static List<User> getUsersByCategoryId(String categoryForeignId) throws IOException, JSONException {
         List<User> users = new ArrayList<>();
 
         if (allUsers.size() > 0) {
             for (User user : allUsers) {
-                if (user.getCategories().contains(categoryId)) {
+                if (user.getCategories().contains(categoryForeignId)) {
                     users.add(user);
                 }
             }
         } else {
             Map<String, String> conditions = new HashMap<>();
-            conditions.put("categories", categoryId);
+            conditions.put("categories", categoryForeignId);
             InputStreamReader is = getAuthorizedRequest(API_USERS_URL + getWhere(conditions));
             String stream = getStream(is);
             JSONArray items = getItems(stream);
@@ -377,18 +377,18 @@ public class Api {
 
         return users;
     }
-    public static List<User> getUsersBySubcategoryId(String subcategoryId) throws IOException, JSONException {
+    public static List<User> getUsersBySubcategoryId(String subcategoryForeignId) throws IOException, JSONException {
         List<User> users = new ArrayList<>();
 
         if (allUsers.size() > 0) {
             for (User user : allUsers) {
-                if (user.getSubcategories().contains(subcategoryId)) {
+                if (user.getSubcategories().contains(subcategoryForeignId)) {
                     users.add(user);
                 }
             }
         } else {
             Map<String, String> conditions = new HashMap<>();
-            conditions.put("subcategories", subcategoryId);
+            conditions.put("subcategories", subcategoryForeignId);
             InputStreamReader is = getAuthorizedRequest(API_USERS_URL + getWhere(conditions));
             String stream = getStream(is);
             JSONArray items = getItems(stream);
@@ -416,10 +416,10 @@ public class Api {
 
         return Boolean.TRUE;
     }
-    public static Boolean addUserToCategory(User user, String categoryId) throws IOException, JSONException {
+    public static Boolean addUserToCategory(User user, String categoryForeignId) throws IOException, JSONException {
         List<String> categories = user.getCategories();
-        if (categories.contains(categoryId)) {
-            Utils.logDebug("Api", "The user: " + user.toString() + " is already in category: " + categoryId);
+        if (categories.contains(categoryForeignId)) {
+            Utils.logDebug("Api", "The user: " + user.toString() + " is already in category: " + categoryForeignId);
             return Boolean.FALSE;
         }
 
@@ -436,16 +436,16 @@ public class Api {
             return Boolean.FALSE;
         }
 
-        categories.add(categoryId);
+        categories.add(categoryForeignId);
         getAllUsers(true);
         user.update(response);
 
         return Boolean.TRUE;
     }
-    public static Boolean addUserToSubcategory(User user, String subcategoryId) throws IOException, JSONException {
+    public static Boolean addUserToSubcategory(User user, String subcategoryForeignId) throws IOException, JSONException {
         List<String> subcategories = user.getSubcategories();
-        if (subcategories.contains(subcategoryId)) {
-            Utils.logDebug("Api", "User " + user.getUsername() + " is already in subcategory " + subcategoryId);
+        if (subcategories.contains(subcategoryForeignId)) {
+            Utils.logDebug("Api", "User " + user.getUsername() + " is already in subcategory " + subcategoryForeignId);
             return Boolean.FALSE;
         }
 
@@ -462,7 +462,7 @@ public class Api {
             return Boolean.FALSE;
         }
 
-        subcategories.add(subcategoryId);
+        subcategories.add(subcategoryForeignId);
         getAllUsers(true);
         user.update(response);
 
