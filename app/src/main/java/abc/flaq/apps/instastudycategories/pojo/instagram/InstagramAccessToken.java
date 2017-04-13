@@ -3,7 +3,7 @@ package abc.flaq.apps.instastudycategories.pojo.instagram;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import abc.flaq.apps.instastudycategories.utils.GeneralUtils;
+import abc.flaq.apps.instastudycategories.utils.Utils;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InstagramAccessToken extends InstagramMeta {
@@ -30,7 +30,7 @@ public class InstagramAccessToken extends InstagramMeta {
     public String toString() {
         String string = "InstagramAccessToken[";
         string += "accessToken: " + accessToken + ", ";
-        string += "user: " + (GeneralUtils.isEmpty(user) ? null : user.toString()) + ", ";
+        string += "user: " + (Utils.isEmpty(user) ? null : user.toString()) + ", ";
         string += "code: " + getCode() + ", ";
         string += "type: " + getType() + ", ";
         string += "message: " + getMessage();

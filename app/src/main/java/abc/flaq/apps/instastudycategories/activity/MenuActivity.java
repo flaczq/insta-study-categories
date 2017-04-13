@@ -26,7 +26,7 @@ import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramAccessToken;
 import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramUser;
 import abc.flaq.apps.instastudycategories.utils.Api;
 import abc.flaq.apps.instastudycategories.utils.Constants;
-import abc.flaq.apps.instastudycategories.utils.GeneralUtils;
+import abc.flaq.apps.instastudycategories.utils.Utils;
 import abc.flaq.apps.instastudycategories.utils.InstagramApi;
 import abc.flaq.apps.instastudycategories.utils.InstagramUtils;
 import abc.flaq.apps.instastudycategories.utils.Session;
@@ -47,8 +47,8 @@ public class MenuActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         accessToken = Session.getInstance().getSettings().getString(SETTINGS_ACCESS_TOKEN, null);
-        GeneralUtils.logInfo(clazz, "Session access token: " + accessToken);
-        if (GeneralUtils.isEmpty(Session.getInstance().getUser()) && GeneralUtils.isNotEmpty(accessToken)) { //move this to category
+        Utils.logInfo(clazz, "Session access token: " + accessToken);
+        if (Utils.isEmpty(Session.getInstance().getUser()) && Utils.isNotEmpty(accessToken)) {
             new ProcessGetUser().execute();
         }
     }
@@ -72,19 +72,20 @@ public class MenuActivity extends AppCompatActivity {
                 // not available from here
                 break;
             case R.id.menu_info:
-                if (GeneralUtils.isEmpty(Session.getInstance().getUser())) {
-                    GeneralUtils.logDebug(clazz, "Instagram user data is empty");
+                if (Utils.isEmpty(Session.getInstance().getUser())) {
+                    Utils.logDebug(clazz, "Instagram user data is empty");
                     new ProcessGetUser().execute();
                 } else {
-                    GeneralUtils.showMessage(clazz, Session.getInstance().getUser().toString());
+                    Utils.showMessage(clazz, Session.getInstance().getUser().toString());
                 }
                 break;
             case R.id.menu_login:
-                if (GeneralUtils.isNotEmpty(Session.getInstance().getUser())) {
-                    GeneralUtils.logDebug(clazz, "User is not empty, but login icon is available");
+                if (Utils.isNotEmpty(Session.getInstance().getUser())) {
+                    Utils.logDebug(clazz, "User is not empty, but login icon is available");
                     handleLogin();
+                    invalidateOptionsMenu();
                 } else {
-                    GeneralUtils.showMessage(clazz, "Logging in...");
+                    Utils.showMessage(clazz, "Logging in...");
                     try {
                         String instagramAuthUrl = InstagramApi.getAuthUrl(Constants.INSTAGRAM_SCOPES.public_content);
                         createInstagramDialog(instagramAuthUrl);
@@ -108,17 +109,17 @@ public class MenuActivity extends AppCompatActivity {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (GeneralUtils.isNotEmpty(url)) {
+                if (Utils.isNotEmpty(url)) {
                     if (!url.startsWith(INSTAGRAM_REDIRECT_URL)) {
                         view.loadUrl(url);
                         preloader.setVisibility(View.GONE);
                     } else {
                         String code = InstagramApi.getCodeFromUrl(clazz, url);
-                        if (GeneralUtils.isEmpty(code)) {
-                            GeneralUtils.afterError(clazz, "Instagram code is empty");
+                        if (Utils.isEmpty(code)) {
+                            Utils.afterError(clazz, "Instagram code is empty");
                             instagramDialog.dismiss();
                         } else {
-                            GeneralUtils.logInfo(clazz, "Collected instagram code: " + code);
+                            Utils.logInfo(clazz, "Collected instagram code: " + code);
                             preloader.setVisibility(View.VISIBLE);
                             new ProcessGetAccessToken().execute(code);
                         }
@@ -134,11 +135,16 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     private void handleLogin() {
-        Boolean isAuthenticated = GeneralUtils.isNotEmpty(Session.getInstance().getUser());
-        mainMenu.findItem(R.id.menu_login).setVisible(!isAuthenticated);
-        mainMenu.findItem(R.id.menu_add).setVisible(isAuthenticated);
-        mainMenu.findItem(R.id.menu_join).setVisible(isAuthenticated);
-        mainMenu.findItem(R.id.menu_info).setVisible(isAuthenticated);
+        if (Utils.isEmpty(mainMenu)) {
+            // Call onCreateOptionsMenu
+            invalidateOptionsMenu();
+        } else {
+            Boolean isAuthenticated = Utils.isNotEmpty(Session.getInstance().getUser());
+            mainMenu.findItem(R.id.menu_login).setVisible(!isAuthenticated);
+            mainMenu.findItem(R.id.menu_add).setVisible(isAuthenticated);
+            mainMenu.findItem(R.id.menu_join).setVisible(isAuthenticated);
+            mainMenu.findItem(R.id.menu_info).setVisible(isAuthenticated);
+        }
     }
 
     private void saveAccessToken(String accessToken) {
@@ -153,10 +159,11 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     public void resetAuthentication() {
-        GeneralUtils.afterError(clazz, "Resetting authentication");
+        Utils.afterError(clazz, "Resetting authentication");
         Session.getInstance().setUser(null);
         accessToken = null;
         handleLogin();
+        invalidateOptionsMenu();
     }
 
     private class ProcessGetAccessToken extends AsyncTask<String, Void, InstagramAccessToken> {
@@ -172,7 +179,7 @@ public class MenuActivity extends AppCompatActivity {
             try {
                 instagramToken = InstagramApi.getAccessTokenByCode(code);
             } catch (IOException e) {
-                GeneralUtils.logError(clazz, "IOException: " + e.toString());
+                Utils.logError(clazz, "IOException: " + e.toString());
             }
             return instagramToken;
         }
@@ -181,18 +188,19 @@ public class MenuActivity extends AppCompatActivity {
         protected void onPostExecute(InstagramAccessToken result) {
             super.onPostExecute(result);
 
-            if (GeneralUtils.isNotEmpty(result)) {
-                if (result.isError() || GeneralUtils.isEmpty(result.getAccessToken())) {
-                    GeneralUtils.afterError(clazz, result.toString());
+            if (Utils.isNotEmpty(result)) {
+                if (result.isError() || Utils.isEmpty(result.getAccessToken())) {
+                    Utils.afterError(clazz, result.toString());
                     Session.getInstance().setUser(null);
                     accessToken = null;
                     handleLogin();
+                    invalidateOptionsMenu();
                 } else {
-                    GeneralUtils.logInfo(clazz, "Collected instagram access token: " + result.getAccessToken());
+                    Utils.logInfo(clazz, "Collected instagram access token: " + result.getAccessToken());
                     accessToken = result.getAccessToken();
                     new ProcessGetUser().execute();
                 }
-                if (GeneralUtils.isNotEmpty(instagramDialog)) {
+                if (Utils.isNotEmpty(instagramDialog)) {
                     instagramDialog.dismiss();
                 }
             }
@@ -213,20 +221,20 @@ public class MenuActivity extends AppCompatActivity {
             InstagramUser instagramUser = null;
             try {
                 instagramUser = InstagramApi.getDataToClass(InstagramUser.class, INSTAGRAM_ENDPOINT_USER_SELF + accessToken);
-                if (GeneralUtils.isNotEmpty(instagramUser) &&
-                        GeneralUtils.isNotEmpty(instagramUser.getData())) {
+                if (Utils.isNotEmpty(instagramUser) &&
+                        Utils.isNotEmpty(instagramUser.getData())) {
                     user = Api.getUserByInstagramId(instagramUser.getData().getId());
-                    if (GeneralUtils.isEmpty(user)) {
+                    if (Utils.isEmpty(user)) {
                         isNewUser = true;
                         user = InstagramUtils.instagramUserToUser(instagramUser.getData());
                     } else {
-                        GeneralUtils.logInfo(clazz, "User already exists: " + user);
+                        Utils.logInfo(clazz, "User already exists: " + user);
                     }
                 }
             } catch (IOException e) {
-                GeneralUtils.logError(clazz, "IOException: " + e.toString());
+                Utils.logError(clazz, "IOException: " + e.toString());
             } catch (JSONException e) {
-                GeneralUtils.logError(clazz, "JSONException: " + e.toString());
+                Utils.logError(clazz, "JSONException: " + e.toString());
             }
             return instagramUser;
         }
@@ -234,18 +242,19 @@ public class MenuActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(InstagramUser result) {
             super.onPostExecute(result);
-            if (GeneralUtils.isNotEmpty(result) &&
-                    GeneralUtils.isNotEmpty(result.getMeta()) &&
-                    GeneralUtils.isNotEmpty(result.getData())) {
+            if (Utils.isNotEmpty(result) &&
+                    Utils.isNotEmpty(result.getMeta()) &&
+                    Utils.isNotEmpty(result.getData())) {
                 if (result.getMeta().isError()) {
-                    GeneralUtils.afterError(clazz, result.toString());
+                    Utils.afterError(clazz, result.toString());
                 } else {
-                    GeneralUtils.logInfo(clazz, "Collected instagram user data: " + result.toString());
+                    Utils.logInfo(clazz, "Collected instagram user data: " + result.toString());
                     Session.getInstance().setUser(user);
                     if (isNewUser) {
                         new ProcessAddUser().execute();
                     } else {
                         handleLogin();
+                        invalidateOptionsMenu();
                     }
                 }
             }
@@ -262,14 +271,11 @@ public class MenuActivity extends AppCompatActivity {
         protected Boolean doInBackground(Void... params) {
             Boolean result = Boolean.FALSE;
             try {
-                Thread.sleep(1000); // FIXME: showing preloader, REMOVE!
                 result = Api.addUser(Session.getInstance().getUser());
-            } catch (InterruptedException e) {
-                GeneralUtils.logError(clazz, "InterruptedException: " + e.toString());
             } catch (JSONException e) {
-                GeneralUtils.logError(clazz, "JSONException: " + e.toString());
+                Utils.logError(clazz, "JSONException: " + e.toString());
             } catch (IOException e) {
-                GeneralUtils.logError(clazz, "IOException: " + e.toString());
+                Utils.logError(clazz, "IOException: " + e.toString());
             }
             return result;
         }
@@ -278,9 +284,10 @@ public class MenuActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
             if (result) {
-                handleLogin();
+                Utils.showMessage(clazz, "Logged in");
                 saveAccessToken(accessToken);
-                GeneralUtils.showMessage(clazz, "Logged in");
+                handleLogin();
+                invalidateOptionsMenu();
             }
         }
     }
@@ -298,9 +305,9 @@ public class MenuActivity extends AppCompatActivity {
             try {
                 result = Api.deleteUser(user);
             } catch (IOException e) {
-                GeneralUtils.logError(clazz, "IOException: " + e.toString());
+                Utils.logError(clazz, "IOException: " + e.toString());
             } catch (JSONException e) {
-                GeneralUtils.logError(clazz, "JSONException: " + e.toString());
+                Utils.logError(clazz, "JSONException: " + e.toString());
             }
             return result;
         }
@@ -308,7 +315,7 @@ public class MenuActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
-            GeneralUtils.logDebug(clazz, "User deleted: " + result);
+            Utils.logDebug(clazz, "User deleted: " + result);
             resetAuthentication();
             removeAccessToken();
         }

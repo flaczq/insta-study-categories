@@ -2,7 +2,7 @@ package abc.flaq.apps.instastudycategories.pojo.instagram;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import abc.flaq.apps.instastudycategories.utils.GeneralUtils;
+import abc.flaq.apps.instastudycategories.utils.Utils;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InstagramUser {
@@ -27,8 +27,8 @@ public class InstagramUser {
     @Override
     public String toString() {
         String string = "InstagramUser[";
-        string += "data: " + (GeneralUtils.isEmpty(data) ? null : data.toString()) + ", ";
-        string += "meta: " + (GeneralUtils.isEmpty(meta) ? null : meta.toString());
+        string += "data: " + (Utils.isEmpty(data) ? null : data.toString()) + ", ";
+        string += "meta: " + (Utils.isEmpty(meta) ? null : meta.toString());
         string += "]";
         return string;
     }
@@ -46,7 +46,7 @@ public class InstagramUser {
         @Override
         public String toString() {
             String string = "InstagramUserData[";
-            string += "counts: " + (GeneralUtils.isEmpty(counts) ? null : counts.toString()) + ", ";
+            string += "counts: " + (Utils.isEmpty(counts) ? null : counts.toString()) + ", ";
             string += "id: " + getId() + ", ";
             string += "username: " + getUsername() + ", ";
             string += "fullname: " + getFullname() + ", ";

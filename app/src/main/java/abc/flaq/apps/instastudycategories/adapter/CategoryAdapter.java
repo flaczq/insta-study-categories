@@ -12,7 +12,7 @@ import java.util.List;
 
 import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.pojo.Category;
-import abc.flaq.apps.instastudycategories.utils.GeneralUtils;
+import abc.flaq.apps.instastudycategories.utils.Utils;
 
 public class CategoryAdapter extends BaseAdapter {
 
@@ -56,7 +56,7 @@ public class CategoryAdapter extends BaseAdapter {
     public View getView(int position, View view, ViewGroup viewGroup) {
         final Category category = categories.get(position);
 
-        if (GeneralUtils.isEmpty(view)) {
+        if (Utils.isEmpty(view)) {
             final LayoutInflater layoutInflater = LayoutInflater.from(context);
             view = layoutInflater.inflate(R.layout.activity_category_item, viewGroup, false);
 
@@ -67,7 +67,7 @@ public class CategoryAdapter extends BaseAdapter {
         }
 
         final ViewHolder viewHolder = (ViewHolder) view.getTag();
-        GeneralUtils.setGridDesign(position, category.getUsersSize(), maxSize, viewHolder.layout);
+        Utils.setGridDesign(position, category.getUsersSize(), maxSize, viewHolder.layout);
         viewHolder.textView.setText(category.getName());
 
         return view;

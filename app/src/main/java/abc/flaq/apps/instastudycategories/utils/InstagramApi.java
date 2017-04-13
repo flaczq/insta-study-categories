@@ -115,7 +115,7 @@ public class InstagramApi {
     public static String getAccessTokenFromUrl(Context context, String url) {
         int errorIndex = url.indexOf("?error=");
         if (errorIndex >= 0) {
-            GeneralUtils.showMessage(context, url.substring(errorIndex + "?error=".length()));
+            Utils.showMessage(context, url.substring(errorIndex + "?error=".length()));
             return null;
         }
 
@@ -130,7 +130,7 @@ public class InstagramApi {
     public static String getCodeFromUrl(Context context, String url) {
         int errorIndex = url.indexOf("?error=");
         if (errorIndex >= 0) {
-            GeneralUtils.showMessage(context, url.substring(errorIndex + "?error=".length()));
+            Utils.showMessage(context, url.substring(errorIndex + "?error=".length()));
             return null;
         }
 
@@ -158,7 +158,7 @@ public class InstagramApi {
         JSONObject jsonObject = new JSONObject(data);
         JSONObject metaObject = jsonObject.getJSONObject("meta");
 
-        if (GeneralUtils.isEmpty(metaObject)) {
+        if (Utils.isEmpty(metaObject)) {
             return null;
         }
 
@@ -168,7 +168,7 @@ public class InstagramApi {
         JSONObject jsonObject = new JSONObject(data);
         JSONObject dataObject = jsonObject.getJSONObject("data");
 
-        if (GeneralUtils.isEmpty(dataObject)) {
+        if (Utils.isEmpty(dataObject)) {
             return null;
         }
 

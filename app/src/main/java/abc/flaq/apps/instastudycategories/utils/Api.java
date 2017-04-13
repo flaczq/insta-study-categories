@@ -64,10 +64,10 @@ public class Api {
         } else {
             inputStream = connection.getErrorStream();
             // Just in case
-            if (GeneralUtils.isEmpty(inputStream)) {
+            if (Utils.isEmpty(inputStream)) {
                 inputStream = connection.getInputStream();
             } else {
-                GeneralUtils.logError("Api", responseCode + "/" + connection.getResponseMessage());
+                Utils.logError("Api", responseCode + "/" + connection.getResponseMessage());
             }
         }
 
@@ -108,7 +108,7 @@ public class Api {
         connection.setRequestProperty("Accept", "application/json");
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("Content-Length", Integer.toString(data.getBytes().length));
-        if (GeneralUtils.isNotEmpty(etag)) {
+        if (Utils.isNotEmpty(etag)) {
             connection.setRequestProperty("If-Match", etag);
         }
         connection.setRequestProperty("Authorization", API_CREDENTIALS);
@@ -407,7 +407,7 @@ public class Api {
         String stream = getStream(is);
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
-            GeneralUtils.logError("Api", response.toString());
+            Utils.logError("Api", response.toString());
             return Boolean.FALSE;
         }
         getAllUsers(true);
@@ -419,25 +419,24 @@ public class Api {
     public static Boolean addUserToCategory(User user, String categoryId) throws IOException, JSONException {
         List<String> categories = user.getCategories();
         if (categories.contains(categoryId)) {
-            GeneralUtils.logDebug("Api", "The user: " + user.toString() + " is already in category: " + categoryId);
+            Utils.logDebug("Api", "The user: " + user.toString() + " is already in category: " + categoryId);
             return Boolean.FALSE;
-        } else {
-            categories.add(categoryId);
         }
 
         InputStreamReader is = patchRequest(
                 API_USERS_URL + "/" + user.getId(),
                 user.getEtag(),
-                "{\"categories\":" + GeneralUtils.listToString(categories) + "," +
+                "{\"categories\":" + Utils.listToString(categories) + "," +
                 "\"categoriesSize\":" + categories.size() + "}"
         );
         String stream = getStream(is);
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
-            GeneralUtils.logError("Api", response.toString());
+            Utils.logError("Api", response.toString());
             return Boolean.FALSE;
         }
 
+        categories.add(categoryId);
         getAllUsers(true);
         user.update(response);
 
@@ -446,25 +445,24 @@ public class Api {
     public static Boolean addUserToSubcategory(User user, String subcategoryId) throws IOException, JSONException {
         List<String> subcategories = user.getSubcategories();
         if (subcategories.contains(subcategoryId)) {
-            GeneralUtils.logDebug("Api", "User " + user.getUsername() + " is already in subcategory " + subcategoryId);
+            Utils.logDebug("Api", "User " + user.getUsername() + " is already in subcategory " + subcategoryId);
             return Boolean.FALSE;
-        } else {
-            subcategories.add(subcategoryId);
         }
 
         InputStreamReader is = patchRequest(
                 API_USERS_URL + "/" + user.getId(),
                 user.getEtag(),
-                "{\"subcategories\":" + GeneralUtils.listToString(subcategories) + "," +
+                "{\"subcategories\":" + Utils.listToString(subcategories) + "," +
                 "\"subcategoriesSize\":" + subcategories.size() + "}"
         );
         String stream = getStream(is);
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
-            GeneralUtils.logError("Api", response.toString());
+            Utils.logError("Api", response.toString());
             return Boolean.FALSE;
         }
 
+        subcategories.add(subcategoryId);
         getAllUsers(true);
         user.update(response);
 
@@ -475,7 +473,7 @@ public class Api {
         String stream = getStream(is);
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
-            GeneralUtils.logError("Api", response.toString());
+            Utils.logError("Api", response.toString());
             return Boolean.FALSE;
         }
 

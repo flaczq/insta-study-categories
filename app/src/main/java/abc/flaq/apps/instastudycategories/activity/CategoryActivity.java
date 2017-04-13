@@ -15,6 +15,7 @@ import com.etsy.android.grid.StaggeredGridView;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import abc.flaq.apps.instastudycategories.BuildConfig;
@@ -22,7 +23,8 @@ import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.adapter.CategoryAdapter;
 import abc.flaq.apps.instastudycategories.pojo.Category;
 import abc.flaq.apps.instastudycategories.utils.Api;
-import abc.flaq.apps.instastudycategories.utils.GeneralUtils;
+import abc.flaq.apps.instastudycategories.utils.Utils;
+import abc.flaq.apps.instastudycategories.utils.Session;
 
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_ID;
 
@@ -40,7 +42,7 @@ public class CategoryActivity extends MenuActivity {
         gridView = (StaggeredGridView) findViewById(R.id.category_grid);
         preloader = (CrystalPreloader) findViewById(R.id.category_preloader);
 
-        GeneralUtils.logDebug(clazz, "Build data: " +
+        Utils.logDebug(clazz, "Build data: " +
                 BuildConfig.FLAVOR_FULLNAME +
                 "/" + BuildConfig.BUILD_TYPE + " " +
                 BuildConfig.VERSION_NAME
@@ -50,7 +52,7 @@ public class CategoryActivity extends MenuActivity {
             @Override
             public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
                 Category selected = categoryAdapter.getItem(position);
-                GeneralUtils.logDebug(clazz, "Selected position: " + position);
+                Utils.logDebug(clazz, "Selected position: " + position);
 
                 Intent nextIntent;
                 if (selected.isAsSubcategory()) {
@@ -63,7 +65,13 @@ public class CategoryActivity extends MenuActivity {
             }
         });
 
-        new ProcessCategories().execute();
+        // Remember categories
+        if (Utils.isEmpty(Session.getInstance().getCategories())) {
+            new ProcessCategories().execute();
+        } else {
+            categoryAdapter = new CategoryAdapter(clazz, Session.getInstance().getCategories());
+            gridView.setAdapter(categoryAdapter);
+        }
     }
 
     @Override
@@ -74,9 +82,12 @@ public class CategoryActivity extends MenuActivity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (preloader.isShown()) {
+            return true;
+        }
         switch (item.getItemId()) {
             case R.id.menu_add:
-                GeneralUtils.showMessage(clazz, "adding");
+                Utils.showMessage(clazz, "adding");
                 break;
             case R.id.menu_join:
                 // not available from here
@@ -91,9 +102,7 @@ public class CategoryActivity extends MenuActivity {
         return true;
     }
 
-    private class ProcessCategories extends AsyncTask<Void, Void, Void> {
-        private List<Category> categories;
-
+    private class ProcessCategories extends AsyncTask<Void, Void, List<Category>> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -101,29 +110,29 @@ public class CategoryActivity extends MenuActivity {
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected List<Category> doInBackground(Void... params) {
+            List<Category> categories = new ArrayList<>();
             try {
-                Thread.sleep(1000); // FIXME: showing preloader, REMOVE
-                categories = Api.getAllCategories(true);    // FIXME: testing
+                categories = Api.getAllCategories(true);
                 for (Category category : categories) {
-                    GeneralUtils.logInfo(clazz, category.toString());
+                    Utils.logInfo(clazz, category.toString());
                 }
-            } catch (InterruptedException e) {
-                GeneralUtils.logError(clazz, "InterruptedException: " + e.toString());
             } catch (JSONException e) {
-                GeneralUtils.logError(clazz, "JSONException: " + e.toString());
+                Utils.logError(clazz, "JSONException: " + e.toString());
             } catch (IOException e) {
-                GeneralUtils.logError(clazz, "IOException: " + e.toString());
+                Utils.logError(clazz, "IOException: " + e.toString());
             }
-            return null;
+            return categories;
         }
 
         @Override
-        protected void onPostExecute(Void result) {
+        protected void onPostExecute(List<Category> result) {
+            // TODO: check if there are any categories
             super.onPostExecute(result);
             preloader.setVisibility(View.GONE);
-            categoryAdapter = new CategoryAdapter(clazz, categories);
+            categoryAdapter = new CategoryAdapter(clazz, result);
             gridView.setAdapter(categoryAdapter);
+            Session.getInstance().setCategories(result);
         }
     }
 

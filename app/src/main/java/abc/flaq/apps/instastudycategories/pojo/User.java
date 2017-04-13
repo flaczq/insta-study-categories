@@ -2,7 +2,7 @@ package abc.flaq.apps.instastudycategories.pojo;
 
 import java.util.List;
 
-import abc.flaq.apps.instastudycategories.utils.GeneralUtils;
+import abc.flaq.apps.instastudycategories.utils.Utils;
 
 public class User extends EveObject implements Comparable<User> {
 
@@ -136,9 +136,9 @@ public class User extends EveObject implements Comparable<User> {
         json += "\"profilePicUrl\":\"" + profilePicUrl + "\",";
         json += "\"followers\":" + followers + ",";
         json += "\"media\":" + media + ",";
-        json += "\"categories\":" + GeneralUtils.listToString(categories) + ",";
+        json += "\"categories\":" + Utils.listToString(categories) + ",";
         json += "\"categoriesSize\":" + categoriesSize + ",";
-        json += "\"subcategories\":" + GeneralUtils.listToString(subcategories) + ",";
+        json += "\"subcategories\":" + Utils.listToString(subcategories) + ",";
         json += "\"subcategoriesSize\":" + subcategoriesSize + ",";
         json += "\"active\":" + active;
         json += "}";

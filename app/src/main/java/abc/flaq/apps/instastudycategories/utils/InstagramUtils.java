@@ -14,8 +14,8 @@ public class InstagramUtils {
         user.setUsername(instagramUser.getUsername());
         user.setBio(instagramUser.getBio());
         user.setProfilePicUrl(instagramUser.getProfilePicUrl());
-        user.setFollowers((GeneralUtils.isEmpty(instagramUser.getCounts()) ? 0 : instagramUser.getCounts().getFollowers()));
-        user.setMedia((GeneralUtils.isEmpty(instagramUser.getCounts()) ? 0 : instagramUser.getCounts().getMedia()));
+        user.setFollowers((Utils.isEmpty(instagramUser.getCounts()) ? 0 : instagramUser.getCounts().getFollowers()));
+        user.setMedia((Utils.isEmpty(instagramUser.getCounts()) ? 0 : instagramUser.getCounts().getMedia()));
         user.setCategories(new ArrayList<String>());
         user.setCategoriesSize(0);
         user.setSubcategories(new ArrayList<String>());

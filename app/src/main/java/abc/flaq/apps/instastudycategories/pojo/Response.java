@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Map;
 
-import abc.flaq.apps.instastudycategories.utils.GeneralUtils;
+import abc.flaq.apps.instastudycategories.utils.Utils;
 
 public class Response extends EveObject {
 
@@ -49,8 +49,8 @@ public class Response extends EveObject {
     public String toString() {
         String string = "Response[";
         string += "status: " + status + ", ";
-        string += "error: " + (GeneralUtils.isEmpty(error) ? null : error.toString()) + ", ";
-        string += "issues: " + (GeneralUtils.isEmpty(issues) ? null : issues.toString());
+        string += "error: " + (Utils.isEmpty(error) ? null : error.toString()) + ", ";
+        string += "issues: " + (Utils.isEmpty(issues) ? null : issues.toString());
         string += "]";
         return string;
     }

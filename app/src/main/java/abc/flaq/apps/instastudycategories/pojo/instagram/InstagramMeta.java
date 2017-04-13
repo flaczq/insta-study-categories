@@ -3,7 +3,7 @@ package abc.flaq.apps.instastudycategories.pojo.instagram;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import abc.flaq.apps.instastudycategories.utils.GeneralUtils;
+import abc.flaq.apps.instastudycategories.utils.Utils;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InstagramMeta {
@@ -36,7 +36,7 @@ public class InstagramMeta {
     }
 
     public Boolean isOk() {
-        if (GeneralUtils.isEmpty(code)) {
+        if (Utils.isEmpty(code)) {
             return true;
         }
         return (code >= 200 && code <= 299);

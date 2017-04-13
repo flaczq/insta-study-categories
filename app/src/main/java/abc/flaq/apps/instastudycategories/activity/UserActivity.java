@@ -22,7 +22,7 @@ import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.adapter.UserAdapter;
 import abc.flaq.apps.instastudycategories.pojo.User;
 import abc.flaq.apps.instastudycategories.utils.Api;
-import abc.flaq.apps.instastudycategories.utils.GeneralUtils;
+import abc.flaq.apps.instastudycategories.utils.Utils;
 import abc.flaq.apps.instastudycategories.utils.Session;
 
 import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_URL;
@@ -39,9 +39,9 @@ public class UserActivity extends MenuActivity {
     private CrystalPreloader preloader;
 
     private Menu mainMenu;
-    private String id;
+    private String selectedId;
     private Boolean isCategory = false;
-    private Boolean hasNotJoined = false;
+    private Boolean hasJoined = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,37 +51,37 @@ public class UserActivity extends MenuActivity {
         preloader = (CrystalPreloader) findViewById(R.id.user_preloader);
 
         intent = getIntent();
-        // Check if passed id is from category or subcategory
+        // Check if passed selectedId is from category or subcategory
         String categoryId = intent.getStringExtra(INTENT_CATEGORY_ID);
-        id = null;
-        if (GeneralUtils.isNotEmpty(categoryId)) {
+        selectedId = null;
+        if (Utils.isNotEmpty(categoryId)) {
             isCategory = true;
-            id = categoryId;
+            selectedId = categoryId;
         } else {
             String subcategoryId = intent.getStringExtra(INTENT_SUBCATEGORY_ID);
-            if (GeneralUtils.isNotEmpty(subcategoryId)) {
-                id = subcategoryId;
+            if (Utils.isNotEmpty(subcategoryId)) {
+                selectedId = subcategoryId;
             }
         }
 
-        if (GeneralUtils.isEmpty(id)) {
-            GeneralUtils.afterError(clazz, "(sub)categoryId is empty");
+        if (Utils.isEmpty(selectedId)) {
+            Utils.afterError(clazz, "No category or subcategory id");
             finish();
         } else {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
                     String selected = userAdapter.getUsername(position);
-                    GeneralUtils.logDebug(clazz, "Selected position: " + position);
+                    Utils.logDebug(clazz, "Selected position: " + position);
                     Uri instagramUri = Uri.parse(INSTAGRAM_URL + "_u/" + selected);
                     Intent nextIntent = new Intent(Intent.ACTION_VIEW, instagramUri);
                     nextIntent.setPackage(PACKAGE_INSTAGRAM);
 
-                    if (GeneralUtils.isIntentAvailable(clazz, nextIntent)) {
-                        GeneralUtils.logDebug(clazz, "Instagram intent is available");
+                    if (Utils.isIntentAvailable(clazz, nextIntent)) {
+                        Utils.logDebug(clazz, "Instagram intent is available");
                         clazz.startActivity(nextIntent);
                     } else {
-                        GeneralUtils.logDebug(clazz, "Instagram intent is NOT available");
+                        Utils.logDebug(clazz, "Instagram intent is NOT available");
                         clazz.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + selected)));
                     }
                 }
@@ -96,17 +96,20 @@ public class UserActivity extends MenuActivity {
         super.onCreateOptionsMenu(menu);
         mainMenu = menu;
         menu.findItem(R.id.menu_add).setVisible(false);
-        menu.findItem(R.id.menu_join).setVisible(hasNotJoined);
+        menu.findItem(R.id.menu_join).setVisible(!hasJoined);
         return true;
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (preloader.isShown()) {
+            return true;
+        }
         switch (item.getItemId()) {
             case R.id.menu_add:
                 // not available from here
                 break;
             case R.id.menu_join:
-                GeneralUtils.showMessage(clazz, "joining");
+                Utils.showMessage(clazz, "joining");
                 new ProcessAddUserToCategory().execute();
                 break;
             case R.id.menu_info:
@@ -131,21 +134,24 @@ public class UserActivity extends MenuActivity {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                Thread.sleep(1000); // FIXME: showing preloader, REMOVE!
                 if (isCategory) {
-                    users = Api.getUsersByCategoryId(id);
+                    users = Api.getUsersByCategoryId(selectedId);
                 } else {
-                    users = Api.getUsersBySubcategoryId(id);
+                    users = Api.getUsersBySubcategoryId(selectedId);
                 }
                 for (User user : users) {
-                    GeneralUtils.logInfo(clazz, user.toString());
+                    Utils.logInfo(clazz, user.toString());
+                    if (Utils.isNotEmpty(Session.getInstance().getUser()) &&
+                            user.getId().equals(Session.getInstance().getUser().getId())) {
+                        hasJoined = (Session.getInstance().getUser().getCategories().contains(selectedId) ||
+                                Session.getInstance().getUser().getSubcategories().contains(selectedId));
+                        invalidateOptionsMenu();
+                    }
                 }
-            } catch (InterruptedException e) {
-                GeneralUtils.logError(clazz, "InterruptedException: " + e.toString());
             } catch (JSONException e) {
-                GeneralUtils.logError(clazz, "JSONException: " + e.toString());
+                Utils.logError(clazz, "JSONException: " + e.toString());
             } catch (IOException e) {
-                GeneralUtils.logError(clazz, "IOException: " + e.toString());
+                Utils.logError(clazz, "IOException: " + e.toString());
             }
             return null;
         }
@@ -169,18 +175,15 @@ public class UserActivity extends MenuActivity {
         protected Boolean doInBackground(Void... params) {
             Boolean result = Boolean.FALSE;
             try {
-                Thread.sleep(1000); // FIXME: showing preloader, REMOVE!
                 if (isCategory) {
-                    result = Api.addUserToCategory(Session.getInstance().getUser(), id);
+                    result = Api.addUserToCategory(Session.getInstance().getUser(), selectedId);
                 } else {
-                    result = Api.addUserToSubcategory(Session.getInstance().getUser(), id);
+                    result = Api.addUserToSubcategory(Session.getInstance().getUser(), selectedId);
                 }
-            } catch (InterruptedException e) {
-                GeneralUtils.logError(clazz, "InterruptedException: " + e.toString());
             } catch (JSONException e) {
-                GeneralUtils.logError(clazz, "JSONException: " + e.toString());
+                Utils.logError(clazz, "JSONException: " + e.toString());
             } catch (IOException e) {
-                GeneralUtils.logError(clazz, "IOException: " + e.toString());
+                Utils.logError(clazz, "IOException: " + e.toString());
             }
             return result;
         }
@@ -189,12 +192,12 @@ public class UserActivity extends MenuActivity {
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
             if (result) {
-                GeneralUtils.showMessage(clazz, "User successfully added to the category");
+                Utils.showMessage(clazz, "User successfully added to the category");
                 userAdapter.addItem(Session.getInstance().getUser());
                 userAdapter.notifyDataSetChanged();
                 mainMenu.findItem(R.id.menu_join).setVisible(false);
             } else {
-                GeneralUtils.afterError(clazz, "Can't add user to category");
+                Utils.afterError(clazz, "Can't add user to category");
             }
         }
     }

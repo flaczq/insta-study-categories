@@ -13,7 +13,7 @@ import java.util.List;
 
 import static abc.flaq.apps.instastudycategories.utils.Constants.GRID_MAX_HEIGHT;
 
-public class GeneralUtils {
+public class Utils {
 
     public static final int LOG_DEBUG = 0;
     public static final int LOG_ERROR = 1;
@@ -113,7 +113,7 @@ public class GeneralUtils {
     }
 
     public static void afterError(Context context, String message) {
-        GeneralUtils.log(LOG_ERROR, context, message);
+        Utils.log(LOG_ERROR, context, message);
         showMessage(context, "General error");
     }
     // FIXME: better - snackbar https://lab.getbase.com/introduction-to-coordinator-layout-on-android/
