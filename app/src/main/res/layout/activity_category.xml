@@ -10,7 +10,7 @@
     <com.etsy.android.grid.StaggeredGridView android:id="@+id/category_grid"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:item_margin="2dp"
+        app:item_margin="@dimen/gridview_margin"
         app:column_count="2" />
 
     <com.crystal.crystalpreloaders.widgets.CrystalPreloader android:id="@+id/category_preloader"

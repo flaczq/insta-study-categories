@@ -18,15 +18,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import abc.flaq.apps.instastudycategories.BuildConfig;
 import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.adapter.CategoryAdapter;
 import abc.flaq.apps.instastudycategories.pojo.Category;
 import abc.flaq.apps.instastudycategories.utils.Api;
-import abc.flaq.apps.instastudycategories.utils.Utils;
 import abc.flaq.apps.instastudycategories.utils.Session;
+import abc.flaq.apps.instastudycategories.utils.Utils;
 
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_ID;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_FOREIGN_ID;
 
 public class CategoryActivity extends MenuActivity {
 
@@ -42,25 +41,17 @@ public class CategoryActivity extends MenuActivity {
         gridView = (StaggeredGridView) findViewById(R.id.category_grid);
         preloader = (CrystalPreloader) findViewById(R.id.category_preloader);
 
-        Utils.logDebug(clazz, "Build data: " +
-                BuildConfig.FLAVOR_FULLNAME +
-                "/" + BuildConfig.BUILD_TYPE + " " +
-                BuildConfig.VERSION_NAME
-        );
-
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
                 Category selected = categoryAdapter.getItem(position);
-                Utils.logDebug(clazz, "Selected position: " + position);
-
                 Intent nextIntent;
                 if (selected.isAsSubcategory()) {
                     nextIntent = new Intent(clazz, UserActivity.class);
                 } else {
                     nextIntent = new Intent(clazz, SubcategoryActivity.class);
                 }
-                nextIntent.putExtra(INTENT_CATEGORY_ID, selected.getForeignId());
+                nextIntent.putExtra(INTENT_CATEGORY_FOREIGN_ID, selected.getForeignId());
                 clazz.startActivity(nextIntent);
             }
         });
@@ -78,6 +69,7 @@ public class CategoryActivity extends MenuActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         menu.findItem(R.id.menu_join).setVisible(false);
+        menu.findItem(R.id.menu_leave).setVisible(false);
         return true;
     }
     @Override
@@ -92,6 +84,9 @@ public class CategoryActivity extends MenuActivity {
             case R.id.menu_join:
                 // not available from here
                 break;
+            case R.id.menu_leave:
+                // not available from here
+                break;
             case R.id.menu_info:
                 return super.onOptionsItemSelected(item);
             case R.id.menu_login:
@@ -100,6 +95,16 @@ public class CategoryActivity extends MenuActivity {
                 break;
         }
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Update categories when going back from User or Subcategory activity
+        if (Utils.isNotEmpty(categoryAdapter)) {
+            categoryAdapter = new CategoryAdapter(clazz, Session.getInstance().getCategories());
+            gridView.setAdapter(categoryAdapter);
+        }
     }
 
     private class ProcessCategories extends AsyncTask<Void, Void, List<Category>> {
@@ -127,12 +132,15 @@ public class CategoryActivity extends MenuActivity {
 
         @Override
         protected void onPostExecute(List<Category> result) {
-            // TODO: check if there are any categories
             super.onPostExecute(result);
-            preloader.setVisibility(View.GONE);
-            categoryAdapter = new CategoryAdapter(clazz, result);
-            gridView.setAdapter(categoryAdapter);
-            Session.getInstance().setCategories(result);
+            if (result.size() == 0) {
+                Utils.showMessage(clazz, "No categories found");
+            } else {
+                preloader.setVisibility(View.GONE);
+                categoryAdapter = new CategoryAdapter(clazz, result);
+                gridView.setAdapter(categoryAdapter);
+                Session.getInstance().setCategories(result);
+            }
         }
     }
 

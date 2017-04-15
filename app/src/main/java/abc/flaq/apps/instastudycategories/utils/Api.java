@@ -18,6 +18,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ import abc.flaq.apps.instastudycategories.pojo.Response;
 import abc.flaq.apps.instastudycategories.pojo.Subcategory;
 import abc.flaq.apps.instastudycategories.pojo.User;
 
+import static abc.flaq.apps.instastudycategories.utils.Constants.API_ALL_CATEGORY_NAME;
 import static abc.flaq.apps.instastudycategories.utils.Constants.API_CATEGORIES_URL;
 import static abc.flaq.apps.instastudycategories.utils.Constants.API_CREDENTIALS;
 import static abc.flaq.apps.instastudycategories.utils.Constants.API_SUBCATEGORIES_URL;
@@ -141,16 +143,37 @@ public class Api {
     }
 
     private static void correctDate(EveObject eveObject) {
-        // is it necessary
-        /*Date date = eveObject.getCreated();
+        Date date = eveObject.getCreated();
         calendar.setTime(date);
-        calendar.add(Calendar.HOUR_OF_DAY, 1);
+        calendar.add(Calendar.HOUR_OF_DAY, 2);
         eveObject.setCreated(calendar.getTime());
 
         date = eveObject.getUpdated();
         calendar.setTime(date);
-        calendar.add(Calendar.HOUR_OF_DAY, 1);
-        eveObject.setUpdated(calendar.getTime());*/
+        calendar.add(Calendar.HOUR_OF_DAY, 2);
+        eveObject.setUpdated(calendar.getTime());
+    }
+    private static void correctForeignId(String url, EveObject eveObject) throws IOException {
+        String id = eveObject.getId();
+        String foreignId = Utils.doForeignId(id);
+        InputStreamReader is = patchRequest(url, eveObject.getEtag(), "{\"foreignId\":\"" + foreignId + "\"}");
+        String stream = getStream(is);
+        Response response = mapper.readValue(stream, Response.class);
+        if (response.isError()) {
+            Utils.logError("Api", response.toString());
+        } else {
+            eveObject.update(response);
+        }
+    }
+    private static void correctSize(String url, EveObject eveObject, String field, Integer size) throws IOException {
+        InputStreamReader is = patchRequest(url, eveObject.getEtag(), "{\"" + field + "\":\"" + size + "\"}");
+        String stream = getStream(is);
+        Response response = mapper.readValue(stream, Response.class);
+        if (response.isError()) {
+            Utils.logError("Api", response.toString());
+        } else {
+            eveObject.update(response);
+        }
     }
 
     private static JSONArray getItems(String data) throws JSONException {
@@ -158,7 +181,6 @@ public class Api {
         JSONArray items = jsonObject.getJSONArray("_items");
         return items;
     }
-
     private static String getWhere(Map<String, String> conditions) throws UnsupportedEncodingException {
         String where = "?where={";
         for (Map.Entry<String, String> entry : conditions.entrySet()) {
@@ -181,14 +203,24 @@ public class Api {
         String stream = getStream(is);
         JSONArray items = getItems(stream);
 
+        Category firstCategory = null;
         List<Category> categories = new ArrayList<>();
         for (int i = 0; i < items.length(); i++) {
             Category category = mapper.readValue(items.getString(i), Category.class);
             correctDate(category);
-            categories.add(category);
+            if (API_ALL_CATEGORY_NAME.equals(category.getName())) {
+                firstCategory = category;
+            } else {
+                categories.add(category);
+            }
         }
         Collections.sort(categories);
+        // Set "all" category always first
+        if (Utils.isNotEmpty(firstCategory)) {
+            categories.add(0, firstCategory);
+        }
         allCategories = categories;
+        Session.getInstance().setCategories(categories);
 
         return categories;
     }
@@ -215,10 +247,40 @@ public class Api {
 
         return null;
     }
+    public static Category getCategoryByName(String name) throws IOException, JSONException {
+        if (allCategories.size() > 0) {
+            for (Category category : allCategories) {
+                if (name.equals(category.getName())) {
+                    return category;
+                }
+            }
+        }
+
+        Map<String, String> conditions = new HashMap<>();
+        conditions.put("name", name);
+        InputStreamReader is = getAuthorizedRequest(API_CATEGORIES_URL + getWhere(conditions));
+        String stream = getStream(is);
+        JSONArray items = getItems(stream);
+
+        for (int i = 0; i < items.length(); i++) {
+            Category category = mapper.readValue(items.getString(i), Category.class);
+            if (name.equals(category.getName())) {
+                correctDate(category);
+                return category;
+            }
+        }
+
+        return null;
+    }
 
     // SUBCATEGORIES
     public static List<Subcategory> getAllSubcategories(boolean force) throws IOException, JSONException {
         if (!force && allSubcategories.size() > 0) {
+            for (Subcategory subcategory : allSubcategories) {
+                for (String categoryForeignId : subcategory.getCategories()) {
+                    getSubcategoriesByCategoryForeignId(force, categoryForeignId);
+                }
+            }
             return allSubcategories;
         }
 
@@ -231,6 +293,10 @@ public class Api {
             Subcategory subcategory = mapper.readValue(items.getString(i), Subcategory.class);
             correctDate(subcategory);
             subcategories.add(subcategory);
+
+            for (String categoryForeignId : subcategory.getCategories()) {
+                getSubcategoriesByCategoryForeignId(force, categoryForeignId);
+            }
         }
         Collections.sort(subcategories);
         allSubcategories = subcategories;
@@ -257,10 +323,10 @@ public class Api {
 
         return null;
     }
-    public static List<Subcategory> getSubcategoriesByCategoryId(String categoryForeignId) throws IOException, JSONException {
+    public static List<Subcategory> getSubcategoriesByCategoryForeignId(boolean force, String categoryForeignId) throws IOException, JSONException {
         List<Subcategory> subcategories = new ArrayList<>();
 
-        if (allCategories.size() > 0) {
+        if (!force && allSubcategories.size() > 0) {
             for (Subcategory subcategory : allSubcategories) {
                 if (subcategory.getCategories().contains(categoryForeignId)) {
                     subcategories.add(subcategory);
@@ -279,6 +345,8 @@ public class Api {
                 subcategories.add(subcategory);
             }
         }
+        Collections.sort(subcategories);
+        Session.getInstance().setSubcategories(categoryForeignId, subcategories);
 
         return subcategories;
     }
@@ -298,6 +366,11 @@ public class Api {
             User user = mapper.readValue(items.getString(i), User.class);
             correctDate(user);
             users.add(user);
+            if (Utils.isNotEmpty(Session.getInstance().getUser()) &&
+                    Utils.isNotEmpty(Session.getInstance().getUser().getId()) &&
+                    Session.getInstance().getUser().getId().equals(user.getId())) {
+                Session.getInstance().setUser(user);
+            }
         }
         Collections.sort(users);
         allUsers = users;
@@ -352,7 +425,7 @@ public class Api {
 
         return null;
     }
-    public static List<User> getUsersByCategoryId(String categoryForeignId) throws IOException, JSONException {
+    public static List<User> getUsersByCategoryForeignId(String categoryForeignId) throws IOException, JSONException {
         List<User> users = new ArrayList<>();
 
         if (allUsers.size() > 0) {
@@ -377,7 +450,7 @@ public class Api {
 
         return users;
     }
-    public static List<User> getUsersBySubcategoryId(String subcategoryForeignId) throws IOException, JSONException {
+    public static List<User> getUsersBySubcategoryForeignId(String subcategoryForeignId) throws IOException, JSONException {
         List<User> users = new ArrayList<>();
 
         if (allUsers.size() > 0) {
@@ -410,9 +483,10 @@ public class Api {
             Utils.logError("Api", response.toString());
             return Boolean.FALSE;
         }
+
+        user.update(response);
+        correctForeignId(API_USERS_URL + "/" + user.getId(), user);
         getAllUsers(true);
-        // Not needed
-        //user.update(response);
 
         return Boolean.TRUE;
     }
@@ -423,22 +497,40 @@ public class Api {
             return Boolean.FALSE;
         }
 
+        categories.add(categoryForeignId);
         InputStreamReader is = patchRequest(
                 API_USERS_URL + "/" + user.getId(),
                 user.getEtag(),
                 "{\"categories\":" + Utils.listToString(categories) + "," +
-                "\"categoriesSize\":" + categories.size() + "}"
+                        "\"categoriesSize\":" + categories.size() + "}"
         );
         String stream = getStream(is);
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
             Utils.logError("Api", response.toString());
+            categories.remove(categoryForeignId);
             return Boolean.FALSE;
         }
 
-        categories.add(categoryForeignId);
-        getAllUsers(true);
         user.update(response);
+        getAllUsers(true);
+        // Update etag of category
+        getAllCategories(true);
+
+        String categoryId = Utils.undoForeignId(categoryForeignId);
+        Category category = getCategoryById(categoryId);
+        if (Utils.isEmpty(category)) {
+            Utils.logDebug("Api", "Couldn't increase size of users in category " + categoryId);
+        } else {
+            correctSize(
+                    API_CATEGORIES_URL + "/" + categoryId,
+                    category,
+                    "usersSize",
+                    category.getUsersSize() + 1
+            );
+        }
+        // Update etag and sizes of category
+        getAllSubcategories(true);
 
         return Boolean.TRUE;
     }
@@ -449,26 +541,45 @@ public class Api {
             return Boolean.FALSE;
         }
 
+        subcategories.add(subcategoryForeignId);
         InputStreamReader is = patchRequest(
                 API_USERS_URL + "/" + user.getId(),
                 user.getEtag(),
                 "{\"subcategories\":" + Utils.listToString(subcategories) + "," +
-                "\"subcategoriesSize\":" + subcategories.size() + "}"
+                        "\"subcategoriesSize\":" + subcategories.size() + "}"
         );
         String stream = getStream(is);
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
             Utils.logError("Api", response.toString());
+            subcategories.remove(subcategoryForeignId);
             return Boolean.FALSE;
         }
 
-        subcategories.add(subcategoryForeignId);
-        getAllUsers(true);
         user.update(response);
+        getAllUsers(true);
+        // Update etag of category
+        getAllSubcategories(true);
+
+        String subcategoryId = Utils.undoForeignId(subcategoryForeignId);
+        Subcategory subcategory = getSubcategoryById(subcategoryId);
+        if (Utils.isEmpty(subcategory)) {
+            Utils.logDebug("Api", "Couldn't increase size of users in subcategory " + subcategoryId);
+        } else {
+            correctSize(
+                    API_SUBCATEGORIES_URL + "/" + subcategoryId,
+                    subcategory,
+                    "usersSize",
+                    subcategory.getUsersSize() + 1
+            );
+        }
+        // Update etag and sizes of category
+        getAllSubcategories(true);
 
         return Boolean.TRUE;
     }
-    public static Boolean deleteUser(User user) throws IOException, JSONException {
+
+    public static Boolean removeUser(User user) throws IOException, JSONException {
         InputStreamReader is = patchRequest(API_USERS_URL + "/" + user.getId(), user.getEtag(), "{\"active\":false}");
         String stream = getStream(is);
         Response response = mapper.readValue(stream, Response.class);
@@ -477,10 +588,96 @@ public class Api {
             return Boolean.FALSE;
         }
 
-        getAllUsers(true);
-        // TODO: check if needed
-        //user.setActive(Boolean.FALSE);
         user.update(response);
+        getAllUsers(true);
+
+        return Boolean.TRUE;
+    }
+    public static Boolean removeUserFromCategory(User user, String categoryForeignId) throws IOException, JSONException {
+        List<String> categories = user.getCategories();
+        if (!categories.contains(categoryForeignId)) {
+            Utils.logDebug("Api", "The user: " + user.toString() + " isn't already in category: " + categoryForeignId);
+            return Boolean.TRUE;
+        }
+
+        categories.remove(categoryForeignId);
+        InputStreamReader is = patchRequest(
+                API_USERS_URL + "/" + user.getId(),
+                user.getEtag(),
+                "{\"categories\":" + Utils.listToString(categories) + "," +
+                        "\"categoriesSize\":" + categories.size() + "}"
+        );
+        String stream = getStream(is);
+        Response response = mapper.readValue(stream, Response.class);
+        if (response.isError()) {
+            Utils.logError("Api", response.toString());
+            categories.add(categoryForeignId);
+            return Boolean.FALSE;
+        }
+
+        user.update(response);
+        getAllUsers(true);
+        // Update etag of category
+        getAllCategories(true);
+
+        String categoryId = Utils.undoForeignId(categoryForeignId);
+        Category category = getCategoryById(categoryId);
+        if (Utils.isEmpty(category)) {
+            Utils.logDebug("Api", "Couldn't decrease size of users in category " + categoryId);
+        } else {
+            correctSize(
+                    API_CATEGORIES_URL + "/" + categoryId,
+                    category,
+                    "usersSize",
+                    category.getUsersSize() - 1
+            );
+        }
+        // Update etag and sizes of category
+        getAllSubcategories(true);
+
+        return Boolean.TRUE;
+    }
+    public static Boolean removeUserFromSubcategory(User user, String subcategoryForeignId) throws IOException, JSONException {
+        List<String> subcategories = user.getSubcategories();
+        if (!subcategories.contains(subcategoryForeignId)) {
+            Utils.logDebug("Api", "The user: " + user.toString() + " isn't already in subcategory: " + subcategoryForeignId);
+            return Boolean.TRUE;
+        }
+
+        subcategories.remove(subcategoryForeignId);
+        InputStreamReader is = patchRequest(
+                API_USERS_URL + "/" + user.getId(),
+                user.getEtag(),
+                "{\"subcategories\":" + Utils.listToString(subcategories) + "," +
+                        "\"subcategoriesSize\":" + subcategories.size() + "}"
+        );
+        String stream = getStream(is);
+        Response response = mapper.readValue(stream, Response.class);
+        if (response.isError()) {
+            Utils.logError("Api", response.toString());
+            subcategories.add(subcategoryForeignId);
+            return Boolean.FALSE;
+        }
+
+        user.update(response);
+        getAllUsers(true);
+        // Update etag of category
+        getAllSubcategories(true);
+
+        String subcategoryId = Utils.undoForeignId(subcategoryForeignId);
+        Subcategory subcategory = getSubcategoryById(subcategoryId);
+        if (Utils.isEmpty(subcategory)) {
+            Utils.logDebug("Api", "Couldn't decrease size of users in subcategory " + subcategoryId);
+        } else {
+            correctSize(
+                    API_SUBCATEGORIES_URL + "/" + subcategoryId,
+                    subcategory,
+                    "usersSize",
+                    subcategory.getUsersSize() - 1
+            );
+        }
+        // Update etag and sizes of category
+        getAllSubcategories(true);
 
         return Boolean.TRUE;
     }

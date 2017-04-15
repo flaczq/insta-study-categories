@@ -38,12 +38,14 @@ android {
             applicationIdSuffix ""
             versionNameSuffix ""
             buildConfigField 'String', 'FLAVOR_FULLNAME', '"production"'
+            buildConfigField 'boolean', 'IS_DEBUG', 'false'
             resValue 'string', 'app_name', '"InstaStudyCategories"'
         }
         dev {
             applicationIdSuffix ".dev"
             versionNameSuffix "-dev"
             buildConfigField 'String', 'FLAVOR_FULLNAME', '"develop"'
+            buildConfigField 'boolean', 'IS_DEBUG', 'true'
             resValue 'string', 'app_name', '"InstaStudyCategories-dev"'
         }
     }

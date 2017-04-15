@@ -25,8 +25,8 @@ import abc.flaq.apps.instastudycategories.utils.Api;
 import abc.flaq.apps.instastudycategories.utils.Session;
 import abc.flaq.apps.instastudycategories.utils.Utils;
 
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_ID;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_ID;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_FOREIGN_ID;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_FOREIGN_ID;
 
 public class SubcategoryActivity extends MenuActivity {
 
@@ -35,7 +35,7 @@ public class SubcategoryActivity extends MenuActivity {
     private Intent intent;
     private StaggeredGridView gridView;
     private CrystalPreloader preloader;
-    private String categoryId;
+    private String categoryForeignId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,28 +45,27 @@ public class SubcategoryActivity extends MenuActivity {
         preloader = (CrystalPreloader) findViewById(R.id.subcategory_preloader);
 
         intent = getIntent();
-        categoryId = intent.getStringExtra(INTENT_CATEGORY_ID);
+        categoryForeignId = intent.getStringExtra(INTENT_CATEGORY_FOREIGN_ID);
 
-        if (Utils.isEmpty(categoryId)) {
-            Utils.afterError(clazz, "categoryId is empty");
+        if (Utils.isEmpty(categoryForeignId)) {
+            Utils.afterError(clazz, "categoryForeignId is empty");
             finish();
         } else {
             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
                     Subcategory selected = subcategoryAdapter.getItem(position);
-                    Utils.logDebug(clazz, "Selected position: " + position);
                     Intent nextIntent = new Intent(clazz, UserActivity.class);
-                    nextIntent.putExtra(INTENT_SUBCATEGORY_ID, selected.getForeignId());
+                    nextIntent.putExtra(INTENT_SUBCATEGORY_FOREIGN_ID, selected.getForeignId());
                     clazz.startActivity(nextIntent);
                 }
             });
 
             // Remember subcategories
-            if (Utils.isEmpty(Session.getInstance().getSubcategories(categoryId))) {
+            if (Utils.isEmpty(Session.getInstance().getSubcategories(categoryForeignId))) {
                 new ProcessSubcategories().execute();
             } else {
-                subcategoryAdapter = new SubcategoryAdapter(clazz, Session.getInstance().getSubcategories(categoryId));
+                subcategoryAdapter = new SubcategoryAdapter(clazz, Session.getInstance().getSubcategories(categoryForeignId));
                 gridView.setAdapter(subcategoryAdapter);
             }
         }
@@ -76,6 +75,7 @@ public class SubcategoryActivity extends MenuActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         menu.findItem(R.id.menu_join).setVisible(false);
+        menu.findItem(R.id.menu_leave).setVisible(false);
         return true;
     }
     @Override
@@ -90,6 +90,9 @@ public class SubcategoryActivity extends MenuActivity {
             case R.id.menu_join:
                 // not available from here
                 break;
+            case R.id.menu_leave:
+                // not available from here
+                break;
             case R.id.menu_info:
                 return super.onOptionsItemSelected(item);
             case R.id.menu_login:
@@ -98,6 +101,16 @@ public class SubcategoryActivity extends MenuActivity {
                 break;
         }
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Update subcategories when going back from User activity
+        if (Utils.isNotEmpty(subcategoryAdapter)) {
+            subcategoryAdapter = new SubcategoryAdapter(clazz, Session.getInstance().getSubcategories(categoryForeignId));
+            gridView.setAdapter(subcategoryAdapter);
+        }
     }
 
     private class ProcessSubcategories extends AsyncTask<Void, Void, List<Subcategory>> {
@@ -111,8 +124,7 @@ public class SubcategoryActivity extends MenuActivity {
         protected List<Subcategory> doInBackground(Void... params) {
             List<Subcategory> subcategories = new ArrayList<>();
             try {
-                subcategories = Api.getSubcategoriesByCategoryId(categoryId);
-                subcategories = Api.getAllSubcategories(true); // FIXME: testing
+                subcategories = Api.getSubcategoriesByCategoryForeignId(true, categoryForeignId);
                 for (Subcategory subcategory : subcategories) {
                     Utils.logInfo(clazz, subcategory.toString());
                 }
@@ -126,12 +138,15 @@ public class SubcategoryActivity extends MenuActivity {
 
         @Override
         protected void onPostExecute(List<Subcategory> result) {
-            // TODO: check if there are any subcategories
             super.onPostExecute(result);
-            preloader.setVisibility(View.GONE);
-            subcategoryAdapter = new SubcategoryAdapter(clazz, result);
-            gridView.setAdapter(subcategoryAdapter);
-            Session.getInstance().setSubcategories(categoryId, result);
+            if (result.size() == 0) {
+                Utils.showMessage(clazz, "No subcategories found");
+            } else {
+                preloader.setVisibility(View.GONE);
+                subcategoryAdapter = new SubcategoryAdapter(clazz, result);
+                gridView.setAdapter(subcategoryAdapter);
+                Session.getInstance().setSubcategories(categoryForeignId, result);
+            }
         }
     }
 

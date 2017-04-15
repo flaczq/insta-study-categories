@@ -7,6 +7,7 @@ public class Subcategory extends EveObject implements Comparable<Subcategory> {
     private String name = "";
     private Integer usersSize;
     private List<String> categories;
+    private Integer categoriesSize;
     private List<String> hashtags;
     private String imageUrl = "";
     private Boolean active;
@@ -30,6 +31,13 @@ public class Subcategory extends EveObject implements Comparable<Subcategory> {
     }
     public void setCategories(List<String> categories) {
         this.categories = categories;
+    }
+
+    public Integer getCategoriesSize() {
+        return categoriesSize;
+    }
+    public void setCategoriesSize(Integer categoriesSize) {
+        this.categoriesSize = categoriesSize;
     }
 
     public List<String> getHashtags() {
@@ -59,6 +67,7 @@ public class Subcategory extends EveObject implements Comparable<Subcategory> {
         string += "name=" + name + ", ";
         string += "usersSize=" + usersSize + ", ";
         string += "categories=" + categories + ", ";
+        string += "categoriesSize=" + categoriesSize + ", ";
         string += "hashtags=" + hashtags + ", ";
         string += "imageUrl: " + imageUrl + ", ";
         string += "active=" + active;

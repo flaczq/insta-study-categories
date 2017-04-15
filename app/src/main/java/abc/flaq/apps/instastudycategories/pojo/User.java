@@ -129,6 +129,7 @@ public class User extends EveObject implements Comparable<User> {
 
     public String toPostJson() {
         String json = "{";
+        json += "\"foreignId\":\"" + getForeignId() + "\",";
         json += "\"instagramId\":\"" + instagramId + "\",";
         json += "\"fullname\":\"" + fullname + "\",";
         json += "\"username\":\"" + username + "\",";

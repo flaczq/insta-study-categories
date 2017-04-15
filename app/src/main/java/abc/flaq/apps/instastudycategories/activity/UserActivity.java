@@ -22,12 +22,12 @@ import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.adapter.UserAdapter;
 import abc.flaq.apps.instastudycategories.pojo.User;
 import abc.flaq.apps.instastudycategories.utils.Api;
-import abc.flaq.apps.instastudycategories.utils.Utils;
 import abc.flaq.apps.instastudycategories.utils.Session;
+import abc.flaq.apps.instastudycategories.utils.Utils;
 
 import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_URL;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_ID;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_ID;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_FOREIGN_ID;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_FOREIGN_ID;
 import static abc.flaq.apps.instastudycategories.utils.Constants.PACKAGE_INSTAGRAM;
 
 public class UserActivity extends MenuActivity {
@@ -39,7 +39,7 @@ public class UserActivity extends MenuActivity {
     private CrystalPreloader preloader;
 
     private Menu mainMenu;
-    private String selectedId;
+    private String selectedForeignId;
     private Boolean isCategory = false;
     private Boolean hasJoined = false;
 
@@ -51,20 +51,20 @@ public class UserActivity extends MenuActivity {
         preloader = (CrystalPreloader) findViewById(R.id.user_preloader);
 
         intent = getIntent();
-        // Check if passed selectedId is from category or subcategory
-        String categoryId = intent.getStringExtra(INTENT_CATEGORY_ID);
-        selectedId = null;
-        if (Utils.isNotEmpty(categoryId)) {
+        // Check if passed selectedForeignId is from category or subcategory
+        String categoryForeignId = intent.getStringExtra(INTENT_CATEGORY_FOREIGN_ID);
+        selectedForeignId = null;
+        if (Utils.isNotEmpty(categoryForeignId)) {
             isCategory = true;
-            selectedId = categoryId;
+            selectedForeignId = categoryForeignId;
         } else {
-            String subcategoryId = intent.getStringExtra(INTENT_SUBCATEGORY_ID);
-            if (Utils.isNotEmpty(subcategoryId)) {
-                selectedId = subcategoryId;
+            String subcategoryForeignId = intent.getStringExtra(INTENT_SUBCATEGORY_FOREIGN_ID);
+            if (Utils.isNotEmpty(subcategoryForeignId)) {
+                selectedForeignId = subcategoryForeignId;
             }
         }
 
-        if (Utils.isEmpty(selectedId)) {
+        if (Utils.isEmpty(selectedForeignId)) {
             Utils.afterError(clazz, "No category or subcategory id");
             finish();
         } else {
@@ -72,7 +72,6 @@ public class UserActivity extends MenuActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
                     User selected = userAdapter.getItem(position);
-                    Utils.logDebug(clazz, "Selected position: " + position);
                     Uri instagramUri = Uri.parse(INSTAGRAM_URL + "_u/" + selected.getUsername());
                     Intent nextIntent = new Intent(Intent.ACTION_VIEW, instagramUri);
                     nextIntent.setPackage(PACKAGE_INSTAGRAM);
@@ -96,7 +95,8 @@ public class UserActivity extends MenuActivity {
         super.onCreateOptionsMenu(menu);
         mainMenu = menu;
         menu.findItem(R.id.menu_add).setVisible(false);
-        menu.findItem(R.id.menu_join).setVisible(!hasJoined);
+        menu.findItem(R.id.menu_join).setVisible(!isCategory && !hasJoined);
+        menu.findItem(R.id.menu_leave).setVisible(!isCategory && hasJoined);
         return true;
     }
     @Override
@@ -110,7 +110,11 @@ public class UserActivity extends MenuActivity {
                 break;
             case R.id.menu_join:
                 Utils.showMessage(clazz, "joining");
-                new ProcessAddUserToCategory().execute();
+                new ProcessAddUserToSubcategory().execute();
+                break;
+            case R.id.menu_leave:
+                Utils.showMessage(clazz, "leaving");
+                new ProcessRemoveUserFromSubcategory().execute();
                 break;
             case R.id.menu_info:
                 return super.onOptionsItemSelected(item);
@@ -135,16 +139,16 @@ public class UserActivity extends MenuActivity {
         protected Void doInBackground(Void... params) {
             try {
                 if (isCategory) {
-                    users = Api.getUsersByCategoryId(selectedId);
+                    users = Api.getUsersByCategoryForeignId(selectedForeignId);
                 } else {
-                    users = Api.getUsersBySubcategoryId(selectedId);
+                    users = Api.getUsersBySubcategoryForeignId(selectedForeignId);
                 }
                 for (User user : users) {
                     Utils.logInfo(clazz, user.toString());
                     if (Utils.isNotEmpty(Session.getInstance().getUser()) &&
                             user.getId().equals(Session.getInstance().getUser().getId())) {
-                        hasJoined = (Session.getInstance().getUser().getCategories().contains(selectedId) ||
-                                Session.getInstance().getUser().getSubcategories().contains(selectedId));
+                        hasJoined = (Session.getInstance().getUser().getCategories().contains(selectedForeignId) ||
+                                Session.getInstance().getUser().getSubcategories().contains(selectedForeignId));
                         invalidateOptionsMenu();
                     }
                 }
@@ -165,7 +169,7 @@ public class UserActivity extends MenuActivity {
         }
     }
 
-    private class ProcessAddUserToCategory extends AsyncTask<Void, Void, Boolean> {
+    private class ProcessAddUserToSubcategory extends AsyncTask<Void, Void, Boolean> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -176,9 +180,9 @@ public class UserActivity extends MenuActivity {
             Boolean result = Boolean.FALSE;
             try {
                 if (isCategory) {
-                    result = Api.addUserToCategory(Session.getInstance().getUser(), selectedId);
+                    result = Api.addUserToCategory(Session.getInstance().getUser(), selectedForeignId);
                 } else {
-                    result = Api.addUserToSubcategory(Session.getInstance().getUser(), selectedId);
+                    result = Api.addUserToSubcategory(Session.getInstance().getUser(), selectedForeignId);
                 }
             } catch (JSONException e) {
                 Utils.logError(clazz, "JSONException: " + e.toString());
@@ -192,12 +196,55 @@ public class UserActivity extends MenuActivity {
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
             if (result) {
-                Utils.showMessage(clazz, "User successfully added to the category");
+                Utils.showMessage(clazz, "User successfully added to the subcategory");
+                if (!isCategory) {
+                    mainMenu.findItem(R.id.menu_join).setVisible(false);
+                    mainMenu.findItem(R.id.menu_leave).setVisible(true);
+                }
                 userAdapter.addItem(Session.getInstance().getUser());
                 userAdapter.notifyDataSetChanged();
-                mainMenu.findItem(R.id.menu_join).setVisible(false);
             } else {
-                Utils.afterError(clazz, "Can't add user to category");
+                Utils.afterError(clazz, "Can't add user to subcategory");
+            }
+        }
+    }
+
+    private class ProcessRemoveUserFromSubcategory extends AsyncTask<Void, Void, Boolean> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            Boolean result = Boolean.FALSE;
+            try {
+                if (isCategory) {
+                    result = Api.removeUserFromCategory(Session.getInstance().getUser(), selectedForeignId);
+                } else {
+                    result = Api.removeUserFromSubcategory(Session.getInstance().getUser(), selectedForeignId);
+                }
+            } catch (JSONException e) {
+                Utils.logError(clazz, "JSONException: " + e.toString());
+            } catch (IOException e) {
+                Utils.logError(clazz, "IOException: " + e.toString());
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            if (result) {
+                Utils.showMessage(clazz, "User successfully removed from the subcategory");
+                if (!isCategory) {
+                    mainMenu.findItem(R.id.menu_join).setVisible(true);
+                    mainMenu.findItem(R.id.menu_leave).setVisible(false);
+                }
+                userAdapter.removeItem(Session.getInstance().getUser());
+                userAdapter.notifyDataSetChanged();
+            } else {
+                Utils.afterError(clazz, "Can't remove user from subcategory");
             }
         }
     }

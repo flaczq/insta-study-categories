@@ -1,5 +1,7 @@
 package abc.flaq.apps.instastudycategories.pojo;
 
+import android.support.annotation.NonNull;
+
 import java.util.List;
 
 public class Category extends EveObject implements Comparable<Category> {
@@ -76,7 +78,7 @@ public class Category extends EveObject implements Comparable<Category> {
     }
 
     @Override
-    public int compareTo(Category category) {
+    public int compareTo(@NonNull Category category) {
         return (category.getUsersSize() - this.usersSize);
     }
 

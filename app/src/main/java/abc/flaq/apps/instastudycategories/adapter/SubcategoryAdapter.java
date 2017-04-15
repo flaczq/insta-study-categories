@@ -56,6 +56,21 @@ public class SubcategoryAdapter extends BaseAdapter {
         subcategories.add(subcategory);
     }
 
+    private Integer findItemById(Subcategory subcategory) {
+        for (int i = 0; i < subcategories.size(); i++) {
+            if (subcategory.getId().equals(subcategories.get(i).getId())) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    public void updateItem(Subcategory subcategory) {
+        int index = findItemById(subcategory);
+        if (index >= 0) {
+            subcategories.add(index, subcategory);
+        }
+    }
+
     @Override
     public View getView(int position, View view, ViewGroup viewGroup) {
         final Subcategory subcategory = subcategories.get(position);

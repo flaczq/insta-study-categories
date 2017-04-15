@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import abc.flaq.apps.instastudycategories.BuildConfig;
+
 import static abc.flaq.apps.instastudycategories.utils.Constants.GRID_MAX_HEIGHT;
 
 public class Utils {
@@ -20,6 +22,7 @@ public class Utils {
     public static final int LOG_INFO = 2;
 
     public static void logDebug(Object activity, String message) {
+        // TODO: save to database
         log(LOG_DEBUG, activity, message);
     }
     public static void logError(Object activity, String message) {
@@ -27,8 +30,9 @@ public class Utils {
         log(LOG_ERROR, activity, message);
     }
     public static void logInfo(Object activity, String message) {
-        // TODO: disable before release
-        log(LOG_INFO, activity, message);
+        if (BuildConfig.IS_DEBUG) {
+            log(LOG_INFO, activity, message);
+        }
     }
     private static void log(int type, Object activity, String message) {
         String className = (activity instanceof String ?
@@ -61,8 +65,11 @@ public class Utils {
         return !isEmpty(element);
     }
 
-    public static String createForeignId(String id) {
+    public static String doForeignId(String id) {
         return "fq" + id;
+    }
+    public static String undoForeignId(String foreignId) {
+        return foreignId.replace("fq", "");
     }
 
     public static Boolean isIntentAvailable(Context context, Intent intent) {
@@ -77,14 +84,15 @@ public class Utils {
     }
 
     public static void setGridDesign(int position, int size, int maxSize, RelativeLayout layout) {
+        // FIXME: sort elements and set different sizes
         int minSize = 10;
 
         if (size >= maxSize) {
             layout.setMinimumHeight(GRID_MAX_HEIGHT);
         } else if (size > minSize) {
-            layout.setMinimumHeight(GRID_MAX_HEIGHT - 30);
+            layout.setMinimumHeight(GRID_MAX_HEIGHT - 50);
         } else {
-            layout.setMinimumHeight(GRID_MAX_HEIGHT - 60);
+            layout.setMinimumHeight(GRID_MAX_HEIGHT - 100);
         }
 
         // Ten colors max
@@ -95,7 +103,25 @@ public class Utils {
             case 1:
                 layout.setBackgroundColor(Color.parseColor("#968089"));
                 break;
-            case 2:
+            case 3:
+                layout.setBackgroundColor(Color.parseColor("#B176B1"));
+                break;
+            case 4:
+                layout.setBackgroundColor(Color.parseColor("#968089"));
+                break;
+            case 5:
+                layout.setBackgroundColor(Color.parseColor("#B176B1"));
+                break;
+            case 6:
+                layout.setBackgroundColor(Color.parseColor("#968089"));
+                break;
+            case 7:
+                layout.setBackgroundColor(Color.parseColor("#B176B1"));
+                break;
+            case 8:
+                layout.setBackgroundColor(Color.parseColor("#968089"));
+                break;
+            case 9:
             default:
                 layout.setBackgroundColor(Color.parseColor("#F19C7F"));
                 break;

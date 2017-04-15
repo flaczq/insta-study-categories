@@ -38,10 +38,10 @@ import static abc.flaq.apps.instastudycategories.utils.Constants.SETTINGS_ACCESS
 public class MenuActivity extends AppCompatActivity {
 
     private final Activity clazz = this;
-
     private Dialog instagramDialog;
     private Menu mainMenu;
     private String accessToken;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +69,9 @@ public class MenuActivity extends AppCompatActivity {
                 // not available from here
                 break;
             case R.id.menu_join:
+                // not available from here
+                break;
+            case R.id.menu_leave:
                 // not available from here
                 break;
             case R.id.menu_info:
@@ -140,10 +143,11 @@ public class MenuActivity extends AppCompatActivity {
             invalidateOptionsMenu();
         } else {
             Boolean isAuthenticated = Utils.isNotEmpty(Session.getInstance().getUser());
-            mainMenu.findItem(R.id.menu_login).setVisible(!isAuthenticated);
             mainMenu.findItem(R.id.menu_add).setVisible(isAuthenticated);
             mainMenu.findItem(R.id.menu_join).setVisible(isAuthenticated);
+            mainMenu.findItem(R.id.menu_leave).setVisible(isAuthenticated);
             mainMenu.findItem(R.id.menu_info).setVisible(isAuthenticated);
+            mainMenu.findItem(R.id.menu_login).setVisible(!isAuthenticated);
         }
     }
 
@@ -161,6 +165,7 @@ public class MenuActivity extends AppCompatActivity {
     public void resetAuthentication() {
         Utils.afterError(clazz, "Resetting authentication");
         Session.getInstance().setUser(null);
+        user = null;
         accessToken = null;
         handleLogin();
         invalidateOptionsMenu();
@@ -208,7 +213,6 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     public class ProcessGetUser extends AsyncTask<Void, Void, InstagramUser> {
-        private User user;
         private Boolean isNewUser = false;
 
         @Override
@@ -249,10 +253,10 @@ public class MenuActivity extends AppCompatActivity {
                     Utils.afterError(clazz, result.toString());
                 } else {
                     Utils.logInfo(clazz, "Collected instagram user data: " + result.toString());
-                    Session.getInstance().setUser(user);
                     if (isNewUser) {
                         new ProcessAddUser().execute();
                     } else {
+                        Session.getInstance().setUser(user);
                         handleLogin();
                         invalidateOptionsMenu();
                     }
@@ -271,7 +275,7 @@ public class MenuActivity extends AppCompatActivity {
         protected Boolean doInBackground(Void... params) {
             Boolean result = Boolean.FALSE;
             try {
-                result = Api.addUser(Session.getInstance().getUser());
+                result = Api.addUser(user);
             } catch (JSONException e) {
                 Utils.logError(clazz, "JSONException: " + e.toString());
             } catch (IOException e) {
@@ -284,7 +288,8 @@ public class MenuActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
             if (result) {
-                Utils.showMessage(clazz, "Logged in");
+                Utils.showMessage(clazz, "User logged in");
+                Session.getInstance().setUser(user);
                 saveAccessToken(accessToken);
                 handleLogin();
                 invalidateOptionsMenu();
@@ -292,18 +297,17 @@ public class MenuActivity extends AppCompatActivity {
         }
     }
 
-    private class ProcessDeleteUser extends AsyncTask<User, Void, Boolean> {
+    private class ProcessDeleteUser extends AsyncTask<Void, Void, Boolean> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
         }
 
         @Override
-        protected Boolean doInBackground(User... params) {
-            User user = params[0];
+        protected Boolean doInBackground(Void... params) {
             Boolean result = Boolean.FALSE;
             try {
-                result = Api.deleteUser(user);
+                result = Api.removeUser(user);
             } catch (IOException e) {
                 Utils.logError(clazz, "IOException: " + e.toString());
             } catch (JSONException e) {
@@ -315,9 +319,11 @@ public class MenuActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
-            Utils.logDebug(clazz, "User deleted: " + result);
-            resetAuthentication();
-            removeAccessToken();
+            if (result) {
+                Utils.logDebug(clazz, "User deleted");
+                resetAuthentication();
+                removeAccessToken();
+            }
         }
     }
 

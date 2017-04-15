@@ -56,6 +56,21 @@ public class UserAdapter extends BaseAdapter {
         users.add(0, user);
     }
 
+    private Integer findItemById(User user) {
+        for (int i = 0; i < users.size(); i++) {
+            if (user.getId().equals(users.get(i).getId())) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    public void removeItem(User user) {
+        int index = findItemById(user);
+        if (index >= 0) {
+            users.remove(index);
+        }
+    }
+
     @Override
     public View getView(int position, View view, ViewGroup viewGroup) {
         final User user = users.get(position);

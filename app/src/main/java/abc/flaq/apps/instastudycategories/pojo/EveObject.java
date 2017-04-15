@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
 
+import abc.flaq.apps.instastudycategories.utils.Utils;
+
 import static abc.flaq.apps.instastudycategories.utils.Constants.DATE_TIMEZONE;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -59,7 +61,10 @@ public class EveObject {
     }
 
     public void update(EveObject object) {
+        id = object.getId();
+        foreignId = Utils.doForeignId(object.getId());
         etag = object.getEtag();
+        created = object.getCreated();
         updated = object.getUpdated();
     }
 
