@@ -78,9 +78,8 @@ public class CategoryActivity extends MenuActivity {
             return true;
         }
         switch (item.getItemId()) {
-            case R.id.menu_add:
-                Utils.showMessage(clazz, "adding");
-                break;
+            case R.id.menu_suggest:
+                return super.onOptionsItemSelected(item);
             case R.id.menu_join:
                 // not available from here
                 break;

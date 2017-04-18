@@ -2,8 +2,10 @@ package abc.flaq.apps.instastudycategories.activity;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Spinner;
 
 import com.crystal.crystalpreloaders.widgets.CrystalPreloader;
 
@@ -26,11 +29,13 @@ import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramAccessToken;
 import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramUser;
 import abc.flaq.apps.instastudycategories.utils.Api;
 import abc.flaq.apps.instastudycategories.utils.Constants;
-import abc.flaq.apps.instastudycategories.utils.Utils;
 import abc.flaq.apps.instastudycategories.utils.InstagramApi;
-import abc.flaq.apps.instastudycategories.utils.InstagramUtils;
+import abc.flaq.apps.instastudycategories.utils.Convertion;
 import abc.flaq.apps.instastudycategories.utils.Session;
+import abc.flaq.apps.instastudycategories.utils.Utils;
 
+import static abc.flaq.apps.instastudycategories.utils.Constants.ACTIVITY_CATEGORY;
+import static abc.flaq.apps.instastudycategories.utils.Constants.ACTIVITY_SUBCATEGORY;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_ENDPOINT_USER_SELF;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_REDIRECT_URL;
 import static abc.flaq.apps.instastudycategories.utils.Constants.SETTINGS_ACCESS_TOKEN;
@@ -65,8 +70,8 @@ public class MenuActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_add:
-                // not available from here
+            case R.id.menu_suggest:
+                createSuggestionDialog();
                 break;
             case R.id.menu_join:
                 // not available from here
@@ -137,13 +142,45 @@ public class MenuActivity extends AppCompatActivity {
         instagramDialog.show();
     }
 
+    private void createSuggestionDialog() {
+        final AlertDialog.Builder suggestionDialogBuilder = new AlertDialog.Builder(clazz);
+        suggestionDialogBuilder.setView(R.layout.suggestion_dialog);
+        suggestionDialogBuilder.setTitle("Zaproponuj nową kategorię, podkategorię lub pomysł.");
+        suggestionDialogBuilder.setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int position) {
+                dialogInterface.cancel();
+            }
+        });
+        suggestionDialogBuilder.setPositiveButton("Zaproponuj", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int position) {
+                // i -> Api.addCategory(category) or Api.addSubcategory(subcategory);
+                Utils.showMessage(clazz, "Zaproponowano");
+                dialogInterface.dismiss();
+            }
+        });
+        AlertDialog suggestionDialog = suggestionDialogBuilder.create();
+        suggestionDialog.show();
+
+        Spinner suggestionTypes = (Spinner) suggestionDialog.findViewById(R.id.suggestion_dialog_types);
+        String name = clazz.getClass().getSimpleName();
+        if (ACTIVITY_CATEGORY.equals(name)) {
+            suggestionTypes.setSelection(0);
+        } else if (ACTIVITY_SUBCATEGORY.equals(name)) {
+            suggestionTypes.setSelection(1);
+        } else {
+            suggestionTypes.setSelection(2);
+        }
+    }
+
     private void handleLogin() {
         if (Utils.isEmpty(mainMenu)) {
             // Call onCreateOptionsMenu
             invalidateOptionsMenu();
         } else {
             Boolean isAuthenticated = Utils.isNotEmpty(Session.getInstance().getUser());
-            mainMenu.findItem(R.id.menu_add).setVisible(isAuthenticated);
+            mainMenu.findItem(R.id.menu_suggest).setVisible(isAuthenticated);
             mainMenu.findItem(R.id.menu_join).setVisible(isAuthenticated);
             mainMenu.findItem(R.id.menu_leave).setVisible(isAuthenticated);
             mainMenu.findItem(R.id.menu_info).setVisible(isAuthenticated);
@@ -230,7 +267,7 @@ public class MenuActivity extends AppCompatActivity {
                     user = Api.getUserByInstagramId(instagramUser.getData().getId());
                     if (Utils.isEmpty(user)) {
                         isNewUser = true;
-                        user = InstagramUtils.instagramUserToUser(instagramUser.getData());
+                        user = Convertion.instagramUserToUser(instagramUser.getData());
                     } else {
                         Utils.logInfo(clazz, "User already exists: " + user);
                     }

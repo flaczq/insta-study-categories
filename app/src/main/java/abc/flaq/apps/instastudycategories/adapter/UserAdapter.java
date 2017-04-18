@@ -80,19 +80,25 @@ public class UserAdapter extends BaseAdapter {
             view = layoutInflater.inflate(R.layout.activity_user_item, viewGroup, false);
 
             final RelativeLayout layout = (RelativeLayout) view.findViewById(R.id.user_item_layout);
-            final TextView username = (TextView) view.findViewById(R.id.user_item_username);
             final ImageView profilePic = (ImageView) view.findViewById(R.id.user_item_profile_pic);
-            final UserAdapter.ViewHolder viewHolder = new UserAdapter.ViewHolder(layout, username, profilePic);
+            final TextView username = (TextView) view.findViewById(R.id.user_item_username);
+            final TextView followers = (TextView) view.findViewById(R.id.user_item_followers);
+            final TextView joined = (TextView) view.findViewById(R.id.user_item_joined);
+            final UserAdapter.ViewHolder viewHolder = new UserAdapter.ViewHolder(layout, profilePic, username, followers, joined);
             view.setTag(viewHolder);
         }
 
         final ViewHolder viewHolder = (ViewHolder) view.getTag();
-        viewHolder.username.setText(user.getUsername());
-        String profilePicUrl = user.getProfilePicUrl();
-        if (Utils.isEmpty(profilePicUrl)) {
-            viewHolder.profilePic.setImageResource(R.drawable.splash_image);
-        } else {
-            UrlImageViewHelper.setUrlDrawable(viewHolder.profilePic, profilePicUrl, R.drawable.splash_image);
+        if (Utils.isNotEmpty(user)) {
+            String profilePicUrl = user.getProfilePicUrl();
+            if (Utils.isEmpty(profilePicUrl)) {
+                viewHolder.profilePic.setImageResource(R.drawable.placeholder_profile_pic_72);
+            } else {
+                UrlImageViewHelper.setUrlDrawable(viewHolder.profilePic, profilePicUrl, R.drawable.placeholder_profile_pic_72);
+            }
+            viewHolder.username.setText(user.getUsername());
+            viewHolder.followers.append(user.getFollowers().toString());
+            viewHolder.joined.append(Utils.formatDate(user.getCreated()));
         }
 
         return view;
@@ -100,13 +106,17 @@ public class UserAdapter extends BaseAdapter {
 
     private class ViewHolder {
         private final RelativeLayout layout;
-        private final TextView username;
         private final ImageView profilePic;
+        private final TextView username;
+        private final TextView followers;
+        private final TextView joined;
 
-        public ViewHolder(RelativeLayout layout, TextView username, ImageView profilePic) {
+        public ViewHolder(RelativeLayout layout, ImageView profilePic, TextView username, TextView followers, TextView joined) {
             this.layout = layout;
-            this.username = username;
             this.profilePic = profilePic;
+            this.username = username;
+            this.followers = followers;
+            this.joined = joined;
         }
     }
 

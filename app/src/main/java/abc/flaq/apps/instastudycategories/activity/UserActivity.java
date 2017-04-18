@@ -94,7 +94,7 @@ public class UserActivity extends MenuActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         mainMenu = menu;
-        menu.findItem(R.id.menu_add).setVisible(false);
+        menu.findItem(R.id.menu_suggest).setVisible(false);
         menu.findItem(R.id.menu_join).setVisible(!isCategory && !hasJoined);
         menu.findItem(R.id.menu_leave).setVisible(!isCategory && hasJoined);
         return true;
@@ -105,9 +105,8 @@ public class UserActivity extends MenuActivity {
             return true;
         }
         switch (item.getItemId()) {
-            case R.id.menu_add:
-                // not available from here
-                break;
+            case R.id.menu_suggest:
+                return super.onOptionsItemSelected(item);
             case R.id.menu_join:
                 Utils.showMessage(clazz, "joining");
                 new ProcessAddUserToSubcategory().execute();

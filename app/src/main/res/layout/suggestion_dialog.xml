@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- TODO: use this https://github.com/afollestad/material-dialogs -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="200dp"
+    android:layout_height="match_parent"
+    android:layout_centerHorizontal="true"
+    android:gravity="center_vertical" >
+
+    <Spinner android:id="@+id/suggestion_dialog_types"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:entries="@array/suggestion_types"
+        android:textSize="16sp"
+        android:paddingTop="20dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp" />
+    <!-- TODO: w jakiej kategorii jest podkategoria -->
+
+    <EditText android:id="@+id/suggestion_dialog_value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textMultiLine"
+        android:ems="10"
+        android:textSize="16sp"
+        android:hint="Propozycja..."
+        android:layout_marginLeft="38dp"
+        android:layout_marginRight="38dp"
+        android:layout_below="@+id/suggestion_dialog_types" />
+
+</RelativeLayout>

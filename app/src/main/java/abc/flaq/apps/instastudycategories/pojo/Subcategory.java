@@ -2,6 +2,8 @@ package abc.flaq.apps.instastudycategories.pojo;
 
 import java.util.List;
 
+import abc.flaq.apps.instastudycategories.utils.Utils;
+
 public class Subcategory extends EveObject implements Comparable<Subcategory> {
 
     private String name = "";
@@ -78,6 +80,20 @@ public class Subcategory extends EveObject implements Comparable<Subcategory> {
     @Override
     public int compareTo(Subcategory subcategory) {
         return (subcategory.getUsersSize() - this.usersSize);
+    }
+
+    public String toPostJson() {
+        String json = "{";
+        json += "\"foreignId\":\"" + getForeignId() + "\",";
+        json += "\"name\":" + name + "\",";
+        json += "\"usersSize\":" + usersSize + "\",";
+        json += "\"categories\":" + Utils.listToString(categories) + "\",";
+        json += "\"categoriesSize\":" + categoriesSize + "\",";
+        json += "\"hashtags\":" + Utils.listToString(hashtags) + "\",";
+        json += "\"imageUrl: " + imageUrl + "\",";
+        json += "\"active\":" + active;
+        json += "}";
+        return json;
     }
 
 }

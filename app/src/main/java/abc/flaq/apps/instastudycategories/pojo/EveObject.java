@@ -8,7 +8,7 @@ import java.util.Date;
 
 import abc.flaq.apps.instastudycategories.utils.Utils;
 
-import static abc.flaq.apps.instastudycategories.utils.Constants.DATE_TIMEZONE;
+import static abc.flaq.apps.instastudycategories.utils.Constants.DATE_FORMAT;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EveObject {
@@ -19,10 +19,10 @@ public class EveObject {
     @JsonProperty("_etag")
     private String etag;
     @JsonProperty("_created")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIMEZONE, timezone = "Poland")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_FORMAT, timezone = "Poland")
     private Date created;
     @JsonProperty("_updated")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIMEZONE, timezone = "Poland")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_FORMAT, timezone = "Poland")
     private Date updated;
 
     public String getForeignId() {

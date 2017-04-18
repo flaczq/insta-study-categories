@@ -2,8 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/menu_add"
-        android:title="Dodaj"
+    <item android:id="@+id/menu_suggest"
+        android:title="Zaproponuj"
         app:showAsAction="ifRoom" />
     <item android:id="@+id/menu_join"
         android:title="Dołącz"

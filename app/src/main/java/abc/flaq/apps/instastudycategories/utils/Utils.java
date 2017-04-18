@@ -5,14 +5,17 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Color;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import java.util.Date;
 import java.util.List;
 
 import abc.flaq.apps.instastudycategories.BuildConfig;
 
+import static abc.flaq.apps.instastudycategories.utils.Constants.DATE_FORMAT;
 import static abc.flaq.apps.instastudycategories.utils.Constants.GRID_MAX_HEIGHT;
 
 public class Utils {
@@ -63,6 +66,11 @@ public class Utils {
     }
     public static <T> boolean isNotEmpty(T element) {
         return !isEmpty(element);
+    }
+
+    public static String formatDate(Date date) {
+        String formattedDate = DateFormat.format(DATE_FORMAT, date).toString();
+        return formattedDate;
     }
 
     public static String doForeignId(String id) {

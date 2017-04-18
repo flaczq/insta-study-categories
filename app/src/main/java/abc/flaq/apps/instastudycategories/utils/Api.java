@@ -350,6 +350,23 @@ public class Api {
 
         return subcategories;
     }
+    // TODO: ...
+    public static Boolean addSubcategory(String subcategoryName, String categoryName) throws IOException, JSONException {
+        Subcategory subcategory = Convertion.subcategoryFromName(subcategoryName);
+        InputStreamReader is = postRequest(API_SUBCATEGORIES_URL, subcategory.toPostJson());
+        String stream = getStream(is);
+        Response response = mapper.readValue(stream, Response.class);
+        if (response.isError()) {
+            Utils.logError("Api", response.toString());
+            return Boolean.FALSE;
+        }
+
+        subcategory.update(response);
+        correctForeignId(API_SUBCATEGORIES_URL + "/" + subcategory.getId(), subcategory);
+        getAllSubcategories(true);
+
+        return Boolean.TRUE;
+    }
 
     // USERS
     public static List<User> getAllUsers(boolean force) throws IOException, JSONException {

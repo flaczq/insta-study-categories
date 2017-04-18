@@ -1,3 +1,8 @@
 <resources>
     <!--<string name="app_name">InstaStudyCategories</string>-->
+    <string-array name="suggestion_types">
+        <item>Kategoria</item>
+        <item>Podkategoria</item>
+        <item>Pomysł</item>
+    </string-array>
 </resources>
