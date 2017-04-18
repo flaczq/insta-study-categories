@@ -1,5 +1,7 @@
 package abc.flaq.apps.instastudycategories.pojo;
 
+import android.support.annotation.NonNull;
+
 import java.util.List;
 
 import abc.flaq.apps.instastudycategories.utils.Utils;
@@ -123,7 +125,7 @@ public class User extends EveObject implements Comparable<User> {
     }
 
     @Override
-    public int compareTo(User user) {
+    public int compareTo(@NonNull User user) {
         return (user.getFollowers() - followers);
     }
 

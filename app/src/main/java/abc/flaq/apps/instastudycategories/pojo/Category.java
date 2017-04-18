@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
+import abc.flaq.apps.instastudycategories.utils.Utils;
+
 public class Category extends EveObject implements Comparable<Category> {
 
     private String name = "";
@@ -80,6 +82,20 @@ public class Category extends EveObject implements Comparable<Category> {
     @Override
     public int compareTo(@NonNull Category category) {
         return (category.getUsersSize() - this.usersSize);
+    }
+
+    public String toPostJson() {
+        String json = "{";
+        json += "\"foreignId\":\"" + getForeignId() + "\",";
+        json += "\"name\":" + name + "\",";
+        json += "\"usersSize\":" + usersSize + "\",";
+        json += "\"subcategoriesSize\":" + subcategoriesSize + "\",";
+        json += "\"hashtags\":" + Utils.listToString(hashtags) + "\",";
+        json += "\"asSubcategory\":" + asSubcategory + "\",";
+        json += "\"imageUrl: " + imageUrl + "\",";
+        json += "\"active\":" + active;
+        json += "}";
+        return json;
     }
 
 }

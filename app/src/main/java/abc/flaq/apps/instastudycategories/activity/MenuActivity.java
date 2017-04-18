@@ -29,8 +29,8 @@ import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramAccessToken;
 import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramUser;
 import abc.flaq.apps.instastudycategories.utils.Api;
 import abc.flaq.apps.instastudycategories.utils.Constants;
+import abc.flaq.apps.instastudycategories.utils.Factory;
 import abc.flaq.apps.instastudycategories.utils.InstagramApi;
-import abc.flaq.apps.instastudycategories.utils.Convertion;
 import abc.flaq.apps.instastudycategories.utils.Session;
 import abc.flaq.apps.instastudycategories.utils.Utils;
 
@@ -164,13 +164,15 @@ public class MenuActivity extends AppCompatActivity {
         suggestionDialog.show();
 
         Spinner suggestionTypes = (Spinner) suggestionDialog.findViewById(R.id.suggestion_dialog_types);
-        String name = clazz.getClass().getSimpleName();
-        if (ACTIVITY_CATEGORY.equals(name)) {
-            suggestionTypes.setSelection(0);
-        } else if (ACTIVITY_SUBCATEGORY.equals(name)) {
-            suggestionTypes.setSelection(1);
-        } else {
-            suggestionTypes.setSelection(2);
+        if (Utils.isNotEmpty(suggestionTypes)) {
+            String name = clazz.getClass().getSimpleName();
+            if (ACTIVITY_CATEGORY.equals(name)) {
+                suggestionTypes.setSelection(0);
+            } else if (ACTIVITY_SUBCATEGORY.equals(name)) {
+                suggestionTypes.setSelection(1);
+            } else {
+                suggestionTypes.setSelection(2);
+            }
         }
     }
 
@@ -267,7 +269,7 @@ public class MenuActivity extends AppCompatActivity {
                     user = Api.getUserByInstagramId(instagramUser.getData().getId());
                     if (Utils.isEmpty(user)) {
                         isNewUser = true;
-                        user = Convertion.instagramUserToUser(instagramUser.getData());
+                        user = Factory.userFromInstagramUser(instagramUser.getData());
                     } else {
                         Utils.logInfo(clazz, "User already exists: " + user);
                     }

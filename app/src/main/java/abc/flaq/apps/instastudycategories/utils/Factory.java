@@ -14,9 +14,9 @@ import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramUser;
 
 import static abc.flaq.apps.instastudycategories.utils.Constants.API_ALL_CATEGORY_NAME;
 
-public class Convertion {
+public class Factory {
 
-    public static User instagramUserToUser(InstagramUser.InstagramUserData instagramUser) throws IOException, JSONException {
+    public static User userFromInstagramUser(InstagramUser.InstagramUserData instagramUser) throws IOException, JSONException {
         User user = new User();
         user.setForeignId(Utils.doForeignId(instagramUser.getId()));    // Update with _id after creating
         user.setInstagramId(instagramUser.getId());
@@ -40,12 +40,34 @@ public class Convertion {
         return user;
     }
 
-    public static Subcategory subcategoryFromName(String name) {
+    public static Category categoryFromName(String categoryName) throws IOException, JSONException {
+        Category category = new Category();
+        category.setForeignId(Utils.doForeignId(categoryName + new Date()));    // Update with _id after creating
+        category.setName(categoryName);
+        category.setUsersSize(1); // FIXME: call addUserToCategory() instead
+        category.setSubcategoriesSize(0);
+        category.setHashtags(new ArrayList<String>());
+        category.setAsSubcategory(Boolean.FALSE);
+        category.setImageUrl("");
+        category.setActive(Boolean.FALSE);
+        return category;
+    }
+
+    public static Subcategory subcategoryFromName(String subcategoryName, String categoryName) throws IOException, JSONException {
         Subcategory subcategory = new Subcategory();
-        subcategory.setForeignId(Utils.doForeignId(name + new Date()));    // Update with _id after creating
+        subcategory.setForeignId(Utils.doForeignId(subcategoryName + new Date()));    // Update with _id after creating
+        subcategory.setName(subcategoryName);
+        subcategory.setUsersSize(1); // FIXME: call addUserToSubcategory() instead
+        List<String> categories = new ArrayList<>();
+        Category parentCategory = Api.getCategoryByName(categoryName);
+        if (Utils.isNotEmpty(parentCategory)) {
+            categories.add(parentCategory.getForeignId());
+        }
+        subcategory.setCategories(categories);
         subcategory.setCategoriesSize(1);
+        subcategory.setHashtags(new ArrayList<String>());
+        subcategory.setImageUrl("");
         subcategory.setActive(Boolean.FALSE);
-        // TODO: ...
         return subcategory;
     }
 
