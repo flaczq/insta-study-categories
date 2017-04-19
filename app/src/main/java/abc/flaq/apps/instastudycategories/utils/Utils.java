@@ -20,9 +20,9 @@ import static abc.flaq.apps.instastudycategories.utils.Constants.GRID_MAX_HEIGHT
 
 public class Utils {
 
-    public static final int LOG_DEBUG = 0;
-    public static final int LOG_ERROR = 1;
-    public static final int LOG_INFO = 2;
+    private static final int LOG_DEBUG = 0;
+    private static final int LOG_ERROR = 1;
+    private static final int LOG_INFO = 2;
 
     public static void logDebug(Object activity, String message) {
         // TODO: save to database

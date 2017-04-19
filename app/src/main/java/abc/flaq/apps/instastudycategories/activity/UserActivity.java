@@ -106,7 +106,8 @@ public class UserActivity extends MenuActivity {
         }
         switch (item.getItemId()) {
             case R.id.menu_suggest:
-                return super.onOptionsItemSelected(item);
+                // not available from here
+                break;
             case R.id.menu_join:
                 Utils.showMessage(clazz, "joining");
                 new ProcessAddUserToSubcategory().execute();

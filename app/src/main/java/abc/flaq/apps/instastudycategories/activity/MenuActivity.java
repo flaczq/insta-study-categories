@@ -2,10 +2,8 @@ package abc.flaq.apps.instastudycategories.activity;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Spinner;
 
 import com.crystal.crystalpreloaders.widgets.CrystalPreloader;
 
@@ -34,8 +31,6 @@ import abc.flaq.apps.instastudycategories.utils.InstagramApi;
 import abc.flaq.apps.instastudycategories.utils.Session;
 import abc.flaq.apps.instastudycategories.utils.Utils;
 
-import static abc.flaq.apps.instastudycategories.utils.Constants.ACTIVITY_CATEGORY;
-import static abc.flaq.apps.instastudycategories.utils.Constants.ACTIVITY_SUBCATEGORY;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_ENDPOINT_USER_SELF;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_REDIRECT_URL;
 import static abc.flaq.apps.instastudycategories.utils.Constants.SETTINGS_ACCESS_TOKEN;
@@ -71,7 +66,7 @@ public class MenuActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_suggest:
-                createSuggestionDialog();
+                // not available from here
                 break;
             case R.id.menu_join:
                 // not available from here
@@ -140,40 +135,6 @@ public class MenuActivity extends AppCompatActivity {
         instagramDialog.setContentView(webView);
         instagramDialog.addContentView(preloader, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         instagramDialog.show();
-    }
-
-    private void createSuggestionDialog() {
-        final AlertDialog.Builder suggestionDialogBuilder = new AlertDialog.Builder(clazz);
-        suggestionDialogBuilder.setView(R.layout.suggestion_dialog);
-        suggestionDialogBuilder.setTitle("Zaproponuj nową kategorię, podkategorię lub pomysł.");
-        suggestionDialogBuilder.setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int position) {
-                dialogInterface.cancel();
-            }
-        });
-        suggestionDialogBuilder.setPositiveButton("Zaproponuj", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int position) {
-                // i -> Api.addCategory(category) or Api.addSubcategory(subcategory);
-                Utils.showMessage(clazz, "Zaproponowano");
-                dialogInterface.dismiss();
-            }
-        });
-        AlertDialog suggestionDialog = suggestionDialogBuilder.create();
-        suggestionDialog.show();
-
-        Spinner suggestionTypes = (Spinner) suggestionDialog.findViewById(R.id.suggestion_dialog_types);
-        if (Utils.isNotEmpty(suggestionTypes)) {
-            String name = clazz.getClass().getSimpleName();
-            if (ACTIVITY_CATEGORY.equals(name)) {
-                suggestionTypes.setSelection(0);
-            } else if (ACTIVITY_SUBCATEGORY.equals(name)) {
-                suggestionTypes.setSelection(1);
-            } else {
-                suggestionTypes.setSelection(2);
-            }
-        }
     }
 
     private void handleLogin() {

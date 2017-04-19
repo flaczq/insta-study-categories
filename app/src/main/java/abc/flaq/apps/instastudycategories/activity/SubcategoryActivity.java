@@ -4,11 +4,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.crystal.crystalpreloaders.widgets.CrystalPreloader;
 import com.etsy.android.grid.StaggeredGridView;
 
@@ -85,7 +89,8 @@ public class SubcategoryActivity extends MenuActivity {
         }
         switch (item.getItemId()) {
             case R.id.menu_suggest:
-                return super.onOptionsItemSelected(item);
+                suggestSubcategoryDialog();
+                break;
             case R.id.menu_join:
                 // not available from here
                 break;
@@ -110,6 +115,38 @@ public class SubcategoryActivity extends MenuActivity {
             subcategoryAdapter = new SubcategoryAdapter(clazz, Session.getInstance().getSubcategories(categoryForeignId));
             gridView.setAdapter(subcategoryAdapter);
         }
+    }
+
+    private void suggestSubcategoryDialog() {
+        new MaterialDialog.Builder(clazz)
+                .title("Nowa podkategoria")
+                .content("Zaproponuj nową podkategorię")
+                .positiveText("Zaproponuj")
+                .negativeText("Anuluj")
+                .inputType(InputType.TYPE_CLASS_TEXT)
+                .inputRangeRes(1, -1, R.color.colorError)
+                .input("Nowa podkategoria...", null, new MaterialDialog.InputCallback() {
+                    @Override
+                    public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
+                        // nothing
+                    }
+                })
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        if (Utils.isNotEmpty(dialog.getInputEditText())) {
+                            Utils.showMessage(clazz, "Zaproponowano " + dialog.getInputEditText().getText());
+                            // i -> Api.addSubcategory(subcategory);
+                        }
+                        dialog.dismiss();
+                    }
+                })
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        dialog.dismiss();
+                    }
+                }).show();
     }
 
     private class ProcessSubcategories extends AsyncTask<Void, Void, List<Subcategory>> {
