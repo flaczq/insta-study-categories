@@ -83,7 +83,7 @@ public class CategoryActivity extends MenuActivity {
         }
         switch (item.getItemId()) {
             case R.id.menu_suggest:
-                suggestCategoryDialog();
+                showSuggestCategoryDialog();
                 break;
             case R.id.menu_join:
                 // not available from here
@@ -111,15 +111,16 @@ public class CategoryActivity extends MenuActivity {
         }
     }
 
-    private void suggestCategoryDialog() {
+    private void showSuggestCategoryDialog() {
         new MaterialDialog.Builder(clazz)
                 .title("Nowa kategoria")
                 .content("Zaproponuj nową kategorię")
                 .positiveText("Zaproponuj")
                 .negativeText("Anuluj")
+                .titleColorRes(R.color.colorPrimaryDark)
                 .inputType(InputType.TYPE_CLASS_TEXT)
                 .inputRangeRes(1, -1, R.color.colorError)
-                .input("Nowa kategoria...", null, new MaterialDialog.InputCallback() {
+                .input("Wpisz nazwę...", null, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                         // nothing
@@ -132,12 +133,6 @@ public class CategoryActivity extends MenuActivity {
                             Utils.showMessage(clazz, "Zaproponowano " + dialog.getInputEditText().getText());
                             // i -> Api.addCategory(category)
                         }
-                        dialog.dismiss();
-                    }
-                })
-                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         dialog.dismiss();
                     }
                 }).show();

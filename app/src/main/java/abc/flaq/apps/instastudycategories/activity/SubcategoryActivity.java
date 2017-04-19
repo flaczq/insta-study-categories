@@ -89,7 +89,7 @@ public class SubcategoryActivity extends MenuActivity {
         }
         switch (item.getItemId()) {
             case R.id.menu_suggest:
-                suggestSubcategoryDialog();
+                showSuggestSubcategoryDialog();
                 break;
             case R.id.menu_join:
                 // not available from here
@@ -117,15 +117,16 @@ public class SubcategoryActivity extends MenuActivity {
         }
     }
 
-    private void suggestSubcategoryDialog() {
+    private void showSuggestSubcategoryDialog() {
         new MaterialDialog.Builder(clazz)
                 .title("Nowa podkategoria")
                 .content("Zaproponuj nową podkategorię")
                 .positiveText("Zaproponuj")
                 .negativeText("Anuluj")
+                .titleColorRes(R.color.colorPrimaryDark)
                 .inputType(InputType.TYPE_CLASS_TEXT)
                 .inputRangeRes(1, -1, R.color.colorError)
-                .input("Nowa podkategoria...", null, new MaterialDialog.InputCallback() {
+                .input("Wpisz nazwę...", null, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                         // nothing
@@ -138,12 +139,6 @@ public class SubcategoryActivity extends MenuActivity {
                             Utils.showMessage(clazz, "Zaproponowano " + dialog.getInputEditText().getText());
                             // i -> Api.addSubcategory(subcategory);
                         }
-                        dialog.dismiss();
-                    }
-                })
-                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         dialog.dismiss();
                     }
                 }).show();

@@ -2,8 +2,11 @@ package abc.flaq.apps.instastudycategories.activity;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,8 +15,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.crystal.crystalpreloaders.widgets.CrystalPreloader;
+import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 
 import org.json.JSONException;
 
@@ -33,6 +40,8 @@ import abc.flaq.apps.instastudycategories.utils.Utils;
 
 import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_ENDPOINT_USER_SELF;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_REDIRECT_URL;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_URL;
+import static abc.flaq.apps.instastudycategories.utils.Constants.PACKAGE_INSTAGRAM;
 import static abc.flaq.apps.instastudycategories.utils.Constants.SETTINGS_ACCESS_TOKEN;
 
 public class MenuActivity extends AppCompatActivity {
@@ -59,7 +68,7 @@ public class MenuActivity extends AppCompatActivity {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.main_menu, menu);
         mainMenu = menu;
-        handleLogin();
+        handleMenuAfterLogin();
         return true;
     }
     @Override
@@ -79,19 +88,20 @@ public class MenuActivity extends AppCompatActivity {
                     Utils.logDebug(clazz, "Instagram user data is empty");
                     new ProcessGetUser().execute();
                 } else {
-                    Utils.showMessage(clazz, Session.getInstance().getUser().toString());
+                    showInfoDialog();
                 }
                 break;
             case R.id.menu_login:
                 if (Utils.isNotEmpty(Session.getInstance().getUser())) {
-                    Utils.logDebug(clazz, "User is not empty, but login icon is available");
-                    handleLogin();
+                    // FIXME: do powtórki - zaloguj się na liście All i wróć do kategorii
+                    Utils.logDebug(clazz, "User is not empty, but login icon is available - that should've happened");
+                    handleMenuAfterLogin();
                     invalidateOptionsMenu();
                 } else {
                     Utils.showMessage(clazz, "Logging in...");
                     try {
                         String instagramAuthUrl = InstagramApi.getAuthUrl(Constants.INSTAGRAM_SCOPES.public_content);
-                        createInstagramDialog(instagramAuthUrl);
+                        showInstagramDialog(instagramAuthUrl);
                     } catch (URISyntaxException e) {
                         e.printStackTrace();
                     }
@@ -103,7 +113,7 @@ public class MenuActivity extends AppCompatActivity {
         return true;
     }
 
-    private void createInstagramDialog(String url) {
+    private void showInstagramDialog(String url) {
         instagramDialog = new Dialog(clazz);
         // FIXME: better preloader
         final CrystalPreloader preloader = new CrystalPreloader(clazz);
@@ -137,7 +147,66 @@ public class MenuActivity extends AppCompatActivity {
         instagramDialog.show();
     }
 
-    private void handleLogin() {
+    private void showInfoDialog() {
+        MaterialDialog.Builder infoDialogBuilder = new MaterialDialog.Builder(clazz)
+                .title(Session.getInstance().getUser().getUsername())
+                // TODO: more...
+                .content(Session.getInstance().getUser().getBio() +
+                        "\nFollowersów: " + Session.getInstance().getUser().getFollowers() +
+                        "\nData dołączenia: " + Utils.formatDate(Session.getInstance().getUser().getCreated()) +
+                        "\nImię: " + Session.getInstance().getUser().getFullname() +
+                        "\nLiczba kategorii: " + (Session.getInstance().getUser().getCategoriesSize() + Session.getInstance().getUser().getSubcategoriesSize() - 1))
+                .positiveText("Wróć")
+                .negativeText("Wyloguj")
+                .neutralText("Usuń konto")
+                .neutralColorRes(R.color.colorGray)
+                .titleColorRes(R.color.colorPrimaryDark)
+                .backgroundColorRes(R.color.colorGreenLight)
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        logOut();
+                        dialog.dismiss();
+                    }
+                })
+                .onNeutral(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        // TODO: Confirmation maybe?
+                        new ProcessDeleteUser().execute();
+                        dialog.dismiss();
+                    }
+                });
+
+        if (Utils.isEmpty(Session.getInstance().getUser().getProfilePicUrl())) {
+            infoDialogBuilder.iconRes(R.drawable.placeholder_profile_pic_72);
+        } else {
+            infoDialogBuilder.icon(Session.getInstance().getUserProfilePic().getDrawable());
+        }
+
+        final MaterialDialog infoDialog = infoDialogBuilder.build();
+        infoDialog.getIconView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Uri instagramUri = Uri.parse(INSTAGRAM_URL + "_u/" + user.getUsername());
+                Intent nextIntent = new Intent(Intent.ACTION_VIEW, instagramUri);
+                nextIntent.setPackage(PACKAGE_INSTAGRAM);
+
+                if (Utils.isIntentAvailable(clazz, nextIntent)) {
+                    Utils.logDebug(clazz, "Instagram intent is available");
+                    clazz.startActivity(nextIntent);
+                } else {
+                    Utils.logDebug(clazz, "Instagram intent is NOT available");
+                    clazz.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + user.getUsername())));
+                }
+
+                infoDialog.dismiss();
+            }
+        });
+        infoDialog.show();
+    }
+
+    private void handleMenuAfterLogin() {
         if (Utils.isEmpty(mainMenu)) {
             // Call onCreateOptionsMenu
             invalidateOptionsMenu();
@@ -162,12 +231,13 @@ public class MenuActivity extends AppCompatActivity {
                 .apply();
     }
 
-    public void resetAuthentication() {
-        Utils.afterError(clazz, "Resetting authentication");
+    public void logOut() {
+        Utils.showMessage(clazz, "Logging out");
         Session.getInstance().setUser(null);
         user = null;
         accessToken = null;
-        handleLogin();
+        removeAccessToken();
+        handleMenuAfterLogin();
         invalidateOptionsMenu();
     }
 
@@ -198,7 +268,7 @@ public class MenuActivity extends AppCompatActivity {
                     Utils.afterError(clazz, result.toString());
                     Session.getInstance().setUser(null);
                     accessToken = null;
-                    handleLogin();
+                    handleMenuAfterLogin();
                     invalidateOptionsMenu();
                 } else {
                     Utils.logInfo(clazz, "Collected instagram access token: " + result.getAccessToken());
@@ -257,7 +327,13 @@ public class MenuActivity extends AppCompatActivity {
                         new ProcessAddUser().execute();
                     } else {
                         Session.getInstance().setUser(user);
-                        handleLogin();
+                        handleMenuAfterLogin();
+
+                        ImageView profilePic = new ImageView(clazz);
+                        UrlImageViewHelper.setUrlDrawable(profilePic, Session.getInstance().getUser().getProfilePicUrl(), R.drawable.placeholder_profile_pic_72);
+                        Session.getInstance().setUserProfilePic(profilePic);
+
+                        saveAccessToken(accessToken);
                         invalidateOptionsMenu();
                     }
                 }
@@ -291,7 +367,12 @@ public class MenuActivity extends AppCompatActivity {
                 Utils.showMessage(clazz, "User logged in");
                 Session.getInstance().setUser(user);
                 saveAccessToken(accessToken);
-                handleLogin();
+
+                ImageView profilePic = new ImageView(clazz);
+                UrlImageViewHelper.setUrlDrawable(profilePic, Session.getInstance().getUser().getProfilePicUrl(), R.drawable.placeholder_profile_pic_72);
+                Session.getInstance().setUserProfilePic(profilePic);
+
+                handleMenuAfterLogin();
                 invalidateOptionsMenu();
             }
         }
@@ -321,8 +402,7 @@ public class MenuActivity extends AppCompatActivity {
             super.onPostExecute(result);
             if (result) {
                 Utils.logDebug(clazz, "User deleted");
-                resetAuthentication();
-                removeAccessToken();
+                logOut();
             }
         }
     }
