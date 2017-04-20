@@ -5,15 +5,18 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Color;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.View;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import java.util.Date;
 import java.util.List;
 
 import abc.flaq.apps.instastudycategories.BuildConfig;
+import abc.flaq.apps.instastudycategories.R;
 
 import static abc.flaq.apps.instastudycategories.utils.Constants.DATE_FORMAT;
 import static abc.flaq.apps.instastudycategories.utils.Constants.GRID_MAX_HEIGHT;
@@ -150,13 +153,32 @@ public class Utils {
         return string;
     }
 
-    public static void afterError(Context context, String message) {
-        Utils.log(LOG_ERROR, context, message);
-        showMessage(context, "General error");
+    public static void showInfo(View view, String message) {
+        Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
     }
-    // FIXME: better - snackbar https://lab.getbase.com/introduction-to-coordinator-layout-on-android/
-    public static void showMessage(Context context, String message) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+    public static void showInfoDismiss(View view, String message) {
+        Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE)
+                .setActionTextColor(ContextCompat.getColor(view.getContext(), R.color.colorAccent))
+                .setAction("OK", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // dismiss
+                    }
+                }).show();
+    }
+    public static void showError(View view, String message) {
+        Utils.log(LOG_ERROR, view.getContext(), message);
+        Snackbar.make(view, "General error", Snackbar.LENGTH_LONG).show();
+    }
+    public static void showErrorDismiss(View view, String message) {
+        Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE)
+                .setActionTextColor(ContextCompat.getColor(view.getContext(), R.color.colorError))
+                .setAction("OK", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // dismiss
+                    }
+                }).show();
     }
 
 }

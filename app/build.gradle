@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 24
+    compileSdkVersion 25
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "abc.flaq.apps.instastudycategories"
         minSdkVersion 15
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode 1
         versionName "0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -61,11 +61,12 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:24.0.0'
+    compile 'com.android.support:appcompat-v7:25.3.1'
     androidTestCompile 'junit:junit:4.12'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.0.pr1'
     compile 'com.etsy.android.grid:library:1.0.5'
     compile 'com.crystal:crystalpreloaders:1.0.0'
     compile 'com.koushikdutta.urlimageviewhelper:urlimageviewhelper:1.0.4'
     compile 'com.afollestad.material-dialogs:core:0.9.4.3'
+    compile 'com.android.support:design:25.3.1'
 }

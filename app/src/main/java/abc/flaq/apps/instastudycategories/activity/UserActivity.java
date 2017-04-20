@@ -33,9 +33,9 @@ import static abc.flaq.apps.instastudycategories.utils.Constants.PACKAGE_INSTAGR
 public class UserActivity extends MenuActivity {
 
     private final Activity clazz = this;
-    private UserAdapter userAdapter;
-    private Intent intent;
+    private View rootView;
     private ListView listView;
+    private UserAdapter userAdapter;
     private CrystalPreloader preloader;
 
     private Menu mainMenu;
@@ -46,11 +46,12 @@ public class UserActivity extends MenuActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        rootView = findViewById(android.R.id.content);
         setContentView(R.layout.activity_user);
         listView = (ListView) findViewById(R.id.user_list);
         preloader = (CrystalPreloader) findViewById(R.id.user_preloader);
 
-        intent = getIntent();
+        Intent intent = getIntent();
         // Check if passed selectedForeignId is from category or subcategory
         String categoryForeignId = intent.getStringExtra(INTENT_CATEGORY_FOREIGN_ID);
         selectedForeignId = null;
@@ -65,7 +66,7 @@ public class UserActivity extends MenuActivity {
         }
 
         if (Utils.isEmpty(selectedForeignId)) {
-            Utils.afterError(clazz, "No category or subcategory id");
+            Utils.showError(rootView, "No category or subcategory id");
             finish();
         } else {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -109,11 +110,12 @@ public class UserActivity extends MenuActivity {
                 // not available from here
                 break;
             case R.id.menu_join:
-                Utils.showMessage(clazz, "joining");
+                Utils.showInfo(rootView, "joining");
+                // TODO: jak się coś wykonuje, to zablokuj możliwość klikania
                 new ProcessAddUserToSubcategory().execute();
                 break;
             case R.id.menu_leave:
-                Utils.showMessage(clazz, "leaving");
+                Utils.showInfo(rootView, "leaving");
                 new ProcessRemoveUserFromSubcategory().execute();
                 break;
             case R.id.menu_info:
@@ -196,7 +198,7 @@ public class UserActivity extends MenuActivity {
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
             if (result) {
-                Utils.showMessage(clazz, "User successfully added to the subcategory");
+                Utils.showInfo(rootView, "User successfully added to the subcategory");
                 if (!isCategory) {
                     mainMenu.findItem(R.id.menu_join).setVisible(false);
                     mainMenu.findItem(R.id.menu_leave).setVisible(true);
@@ -204,7 +206,7 @@ public class UserActivity extends MenuActivity {
                 userAdapter.addItem(Session.getInstance().getUser());
                 userAdapter.notifyDataSetChanged();
             } else {
-                Utils.afterError(clazz, "Can't add user to subcategory");
+                Utils.showError(rootView, "Can't add user to subcategory");
             }
         }
     }
@@ -236,7 +238,7 @@ public class UserActivity extends MenuActivity {
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
             if (result) {
-                Utils.showMessage(clazz, "User successfully removed from the subcategory");
+                Utils.showInfo(rootView, "User successfully removed from the subcategory");
                 if (!isCategory) {
                     mainMenu.findItem(R.id.menu_join).setVisible(true);
                     mainMenu.findItem(R.id.menu_leave).setVisible(false);
@@ -244,7 +246,7 @@ public class UserActivity extends MenuActivity {
                 userAdapter.removeItem(Session.getInstance().getUser());
                 userAdapter.notifyDataSetChanged();
             } else {
-                Utils.afterError(clazz, "Can't remove user from subcategory");
+                Utils.showError(rootView, "Can't remove user from subcategory");
             }
         }
     }

@@ -2,10 +2,10 @@
 <resources>
     <color name="colorPrimary">#337AB7</color>
     <color name="colorPrimaryDark">#286090</color>
-    <color name="colorAccent">#5CB85C</color>
-    <color name="colorAccentAlpha">#805CB85C</color>
-    <color name="colorError">#FF302C</color>
-    <color name="colorErrorAlpha">#80FF302C</color>
+    <color name="colorAccent">#4CAF50</color>
+    <color name="colorAccentAlpha">#804CAF50</color>
+    <color name="colorError">#D32F2F</color>
+    <color name="colorErrorAlpha">#80D32F2F</color>
     <color name="colorGreenLight">#FEFFFA</color>
     <color name="colorGray">#808080</color>
 </resources>

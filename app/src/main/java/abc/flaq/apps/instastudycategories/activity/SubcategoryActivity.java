@@ -35,15 +35,17 @@ import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEG
 public class SubcategoryActivity extends MenuActivity {
 
     private final Activity clazz = this;
-    private SubcategoryAdapter subcategoryAdapter;
+    private View rootView;
     private Intent intent;
     private StaggeredGridView gridView;
+    private SubcategoryAdapter subcategoryAdapter;
     private CrystalPreloader preloader;
     private String categoryForeignId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        rootView = findViewById(android.R.id.content);
         setContentView(R.layout.activity_subcategory);
         gridView = (StaggeredGridView) findViewById(R.id.subcategory_grid);
         preloader = (CrystalPreloader) findViewById(R.id.subcategory_preloader);
@@ -52,7 +54,7 @@ public class SubcategoryActivity extends MenuActivity {
         categoryForeignId = intent.getStringExtra(INTENT_CATEGORY_FOREIGN_ID);
 
         if (Utils.isEmpty(categoryForeignId)) {
-            Utils.afterError(clazz, "categoryForeignId is empty");
+            Utils.showError(rootView, "categoryForeignId is empty");
             finish();
         } else {
             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -136,7 +138,7 @@ public class SubcategoryActivity extends MenuActivity {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         if (Utils.isNotEmpty(dialog.getInputEditText())) {
-                            Utils.showMessage(clazz, "Zaproponowano " + dialog.getInputEditText().getText());
+                            Utils.showInfo(rootView, "Zaproponowano " + dialog.getInputEditText().getText());
                             // i -> Api.addSubcategory(subcategory);
                         }
                         dialog.dismiss();
@@ -171,7 +173,7 @@ public class SubcategoryActivity extends MenuActivity {
         protected void onPostExecute(List<Subcategory> result) {
             super.onPostExecute(result);
             if (result.size() == 0) {
-                Utils.showMessage(clazz, "No subcategories found");
+                Utils.showInfo(rootView, "No subcategories found");
             } else {
                 preloader.setVisibility(View.GONE);
                 subcategoryAdapter = new SubcategoryAdapter(clazz, result);

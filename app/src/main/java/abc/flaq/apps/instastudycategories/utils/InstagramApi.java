@@ -1,6 +1,6 @@
 package abc.flaq.apps.instastudycategories.utils;
 
-import android.content.Context;
+import android.view.View;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -112,10 +112,10 @@ public class InstagramApi {
         return uri.toString();
     }
 
-    public static String getAccessTokenFromUrl(Context context, String url) {
+    public static String getAccessTokenFromUrl(View view, String url) {
         int errorIndex = url.indexOf("?error=");
         if (errorIndex >= 0) {
-            Utils.showMessage(context, url.substring(errorIndex + "?error=".length()));
+            Utils.showInfo(view, url.substring(errorIndex + "?error=".length()));
             return null;
         }
 
@@ -127,10 +127,10 @@ public class InstagramApi {
         return null;
     }
 
-    public static String getCodeFromUrl(Context context, String url) {
+    public static String getCodeFromUrl(View view, String url) {
         int errorIndex = url.indexOf("?error=");
         if (errorIndex >= 0) {
-            Utils.showMessage(context, url.substring(errorIndex + "?error=".length()));
+            Utils.showInfo(view, url.substring(errorIndex + "?error=".length()));
             return null;
         }
 

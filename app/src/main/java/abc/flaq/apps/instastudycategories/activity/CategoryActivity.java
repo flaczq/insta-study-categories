@@ -34,13 +34,15 @@ import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY
 public class CategoryActivity extends MenuActivity {
 
     private final Activity clazz = this;
-    private CategoryAdapter categoryAdapter;
+    private View rootView;
     private StaggeredGridView gridView;
+    private CategoryAdapter categoryAdapter;
     private CrystalPreloader preloader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        rootView = findViewById(android.R.id.content);
         setContentView(R.layout.activity_category);
         gridView = (StaggeredGridView) findViewById(R.id.category_grid);
         preloader = (CrystalPreloader) findViewById(R.id.category_preloader);
@@ -130,7 +132,7 @@ public class CategoryActivity extends MenuActivity {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         if (Utils.isNotEmpty(dialog.getInputEditText())) {
-                            Utils.showMessage(clazz, "Zaproponowano " + dialog.getInputEditText().getText());
+                            Utils.showInfo(rootView, "Zaproponowano " + dialog.getInputEditText().getText());
                             // i -> Api.addCategory(category)
                         }
                         dialog.dismiss();
@@ -165,7 +167,7 @@ public class CategoryActivity extends MenuActivity {
         protected void onPostExecute(List<Category> result) {
             super.onPostExecute(result);
             if (result.size() == 0) {
-                Utils.showMessage(clazz, "No categories found");
+                Utils.showInfo(rootView, "No categories found");
             } else {
                 preloader.setVisibility(View.GONE);
                 categoryAdapter = new CategoryAdapter(clazz, result);
