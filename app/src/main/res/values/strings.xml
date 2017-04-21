@@ -1,8 +1,16 @@
 <resources>
     <!--<string name="app_name">InstaStudyCategories</string>-->
-    <string-array name="suggestion_types">
-        <item>Kategoria</item>
-        <item>Podkategoria</item>
-        <item>Pomysł</item>
-    </string-array>
+    <string name="category_name.all">ALL</string>
+    <string name="category_name.college">CO\nLLE\nGE</string>
+    <string name="category_name.high_school">HIGH\nSCH\nOOL</string>
+    <string name="category_name.work">WO\nRK</string>
+
+    <string name="subcategory_name.hs_biology">BIOLOGY</string>
+    <string name="subcategory_name.hs_chemistry">CHEMISTRY</string>
+    <string name="subcategory_name.hs_maths">MATHS</string>
+    <string name="subcategory_name.hs_it">IT</string>
+    <string name="subcategory_name.c_biology">BIOLOGY</string>
+    <string name="subcategory_name.c_chemistry">CHEMISTRY</string>
+    <string name="subcategory_name.w_doctor">DOCTOR</string>
+    <string name="subcategory_name.w_it">IT</string>
 </resources>

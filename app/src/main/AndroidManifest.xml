@@ -29,7 +29,7 @@
         <activity
             android:name=".activity.UserActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".activity.MenuActivity"></activity>
+        <activity android:name=".activity.SessionActivity"></activity>
     </application>
 
 </manifest>

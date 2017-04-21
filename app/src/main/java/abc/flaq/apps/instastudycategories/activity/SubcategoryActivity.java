@@ -13,7 +13,6 @@ import android.widget.AdapterView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.crystal.crystalpreloaders.widgets.CrystalPreloader;
 import com.etsy.android.grid.StaggeredGridView;
 
 import org.json.JSONException;
@@ -32,15 +31,16 @@ import abc.flaq.apps.instastudycategories.utils.Utils;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_FOREIGN_ID;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_FOREIGN_ID;
 
-public class SubcategoryActivity extends MenuActivity {
+public class SubcategoryActivity extends SessionActivity {
 
     private final Activity clazz = this;
-    private View rootView;
     private Intent intent;
+    private View rootView;
     private StaggeredGridView gridView;
     private SubcategoryAdapter subcategoryAdapter;
-    private CrystalPreloader preloader;
+
     private String categoryForeignId;
+    private Boolean isSnackbarShown = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,14 +48,12 @@ public class SubcategoryActivity extends MenuActivity {
         rootView = findViewById(android.R.id.content);
         setContentView(R.layout.activity_subcategory);
         gridView = (StaggeredGridView) findViewById(R.id.subcategory_grid);
-        preloader = (CrystalPreloader) findViewById(R.id.subcategory_preloader);
 
         intent = getIntent();
         categoryForeignId = intent.getStringExtra(INTENT_CATEGORY_FOREIGN_ID);
 
         if (Utils.isEmpty(categoryForeignId)) {
             Utils.showError(rootView, "categoryForeignId is empty");
-            finish();
         } else {
             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -80,13 +78,14 @@ public class SubcategoryActivity extends MenuActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
+        handleMenuVisibility(menu);
         menu.findItem(R.id.menu_join).setVisible(false);
         menu.findItem(R.id.menu_leave).setVisible(false);
         return true;
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (preloader.isShown()) {
+        if (isSnackbarShown) {
             return true;
         }
         switch (item.getItemId()) {
@@ -139,7 +138,7 @@ public class SubcategoryActivity extends MenuActivity {
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         if (Utils.isNotEmpty(dialog.getInputEditText())) {
                             Utils.showInfo(rootView, "Zaproponowano " + dialog.getInputEditText().getText());
-                            // i -> Api.addSubcategory(subcategory);
+                            // TODO: Api.addSubcategory(subcategory);
                         }
                         dialog.dismiss();
                     }
@@ -150,7 +149,7 @@ public class SubcategoryActivity extends MenuActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            preloader.setVisibility(View.VISIBLE);
+            isSnackbarShown = true;
         }
 
         @Override
@@ -175,7 +174,7 @@ public class SubcategoryActivity extends MenuActivity {
             if (result.size() == 0) {
                 Utils.showInfo(rootView, "No subcategories found");
             } else {
-                preloader.setVisibility(View.GONE);
+                isSnackbarShown = false;
                 subcategoryAdapter = new SubcategoryAdapter(clazz, result);
                 gridView.setAdapter(subcategoryAdapter);
                 Session.getInstance().setSubcategories(categoryForeignId, result);

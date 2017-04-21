@@ -31,7 +31,7 @@ import abc.flaq.apps.instastudycategories.utils.Utils;
 
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_FOREIGN_ID;
 
-public class CategoryActivity extends MenuActivity {
+public class CategoryActivity extends SessionActivity {
 
     private final Activity clazz = this;
     private View rootView;
@@ -74,6 +74,7 @@ public class CategoryActivity extends MenuActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
+        handleMenuVisibility(menu);
         menu.findItem(R.id.menu_join).setVisible(false);
         menu.findItem(R.id.menu_leave).setVisible(false);
         return true;
@@ -133,7 +134,7 @@ public class CategoryActivity extends MenuActivity {
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         if (Utils.isNotEmpty(dialog.getInputEditText())) {
                             Utils.showInfo(rootView, "Zaproponowano " + dialog.getInputEditText().getText());
-                            // i -> Api.addCategory(category)
+                            // TODO: Api.addCategory(category)
                         }
                         dialog.dismiss();
                     }

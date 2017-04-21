@@ -12,8 +12,9 @@ import java.util.List;
 
 import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.pojo.Category;
-import abc.flaq.apps.instastudycategories.pojo.User;
 import abc.flaq.apps.instastudycategories.utils.Utils;
+
+import static abc.flaq.apps.instastudycategories.utils.Constants.STRINGS_CATEGORY_PREFIX;
 
 public class CategoryAdapter extends BaseAdapter {
 
@@ -25,7 +26,7 @@ public class CategoryAdapter extends BaseAdapter {
         this.context = context;
         this.categories = categories;
         // Assuming categories are sorted by size desc
-        this.maxSize = (categories.size() > 0 ? categories.get(0).getUsersSize() : 10);
+        this.maxSize = (categories.size() > 0 ? categories.get(0).getUsersSize() : -1);
     }
 
     @Override
@@ -66,25 +67,26 @@ public class CategoryAdapter extends BaseAdapter {
             view = layoutInflater.inflate(R.layout.activity_category_item, viewGroup, false);
 
             final RelativeLayout layout = (RelativeLayout) view.findViewById(R.id.category_item_layout);
-            final TextView textView = (TextView) view.findViewById(R.id.category_item_name);
-            final ViewHolder viewHolder = new ViewHolder(layout, textView);
+            final TextView name = (TextView) view.findViewById(R.id.category_item_name);
+            final ViewHolder viewHolder = new ViewHolder(layout, name);
             view.setTag(viewHolder);
         }
 
         final ViewHolder viewHolder = (ViewHolder) view.getTag();
         Utils.setGridDesign(position, category.getUsersSize(), maxSize, viewHolder.layout);
-        viewHolder.textView.setText(category.getName());
+        String categoryName = Utils.getStringByName(context, STRINGS_CATEGORY_PREFIX + category.getName());
+        viewHolder.name.setText(categoryName);
 
         return view;
     }
 
     private class ViewHolder {
         private final RelativeLayout layout;
-        private final TextView textView;
+        private final TextView name;
 
-        public ViewHolder(RelativeLayout layout, TextView textView) {
+        private ViewHolder(RelativeLayout layout, TextView name) {
             this.layout = layout;
-            this.textView = textView;
+            this.name = name;
         }
     }
 

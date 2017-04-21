@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">\"InstaStudyCategories-dev\"</string>
+    <string name="category_name.all">WSZ\nYS\nCY</string>
+    <string name="category_name.college">STU\nDIA</string>
+    <string name="category_name.high_school">LI\nCE\nUM</string>
+    <string name="category_name.work">PRA\nCA</string>
+
+    <string name="subcategory_name.hs_biology">BIOLOGIA</string>
+    <string name="subcategory_name.hs_chemistry">CHEMIA</string>
+    <string name="subcategory_name.hs_maths">MATMA</string>
+    <string name="subcategory_name.hs_it">INFORMATYKA</string>
+    <string name="subcategory_name.c_biology">BIOLOGIA</string>
+    <string name="subcategory_name.c_chemistry">CHEMIA</string>
+    <string name="subcategory_name.w_doctor">LEKARZ</string>
+    <string name="subcategory_name.w_it">INFORMATYKA</string>
+</resources>

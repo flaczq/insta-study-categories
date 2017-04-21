@@ -19,8 +19,8 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:visibility="invisible"
-        app:crs_pl_size="extra_large"
-        app:crs_pl_fg_color="@color/colorPrimary"
-        app:crs_pl_style="expandable_balls" />
+        app:crs_pl_size="large"
+        app:crs_pl_fg_color="@color/colorPreloader"
+        app:crs_pl_style="ball_pulse" />
 
 </RelativeLayout>

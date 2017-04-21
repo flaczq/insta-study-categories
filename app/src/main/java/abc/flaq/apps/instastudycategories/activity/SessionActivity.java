@@ -44,7 +44,7 @@ import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_URL;
 import static abc.flaq.apps.instastudycategories.utils.Constants.PACKAGE_INSTAGRAM;
 import static abc.flaq.apps.instastudycategories.utils.Constants.SETTINGS_ACCESS_TOKEN;
 
-public class MenuActivity extends AppCompatActivity {
+public class SessionActivity extends AppCompatActivity {
 
     private final Activity clazz = this;
     private View rootView;
@@ -52,6 +52,10 @@ public class MenuActivity extends AppCompatActivity {
     private Menu mainMenu;
     private String accessToken;
     private User user;
+
+    public Menu getMainMenu() {
+        return mainMenu;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,18 +67,14 @@ public class MenuActivity extends AppCompatActivity {
             if (Utils.isNotEmpty(accessToken)) {
                 new ProcessGetUser().execute();
             }
-        } else {
-            user = Session.getInstance().getUser();
         }
     }
 
-    // FIXME: przenieść do activity, a mainmenu do session
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.main_menu, menu);
         mainMenu = menu;
-        handleMenuVisibility();
         return true;
     }
     @Override
@@ -101,7 +101,7 @@ public class MenuActivity extends AppCompatActivity {
                 if (Utils.isNotEmpty(Session.getInstance().getUser())) {
                     // FIXME: do powtórki - zaloguj się na liście All i wróć do kategorii
                     Utils.logDebug(clazz, "User is not empty, but login icon is available - that should've happened");
-                    handleMenuVisibility();
+                    handleMenuVisibility(mainMenu);
                     invalidateOptionsMenu();
                 } else {
                     Utils.showInfo(rootView, "Logging in...");
@@ -165,9 +165,9 @@ public class MenuActivity extends AppCompatActivity {
                 .positiveText("Wróć")
                 .negativeText("Wyloguj")
                 .neutralText("Usuń konto")
-                .neutralColorRes(R.color.colorGray)
+                .neutralColorRes(R.color.colorAdditionalAction)
                 .titleColorRes(R.color.colorPrimaryDark)
-                .backgroundColorRes(R.color.colorGreenLight)
+                .backgroundColorRes(R.color.colorBackgroundLight)
                 .onNegative(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
@@ -212,17 +212,14 @@ public class MenuActivity extends AppCompatActivity {
         infoDialog.show();
     }
 
-    private void handleMenuVisibility() {
-        if (Utils.isEmpty(mainMenu)) {
-            // Call onCreateOptionsMenu
-            invalidateOptionsMenu();
-        } else {
+    public void handleMenuVisibility(Menu menu) {
+        if (Utils.isNotEmpty(menu)) {
             Boolean isAuthenticated = Utils.isNotEmpty(Session.getInstance().getUser());
-            mainMenu.findItem(R.id.menu_suggest).setVisible(isAuthenticated);
-            mainMenu.findItem(R.id.menu_join).setVisible(isAuthenticated);
-            mainMenu.findItem(R.id.menu_leave).setVisible(isAuthenticated);
-            mainMenu.findItem(R.id.menu_info).setVisible(isAuthenticated);
-            mainMenu.findItem(R.id.menu_login).setVisible(!isAuthenticated);
+            menu.findItem(R.id.menu_suggest).setVisible(isAuthenticated);
+            menu.findItem(R.id.menu_join).setVisible(isAuthenticated);
+            menu.findItem(R.id.menu_leave).setVisible(isAuthenticated);
+            menu.findItem(R.id.menu_info).setVisible(isAuthenticated);
+            menu.findItem(R.id.menu_login).setVisible(!isAuthenticated);
         }
     }
 
@@ -242,7 +239,7 @@ public class MenuActivity extends AppCompatActivity {
         Session.getInstance().setUser(null);
         user = null;
         accessToken = null;
-        handleMenuVisibility();
+        handleMenuVisibility(mainMenu);
         invalidateOptionsMenu();
     }
 
@@ -273,7 +270,7 @@ public class MenuActivity extends AppCompatActivity {
                     Utils.showError(rootView, result.toString());
                     Session.getInstance().setUser(null);
                     accessToken = null;
-                    handleMenuVisibility();
+                    handleMenuVisibility(mainMenu);
                     invalidateOptionsMenu();
                 } else {
                     Utils.logInfo(clazz, "Collected instagram access token: " + result.getAccessToken());
@@ -333,7 +330,7 @@ public class MenuActivity extends AppCompatActivity {
                     } else {
                         Utils.showInfo(rootView, "Logged in");
                         Session.getInstance().setUser(user);
-                        handleMenuVisibility();
+                        handleMenuVisibility(mainMenu);
 
                         ImageView profilePic = new ImageView(clazz);
                         UrlImageViewHelper.setUrlDrawable(profilePic, Session.getInstance().getUser().getProfilePicUrl(), R.drawable.placeholder_profile_pic_72);
@@ -378,7 +375,7 @@ public class MenuActivity extends AppCompatActivity {
                 UrlImageViewHelper.setUrlDrawable(profilePic, Session.getInstance().getUser().getProfilePicUrl(), R.drawable.placeholder_profile_pic_72);
                 Session.getInstance().setUserProfilePic(profilePic);
 
-                handleMenuVisibility();
+                handleMenuVisibility(mainMenu);
                 invalidateOptionsMenu();
             }
         }

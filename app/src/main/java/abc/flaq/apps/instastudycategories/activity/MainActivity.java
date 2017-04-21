@@ -23,6 +23,10 @@ public class MainActivity extends AppCompatActivity {
                 BuildConfig.VERSION_NAME
         );
 
+        if (BuildConfig.IS_DEBUG) {
+            Utils.setLocale(this, "pl");
+        }
+
         SharedPreferences settings = getSharedPreferences(SETTINGS_NAME, MODE_PRIVATE);
         Session.getInstance().setSettings(settings);
 

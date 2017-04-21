@@ -11,8 +11,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.crystal.crystalpreloaders.widgets.CrystalPreloader;
-
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -30,18 +28,18 @@ import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_FOREIGN_ID;
 import static abc.flaq.apps.instastudycategories.utils.Constants.PACKAGE_INSTAGRAM;
 
-public class UserActivity extends MenuActivity {
+public class UserActivity extends SessionActivity {
 
     private final Activity clazz = this;
     private View rootView;
     private ListView listView;
     private UserAdapter userAdapter;
-    private CrystalPreloader preloader;
 
     private Menu mainMenu;
     private String selectedForeignId;
     private Boolean isCategory = false;
     private Boolean hasJoined = false;
+    private Boolean isSnackbarShown = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +47,6 @@ public class UserActivity extends MenuActivity {
         rootView = findViewById(android.R.id.content);
         setContentView(R.layout.activity_user);
         listView = (ListView) findViewById(R.id.user_list);
-        preloader = (CrystalPreloader) findViewById(R.id.user_preloader);
 
         Intent intent = getIntent();
         // Check if passed selectedForeignId is from category or subcategory
@@ -67,7 +64,6 @@ public class UserActivity extends MenuActivity {
 
         if (Utils.isEmpty(selectedForeignId)) {
             Utils.showError(rootView, "No category or subcategory id");
-            finish();
         } else {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -94,15 +90,16 @@ public class UserActivity extends MenuActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        mainMenu = menu;
+        handleMenuVisibility(menu);
         menu.findItem(R.id.menu_suggest).setVisible(false);
-        menu.findItem(R.id.menu_join).setVisible(!isCategory && !hasJoined);
-        menu.findItem(R.id.menu_leave).setVisible(!isCategory && hasJoined);
+        menu.findItem(R.id.menu_join).setVisible(false);
+        menu.findItem(R.id.menu_leave).setVisible(false);
+        mainMenu = getMainMenu();
         return true;
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (preloader.isShown()) {
+        if (isSnackbarShown) {
             return true;
         }
         switch (item.getItemId()) {
@@ -134,7 +131,7 @@ public class UserActivity extends MenuActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            preloader.setVisibility(View.VISIBLE);
+            isSnackbarShown = true;
         }
 
         @Override
@@ -151,7 +148,6 @@ public class UserActivity extends MenuActivity {
                             user.getId().equals(Session.getInstance().getUser().getId())) {
                         hasJoined = (Session.getInstance().getUser().getCategories().contains(selectedForeignId) ||
                                 Session.getInstance().getUser().getSubcategories().contains(selectedForeignId));
-                        invalidateOptionsMenu();
                     }
                 }
             } catch (JSONException e) {
@@ -165,9 +161,13 @@ public class UserActivity extends MenuActivity {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            preloader.setVisibility(View.GONE);
             userAdapter = new UserAdapter(clazz, users);
             listView.setAdapter(userAdapter);
+            if (!isCategory) {
+                mainMenu.findItem(R.id.menu_join).setVisible(!hasJoined);
+                mainMenu.findItem(R.id.menu_leave).setVisible(hasJoined);
+            }
+            isSnackbarShown = false;
         }
     }
 
@@ -175,6 +175,7 @@ public class UserActivity extends MenuActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            isSnackbarShown = true;
         }
 
         @Override
@@ -199,15 +200,16 @@ public class UserActivity extends MenuActivity {
             super.onPostExecute(result);
             if (result) {
                 Utils.showInfo(rootView, "User successfully added to the subcategory");
+                userAdapter.addItem(Session.getInstance().getUser());
+                userAdapter.notifyDataSetChanged();
                 if (!isCategory) {
                     mainMenu.findItem(R.id.menu_join).setVisible(false);
                     mainMenu.findItem(R.id.menu_leave).setVisible(true);
                 }
-                userAdapter.addItem(Session.getInstance().getUser());
-                userAdapter.notifyDataSetChanged();
             } else {
                 Utils.showError(rootView, "Can't add user to subcategory");
             }
+            isSnackbarShown = false;
         }
     }
 
@@ -215,6 +217,7 @@ public class UserActivity extends MenuActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            isSnackbarShown = true;
         }
 
         @Override
@@ -239,15 +242,16 @@ public class UserActivity extends MenuActivity {
             super.onPostExecute(result);
             if (result) {
                 Utils.showInfo(rootView, "User successfully removed from the subcategory");
+                userAdapter.removeItem(Session.getInstance().getUser());
+                userAdapter.notifyDataSetChanged();
                 if (!isCategory) {
                     mainMenu.findItem(R.id.menu_join).setVisible(true);
                     mainMenu.findItem(R.id.menu_leave).setVisible(false);
                 }
-                userAdapter.removeItem(Session.getInstance().getUser());
-                userAdapter.notifyDataSetChanged();
             } else {
                 Utils.showError(rootView, "Can't remove user from subcategory");
             }
+            isSnackbarShown = false;
         }
     }
 

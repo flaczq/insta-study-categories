@@ -6,6 +6,7 @@
     <color name="colorAccentAlpha">#804CAF50</color>
     <color name="colorError">#D32F2F</color>
     <color name="colorErrorAlpha">#80D32F2F</color>
-    <color name="colorGreenLight">#FEFFFA</color>
-    <color name="colorGray">#808080</color>
+    <color name="colorBackgroundLight">#FEFFFA</color>
+    <color name="colorAdditionalAction">#808080</color>
+    <color name="colorPreloader">#154360</color>
 </resources>

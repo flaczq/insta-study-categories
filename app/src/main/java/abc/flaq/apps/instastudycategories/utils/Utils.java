@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -14,6 +15,7 @@ import android.widget.RelativeLayout;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import abc.flaq.apps.instastudycategories.BuildConfig;
 import abc.flaq.apps.instastudycategories.R;
@@ -71,11 +73,6 @@ public class Utils {
         return !isEmpty(element);
     }
 
-    public static String formatDate(Date date) {
-        String formattedDate = DateFormat.format(DATE_FORMAT, date).toString();
-        return formattedDate;
-    }
-
     public static String doForeignId(String id) {
         return "fq" + id;
     }
@@ -87,6 +84,16 @@ public class Utils {
         final PackageManager packageManager = context.getPackageManager();
         List<ResolveInfo> list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         return (list.size() > 0);
+    }
+
+    public static String formatDate(Date date) {
+        String formattedDate = DateFormat.format(DATE_FORMAT, date).toString();
+        return formattedDate;
+    }
+
+    public static String getStringByName(Context context, String name) {
+        int nameId = context.getResources().getIdentifier(name, "string", context.getPackageName());
+        return context.getString(nameId);
     }
 
     public static int getDrawableByName(Context context, String name) {
@@ -137,6 +144,14 @@ public class Utils {
                 layout.setBackgroundColor(Color.parseColor("#F19C7F"));
                 break;
         }
+    }
+
+    public static void setLocale(Context context, String language) {
+        final Locale locale = new Locale(language);
+        Locale.setDefault(locale);
+        final Configuration config = new Configuration();
+        config.locale = locale;
+        context.getResources().updateConfiguration(config, context.getResources().getDisplayMetrics());
     }
 
     public static String listToString(List<String> list) {

@@ -6,14 +6,15 @@
     android:background="@color/colorPrimaryDark">
 
     <TextView android:id="@+id/subcategory_item_name"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Biology"
-        android:textSize="26sp"
+        android:maxHeight="450px"
+        android:text="@string/subcategory_name.c_biology"
+        android:fontFamily="casual"
+        android:textSize="32sp"
         android:textColor="#FFF"
         android:textStyle="bold"
-        android:gravity="center"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true" />
+        android:gravity="center_horizontal"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
