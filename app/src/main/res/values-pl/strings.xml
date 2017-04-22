@@ -13,5 +13,5 @@
     <string name="subcategory_name.c_biology">BIOLOGIA</string>
     <string name="subcategory_name.c_chemistry">CHEMIA</string>
     <string name="subcategory_name.w_doctor">LEKARZ</string>
-    <string name="subcategory_name.w_it">INFORMATYKA</string>
+    <string name="subcategory_name.w_it">INFA</string>
 </resources>

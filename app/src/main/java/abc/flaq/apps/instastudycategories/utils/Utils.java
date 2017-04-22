@@ -12,6 +12,7 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.util.Date;
 import java.util.List;
@@ -21,6 +22,7 @@ import abc.flaq.apps.instastudycategories.BuildConfig;
 import abc.flaq.apps.instastudycategories.R;
 
 import static abc.flaq.apps.instastudycategories.utils.Constants.DATE_FORMAT;
+import static abc.flaq.apps.instastudycategories.utils.Constants.GRID_HEIGHT_DIFF;
 import static abc.flaq.apps.instastudycategories.utils.Constants.GRID_MAX_HEIGHT;
 
 public class Utils {
@@ -101,48 +103,63 @@ public class Utils {
         return drawableId;
     }
 
-    public static void setGridDesign(int position, int size, int maxSize, RelativeLayout layout) {
+    public static void setCategoryGridDesign(int position, int size, int maxSize, TextView textView) {
+        // FIXME: sort elements and set different sizes
+        int minSize = 10;
+
+        if (size >= maxSize) {
+            textView.setMinHeight(GRID_MAX_HEIGHT);
+            textView.setMaxHeight(GRID_MAX_HEIGHT);
+        } else if (size > minSize) {
+            textView.setMinHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
+            textView.setMaxHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
+        } else {
+            textView.setMinHeight(GRID_MAX_HEIGHT - 2*GRID_HEIGHT_DIFF);
+            textView.setMaxHeight(GRID_MAX_HEIGHT - 2*GRID_HEIGHT_DIFF);
+        }
+
+        // Ten colors max
+        switch (position % 10) {
+            case 0:
+                textView.setBackgroundColor(Color.parseColor("#B176B1"));
+                break;
+            case 1:
+                textView.setBackgroundColor(Color.parseColor("#968089"));
+                break;
+            case 3:
+                textView.setBackgroundColor(Color.parseColor("#B176B1"));
+                break;
+            case 4:
+                textView.setBackgroundColor(Color.parseColor("#968089"));
+                break;
+            case 5:
+                textView.setBackgroundColor(Color.parseColor("#B176B1"));
+                break;
+            case 6:
+                textView.setBackgroundColor(Color.parseColor("#968089"));
+                break;
+            case 7:
+                textView.setBackgroundColor(Color.parseColor("#B176B1"));
+                break;
+            case 8:
+                textView.setBackgroundColor(Color.parseColor("#968089"));
+                break;
+            case 9:
+            default:
+                textView.setBackgroundColor(Color.parseColor("#F19C7F"));
+                break;
+        }
+    }
+    public static void setSubcategoryGridDesign(int position, int size, int maxSize, RelativeLayout layout) {
         // FIXME: sort elements and set different sizes
         int minSize = 10;
 
         if (size >= maxSize) {
             layout.setMinimumHeight(GRID_MAX_HEIGHT);
         } else if (size > minSize) {
-            layout.setMinimumHeight(GRID_MAX_HEIGHT - 50);
+            layout.setMinimumHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
         } else {
-            layout.setMinimumHeight(GRID_MAX_HEIGHT - 100);
-        }
-
-        // Ten colors max
-        switch (position % 10) {
-            case 0:
-                layout.setBackgroundColor(Color.parseColor("#B176B1"));
-                break;
-            case 1:
-                layout.setBackgroundColor(Color.parseColor("#968089"));
-                break;
-            case 3:
-                layout.setBackgroundColor(Color.parseColor("#B176B1"));
-                break;
-            case 4:
-                layout.setBackgroundColor(Color.parseColor("#968089"));
-                break;
-            case 5:
-                layout.setBackgroundColor(Color.parseColor("#B176B1"));
-                break;
-            case 6:
-                layout.setBackgroundColor(Color.parseColor("#968089"));
-                break;
-            case 7:
-                layout.setBackgroundColor(Color.parseColor("#B176B1"));
-                break;
-            case 8:
-                layout.setBackgroundColor(Color.parseColor("#968089"));
-                break;
-            case 9:
-            default:
-                layout.setBackgroundColor(Color.parseColor("#F19C7F"));
-                break;
+            layout.setMinimumHeight(GRID_MAX_HEIGHT - 2*GRID_HEIGHT_DIFF);
         }
     }
 

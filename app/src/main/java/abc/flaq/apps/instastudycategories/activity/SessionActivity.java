@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -48,14 +50,12 @@ public class SessionActivity extends AppCompatActivity {
 
     private final Activity clazz = this;
     private View rootView;
-    private Dialog instagramDialog;
-    private Menu mainMenu;
-    private String accessToken;
-    private User user;
 
-    public Menu getMainMenu() {
-        return mainMenu;
-    }
+    private Menu mainMenu;
+    private User user;
+    private String accessToken;
+    private Dialog instagramDialog;
+    private Boolean isSnackbarShown = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +71,14 @@ public class SessionActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (Utils.isEmpty(Session.getInstance().getUser())) {
+            setMainMenuVisibility(mainMenu);
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.main_menu, menu);
@@ -79,6 +87,9 @@ public class SessionActivity extends AppCompatActivity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (isSnackbarShown) {
+            return true;
+        }
         switch (item.getItemId()) {
             case R.id.menu_suggest:
                 // not available from here
@@ -99,9 +110,8 @@ public class SessionActivity extends AppCompatActivity {
                 break;
             case R.id.menu_login:
                 if (Utils.isNotEmpty(Session.getInstance().getUser())) {
-                    // FIXME: do powtórki - zaloguj się na liście All i wróć do kategorii
-                    Utils.logDebug(clazz, "User is not empty, but login icon is available - that should've happened");
-                    handleMenuVisibility(mainMenu);
+                    Utils.logDebug(clazz, "User is not empty, but login icon is available - that shouldn't happen");
+                    setMainMenuVisibility(mainMenu);
                     invalidateOptionsMenu();
                 } else {
                     Utils.showInfo(rootView, "Logging in...");
@@ -178,8 +188,14 @@ public class SessionActivity extends AppCompatActivity {
                 .onNeutral(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        // TODO: Confirmation maybe?
-                        new ProcessDeleteUser().execute();
+                        Snackbar.make(rootView, "Czy na pewno usunąć konto?", Snackbar.LENGTH_LONG)
+                                .setActionTextColor(ContextCompat.getColor(clazz, R.color.colorAccent))
+                                .setAction("USUŃ", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        new ProcessDeleteUser().execute();
+                                    }
+                                }).show();
                         dialog.dismiss();
                     }
                 });
@@ -212,7 +228,7 @@ public class SessionActivity extends AppCompatActivity {
         infoDialog.show();
     }
 
-    public void handleMenuVisibility(Menu menu) {
+    public void setMainMenuVisibility(Menu menu) {
         if (Utils.isNotEmpty(menu)) {
             Boolean isAuthenticated = Utils.isNotEmpty(Session.getInstance().getUser());
             menu.findItem(R.id.menu_suggest).setVisible(isAuthenticated);
@@ -236,10 +252,11 @@ public class SessionActivity extends AppCompatActivity {
 
     public void logOut() {
         Utils.showInfo(rootView, "Logging out");
-        Session.getInstance().setUser(null);
         user = null;
+        Session.getInstance().setUser(null);
         accessToken = null;
-        handleMenuVisibility(mainMenu);
+        removeAccessToken();
+        setMainMenuVisibility(mainMenu);
         invalidateOptionsMenu();
     }
 
@@ -247,6 +264,7 @@ public class SessionActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            isSnackbarShown = true;
         }
 
         @Override
@@ -264,22 +282,23 @@ public class SessionActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(InstagramAccessToken result) {
             super.onPostExecute(result);
+            isSnackbarShown = false;
 
             if (Utils.isNotEmpty(result)) {
                 if (result.isError() || Utils.isEmpty(result.getAccessToken())) {
                     Utils.showError(rootView, result.toString());
                     Session.getInstance().setUser(null);
                     accessToken = null;
-                    handleMenuVisibility(mainMenu);
+                    setMainMenuVisibility(mainMenu);
                     invalidateOptionsMenu();
                 } else {
                     Utils.logInfo(clazz, "Collected instagram access token: " + result.getAccessToken());
                     accessToken = result.getAccessToken();
                     new ProcessGetUser().execute();
                 }
-                if (Utils.isNotEmpty(instagramDialog)) {
-                    instagramDialog.dismiss();
-                }
+            }
+            if (Utils.isNotEmpty(instagramDialog)) {
+                instagramDialog.dismiss();
             }
         }
     }
@@ -290,6 +309,7 @@ public class SessionActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            isSnackbarShown = true;
         }
 
         @Override
@@ -318,6 +338,8 @@ public class SessionActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(InstagramUser result) {
             super.onPostExecute(result);
+            isSnackbarShown = false;
+
             if (Utils.isNotEmpty(result) &&
                     Utils.isNotEmpty(result.getMeta()) &&
                     Utils.isNotEmpty(result.getData())) {
@@ -330,7 +352,7 @@ public class SessionActivity extends AppCompatActivity {
                     } else {
                         Utils.showInfo(rootView, "Logged in");
                         Session.getInstance().setUser(user);
-                        handleMenuVisibility(mainMenu);
+                        setMainMenuVisibility(mainMenu);
 
                         ImageView profilePic = new ImageView(clazz);
                         UrlImageViewHelper.setUrlDrawable(profilePic, Session.getInstance().getUser().getProfilePicUrl(), R.drawable.placeholder_profile_pic_72);
@@ -348,6 +370,7 @@ public class SessionActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            isSnackbarShown = true;
         }
 
         @Override
@@ -366,6 +389,8 @@ public class SessionActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
+            isSnackbarShown = false;
+
             if (result) {
                 Utils.showInfo(rootView, "Logged in");
                 Session.getInstance().setUser(user);
@@ -375,7 +400,7 @@ public class SessionActivity extends AppCompatActivity {
                 UrlImageViewHelper.setUrlDrawable(profilePic, Session.getInstance().getUser().getProfilePicUrl(), R.drawable.placeholder_profile_pic_72);
                 Session.getInstance().setUserProfilePic(profilePic);
 
-                handleMenuVisibility(mainMenu);
+                setMainMenuVisibility(mainMenu);
                 invalidateOptionsMenu();
             }
         }
@@ -385,6 +410,7 @@ public class SessionActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            isSnackbarShown = true;
         }
 
         @Override
@@ -403,9 +429,10 @@ public class SessionActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
+            isSnackbarShown = false;
+
             if (result) {
                 Utils.logDebug(clazz, "User deleted");
-                removeAccessToken();
                 logOut();
             }
         }

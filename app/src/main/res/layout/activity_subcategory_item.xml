@@ -2,19 +2,28 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/subcategory_item_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark">
+    android:layout_height="match_parent">
+
+    <ImageView android:id="@+id/subcategory_item_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/c_biology"
+        android:scaleType="centerCrop"
+        android:maxHeight="450px"
+        android:contentDescription="category_item_image" />
 
     <TextView android:id="@+id/subcategory_item_name"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:maxHeight="450px"
+        android:background="@color/colorBackgroundForText"
         android:text="@string/subcategory_name.c_biology"
         android:fontFamily="casual"
         android:textSize="32sp"
-        android:textColor="#FFF"
         android:textStyle="bold"
-        android:gravity="center_horizontal"
-        android:layout_centerHorizontal="true" />
+        android:textColor="#FFF"
+        android:paddingTop="10px"
+        android:gravity="center_horizontal|bottom"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>

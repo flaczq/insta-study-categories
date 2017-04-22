@@ -74,11 +74,21 @@ public class SubcategoryActivity extends SessionActivity {
             }
         }
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        invalidateOptionsMenu();
+        // Update subcategories when going back from User activity
+        if (Utils.isNotEmpty(subcategoryAdapter)) {
+            subcategoryAdapter = new SubcategoryAdapter(clazz, Session.getInstance().getSubcategories(categoryForeignId));
+            gridView.setAdapter(subcategoryAdapter);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        handleMenuVisibility(menu);
+        setMainMenuVisibility(menu);
         menu.findItem(R.id.menu_join).setVisible(false);
         menu.findItem(R.id.menu_leave).setVisible(false);
         return true;
@@ -106,16 +116,6 @@ public class SubcategoryActivity extends SessionActivity {
                 break;
         }
         return true;
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // Update subcategories when going back from User activity
-        if (Utils.isNotEmpty(subcategoryAdapter)) {
-            subcategoryAdapter = new SubcategoryAdapter(clazz, Session.getInstance().getSubcategories(categoryForeignId));
-            gridView.setAdapter(subcategoryAdapter);
-        }
     }
 
     private void showSuggestSubcategoryDialog() {
@@ -171,10 +171,11 @@ public class SubcategoryActivity extends SessionActivity {
         @Override
         protected void onPostExecute(List<Subcategory> result) {
             super.onPostExecute(result);
+            isSnackbarShown = false;
+
             if (result.size() == 0) {
                 Utils.showInfo(rootView, "No subcategories found");
             } else {
-                isSnackbarShown = false;
                 subcategoryAdapter = new SubcategoryAdapter(clazz, result);
                 gridView.setAdapter(subcategoryAdapter);
                 Session.getInstance().setSubcategories(categoryForeignId, result);

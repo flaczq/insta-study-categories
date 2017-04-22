@@ -70,11 +70,21 @@ public class CategoryActivity extends SessionActivity {
             gridView.setAdapter(categoryAdapter);
         }
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        invalidateOptionsMenu();
+        // Update categories when going back from User or Subcategory activity
+        if (Utils.isNotEmpty(categoryAdapter)) {
+            categoryAdapter = new CategoryAdapter(clazz, Session.getInstance().getCategories());
+            gridView.setAdapter(categoryAdapter);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        handleMenuVisibility(menu);
+        setMainMenuVisibility(menu);
         menu.findItem(R.id.menu_join).setVisible(false);
         menu.findItem(R.id.menu_leave).setVisible(false);
         return true;
@@ -102,16 +112,6 @@ public class CategoryActivity extends SessionActivity {
                 break;
         }
         return true;
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // Update categories when going back from User or Subcategory activity
-        if (Utils.isNotEmpty(categoryAdapter)) {
-            categoryAdapter = new CategoryAdapter(clazz, Session.getInstance().getCategories());
-            gridView.setAdapter(categoryAdapter);
-        }
     }
 
     private void showSuggestCategoryDialog() {
@@ -167,10 +167,11 @@ public class CategoryActivity extends SessionActivity {
         @Override
         protected void onPostExecute(List<Category> result) {
             super.onPostExecute(result);
+            preloader.setVisibility(View.GONE);
+
             if (result.size() == 0) {
                 Utils.showInfo(rootView, "No categories found");
             } else {
-                preloader.setVisibility(View.GONE);
                 categoryAdapter = new CategoryAdapter(clazz, result);
                 gridView.setAdapter(categoryAdapter);
                 Session.getInstance().setCategories(result);

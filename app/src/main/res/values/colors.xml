@@ -9,4 +9,5 @@
     <color name="colorBackgroundLight">#FEFFFA</color>
     <color name="colorAdditionalAction">#808080</color>
     <color name="colorPreloader">#154360</color>
+    <color name="colorBackgroundForText">#90000000</color>
 </resources>

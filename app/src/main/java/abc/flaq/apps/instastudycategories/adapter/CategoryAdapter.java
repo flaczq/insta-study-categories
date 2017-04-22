@@ -73,7 +73,7 @@ public class CategoryAdapter extends BaseAdapter {
         }
 
         final ViewHolder viewHolder = (ViewHolder) view.getTag();
-        Utils.setGridDesign(position, category.getUsersSize(), maxSize, viewHolder.layout);
+        Utils.setCategoryGridDesign(position, category.getUsersSize(), maxSize, viewHolder.name);
         String categoryName = Utils.getStringByName(context, STRINGS_CATEGORY_PREFIX + category.getName());
         viewHolder.name.setText(categoryName);
 

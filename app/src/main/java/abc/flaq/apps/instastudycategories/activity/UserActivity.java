@@ -38,7 +38,7 @@ public class UserActivity extends SessionActivity {
     private Menu mainMenu;
     private String selectedForeignId;
     private Boolean isCategory = false;
-    private Boolean hasJoined = false;
+    private Boolean hasJoined;
     private Boolean isSnackbarShown = false;
 
     @Override
@@ -90,12 +90,23 @@ public class UserActivity extends SessionActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        handleMenuVisibility(menu);
+        setMainMenuVisibility(menu);
         menu.findItem(R.id.menu_suggest).setVisible(false);
-        menu.findItem(R.id.menu_join).setVisible(false);
-        menu.findItem(R.id.menu_leave).setVisible(false);
-        mainMenu = getMainMenu();
+        if (Utils.isEmpty(hasJoined) || Utils.isEmpty(Session.getInstance().getUser())) {
+            menu.findItem(R.id.menu_join).setVisible(false);
+            menu.findItem(R.id.menu_leave).setVisible(false);
+        } else {
+            menu.findItem(R.id.menu_join).setVisible(!hasJoined && !isCategory);
+            menu.findItem(R.id.menu_leave).setVisible(hasJoined && !isCategory);
+        }
+        mainMenu = menu;
         return true;
+    }
+    private void setCategoryMenuVisibility(Boolean joined) {
+        if (Utils.isNotEmpty(mainMenu) && !isCategory && Utils.isNotEmpty(Session.getInstance().getUser())) {
+            mainMenu.findItem(R.id.menu_join).setVisible(!joined);
+            mainMenu.findItem(R.id.menu_leave).setVisible(joined);
+        }
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -108,7 +119,6 @@ public class UserActivity extends SessionActivity {
                 break;
             case R.id.menu_join:
                 Utils.showInfo(rootView, "joining");
-                // TODO: jak się coś wykonuje, to zablokuj możliwość klikania
                 new ProcessAddUserToSubcategory().execute();
                 break;
             case R.id.menu_leave:
@@ -150,6 +160,9 @@ public class UserActivity extends SessionActivity {
                                 Session.getInstance().getUser().getSubcategories().contains(selectedForeignId));
                     }
                 }
+                if (Utils.isEmpty(hasJoined)) {
+                    hasJoined = false;
+                }
             } catch (JSONException e) {
                 Utils.logError(clazz, "JSONException: " + e.toString());
             } catch (IOException e) {
@@ -161,13 +174,11 @@ public class UserActivity extends SessionActivity {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
+            isSnackbarShown = false;
+
             userAdapter = new UserAdapter(clazz, users);
             listView.setAdapter(userAdapter);
-            if (!isCategory) {
-                mainMenu.findItem(R.id.menu_join).setVisible(!hasJoined);
-                mainMenu.findItem(R.id.menu_leave).setVisible(hasJoined);
-            }
-            isSnackbarShown = false;
+            setCategoryMenuVisibility(hasJoined);
         }
     }
 
@@ -198,18 +209,17 @@ public class UserActivity extends SessionActivity {
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
+            isSnackbarShown = false;
+
             if (result) {
                 Utils.showInfo(rootView, "User successfully added to the subcategory");
                 userAdapter.addItem(Session.getInstance().getUser());
                 userAdapter.notifyDataSetChanged();
-                if (!isCategory) {
-                    mainMenu.findItem(R.id.menu_join).setVisible(false);
-                    mainMenu.findItem(R.id.menu_leave).setVisible(true);
-                }
+                hasJoined = true;
+                setCategoryMenuVisibility(true);
             } else {
                 Utils.showError(rootView, "Can't add user to subcategory");
             }
-            isSnackbarShown = false;
         }
     }
 
@@ -240,18 +250,17 @@ public class UserActivity extends SessionActivity {
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
+            isSnackbarShown = false;
+
             if (result) {
                 Utils.showInfo(rootView, "User successfully removed from the subcategory");
                 userAdapter.removeItem(Session.getInstance().getUser());
                 userAdapter.notifyDataSetChanged();
-                if (!isCategory) {
-                    mainMenu.findItem(R.id.menu_join).setVisible(true);
-                    mainMenu.findItem(R.id.menu_leave).setVisible(false);
-                }
+                hasJoined = false;
+                setCategoryMenuVisibility(false);
             } else {
                 Utils.showError(rootView, "Can't remove user from subcategory");
             }
-            isSnackbarShown = false;
         }
     }
 

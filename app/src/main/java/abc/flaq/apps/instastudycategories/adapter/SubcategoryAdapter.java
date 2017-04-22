@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -82,13 +83,14 @@ public class SubcategoryAdapter extends BaseAdapter {
             view = layoutInflater.inflate(R.layout.activity_subcategory_item, viewGroup, false);
 
             final RelativeLayout layout = (RelativeLayout) view.findViewById(R.id.subcategory_item_layout);
+            final ImageView image = (ImageView) view.findViewById(R.id.subcategory_item_image);
             final TextView name = (TextView) view.findViewById(R.id.subcategory_item_name);
-            final SubcategoryAdapter.ViewHolder viewHolder = new ViewHolder(layout, name);
+            final SubcategoryAdapter.ViewHolder viewHolder = new ViewHolder(layout, image, name);
             view.setTag(viewHolder);
         }
 
         final ViewHolder viewHolder = (ViewHolder) view.getTag();
-        Utils.setGridDesign(position, subcategory.getUsersSize(), maxSize, viewHolder.layout);
+        Utils.setSubcategoryGridDesign(position, subcategory.getUsersSize(), maxSize, viewHolder.layout);
         String subcategoryName = Utils.getStringByName(context, STRINGS_SUBCATEGORY_PREFIX + subcategory.getName());
         viewHolder.name.setText(subcategoryName);
 
@@ -97,10 +99,12 @@ public class SubcategoryAdapter extends BaseAdapter {
 
     private class ViewHolder {
         private final RelativeLayout layout;
+        private final ImageView image;
         private final TextView name;
 
-        private ViewHolder(RelativeLayout layout, TextView name) {
+        private ViewHolder(RelativeLayout layout, ImageView image, TextView name) {
             this.layout = layout;
+            this.image = image;
             this.name = name;
         }
     }
