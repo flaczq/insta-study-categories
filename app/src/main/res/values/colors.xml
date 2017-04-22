@@ -6,8 +6,19 @@
     <color name="colorAccentAlpha">#804CAF50</color>
     <color name="colorError">#D32F2F</color>
     <color name="colorErrorAlpha">#80D32F2F</color>
-    <color name="colorBackgroundLight">#FEFFFA</color>
+    <color name="colorBackgroundLight">#F7F7F7</color>
     <color name="colorAdditionalAction">#808080</color>
-    <color name="colorPreloader">#154360</color>
+    <color name="colorPreloader">#043250</color>
     <color name="colorBackgroundForText">#90000000</color>
+
+    <color name="colorCategoryBlue">#0D6BB6</color>
+    <color name="colorCategoryBlueLight">#90D4F7</color>
+    <color name="colorCategoryCreamy">#F0E8DB</color>
+    <color name="colorCategoryGray">#ADB1B2</color>
+    <color name="colorCategoryGreen">#83B6B1</color>
+    <color name="colorCategoryGreenLight">#71E096</color>
+    <color name="colorCategoryOrange">#F5A26F</color>
+    <color name="colorCategoryPink">#FF89B5</color>
+    <color name="colorCategoryPurple">#898CFF</color>
+    <color name="colorCategoryRed">#CC6675</color>
 </resources>

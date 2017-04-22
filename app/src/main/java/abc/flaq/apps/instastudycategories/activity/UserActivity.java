@@ -118,11 +118,11 @@ public class UserActivity extends SessionActivity {
                 // not available from here
                 break;
             case R.id.menu_join:
-                Utils.showInfo(rootView, "joining");
+                Utils.showInfo(rootView, "Dodawanie do podkategorii...");
                 new ProcessAddUserToSubcategory().execute();
                 break;
             case R.id.menu_leave:
-                Utils.showInfo(rootView, "leaving");
+                Utils.showInfo(rootView, "Usuwanie z podkategorii...");
                 new ProcessRemoveUserFromSubcategory().execute();
                 break;
             case R.id.menu_info:
@@ -212,7 +212,7 @@ public class UserActivity extends SessionActivity {
             isSnackbarShown = false;
 
             if (result) {
-                Utils.showInfo(rootView, "User successfully added to the subcategory");
+                Utils.showInfo(rootView, "Dodano użytkownika do podkategorii");
                 userAdapter.addItem(Session.getInstance().getUser());
                 userAdapter.notifyDataSetChanged();
                 hasJoined = true;
@@ -253,7 +253,7 @@ public class UserActivity extends SessionActivity {
             isSnackbarShown = false;
 
             if (result) {
-                Utils.showInfo(rootView, "User successfully removed from the subcategory");
+                Utils.showInfo(rootView, "Usunięto użytkownika z podkategorii");
                 userAdapter.removeItem(Session.getInstance().getUser());
                 userAdapter.notifyDataSetChanged();
                 hasJoined = false;

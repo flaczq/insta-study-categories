@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -14,14 +15,15 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+import android.webkit.CookieManager;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.crystal.crystalpreloaders.widgets.CrystalPreloader;
 import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 
 import org.json.JSONException;
@@ -114,7 +116,6 @@ public class SessionActivity extends AppCompatActivity {
                     setMainMenuVisibility(mainMenu);
                     invalidateOptionsMenu();
                 } else {
-                    Utils.showInfo(rootView, "Logging in...");
                     try {
                         String instagramAuthUrl = InstagramApi.getAuthUrl(Constants.INSTAGRAM_SCOPES.public_content);
                         showInstagramDialog(instagramAuthUrl);
@@ -130,35 +131,40 @@ public class SessionActivity extends AppCompatActivity {
     }
 
     private void showInstagramDialog(String url) {
+        // FIXME: mały pasek przed wczytaniem strony
         instagramDialog = new Dialog(clazz);
-        // FIXME: better preloader
-        final CrystalPreloader preloader = new CrystalPreloader(clazz);
+        if (Build.VERSION.SDK_INT >= 21) {
+            CookieManager.getInstance().removeAllCookies(null);
+        } else {
+            CookieManager.getInstance().removeAllCookie();
+        }
         WebView webView = new WebView(clazz);
         webView.loadUrl(url);
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (Utils.isNotEmpty(url)) {
-                    if (!url.startsWith(INSTAGRAM_REDIRECT_URL)) {
-                        view.loadUrl(url);
-                        preloader.setVisibility(View.GONE);
+                if (url.startsWith(INSTAGRAM_REDIRECT_URL)) {
+                    String code = InstagramApi.getCodeFromUrl(rootView, url);
+                    if (Utils.isEmpty(code)) {
+                        Utils.showError(rootView, "Instagram code is empty");
+                        instagramDialog.dismiss();
                     } else {
-                        String code = InstagramApi.getCodeFromUrl(rootView, url);
-                        if (Utils.isEmpty(code)) {
-                            Utils.showError(rootView, "Instagram code is empty");
-                            instagramDialog.dismiss();
-                        } else {
-                            Utils.logInfo(clazz, "Collected instagram code: " + code);
-                            preloader.setVisibility(View.VISIBLE);
-                            new ProcessGetAccessToken().execute(code);
-                        }
+                        Utils.logInfo(clazz, "Collected instagram code: " + code);
+                        new ProcessGetAccessToken().execute(code);
                     }
+                } else {
+                    view.loadUrl(url);
                 }
                 return true;
             }
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                super.onReceivedError(view, request, error);
+                Utils.showError(rootView, "Instagram login error");
+                instagramDialog.dismiss();
+            }
         });
         instagramDialog.setContentView(webView);
-        instagramDialog.addContentView(preloader, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         instagramDialog.show();
     }
 
@@ -181,6 +187,7 @@ public class SessionActivity extends AppCompatActivity {
                 .onNegative(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        Utils.showInfo(rootView, "Wylogowano");
                         logOut();
                         dialog.dismiss();
                     }
@@ -251,7 +258,6 @@ public class SessionActivity extends AppCompatActivity {
     }
 
     public void logOut() {
-        Utils.showInfo(rootView, "Logging out");
         user = null;
         Session.getInstance().setUser(null);
         accessToken = null;
@@ -350,7 +356,7 @@ public class SessionActivity extends AppCompatActivity {
                     if (isNewUser) {
                         new ProcessAddUser().execute();
                     } else {
-                        Utils.showInfo(rootView, "Logged in");
+                        Utils.showInfo(rootView, "Zalogowano");
                         Session.getInstance().setUser(user);
                         setMainMenuVisibility(mainMenu);
 
@@ -392,7 +398,7 @@ public class SessionActivity extends AppCompatActivity {
             isSnackbarShown = false;
 
             if (result) {
-                Utils.showInfo(rootView, "Logged in");
+                Utils.showInfo(rootView, "Zalogowano");
                 Session.getInstance().setUser(user);
                 saveAccessToken(accessToken);
 
@@ -432,7 +438,7 @@ public class SessionActivity extends AppCompatActivity {
             isSnackbarShown = false;
 
             if (result) {
-                Utils.logDebug(clazz, "User deleted");
+                Utils.showInfo(rootView, "Usunięto konto użytkownika");
                 logOut();
             }
         }

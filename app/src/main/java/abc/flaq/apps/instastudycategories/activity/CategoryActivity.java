@@ -170,7 +170,7 @@ public class CategoryActivity extends SessionActivity {
             preloader.setVisibility(View.GONE);
 
             if (result.size() == 0) {
-                Utils.showInfo(rootView, "No categories found");
+                Utils.showError(rootView, "No categories found");
             } else {
                 categoryAdapter = new CategoryAdapter(clazz, result);
                 gridView.setAdapter(categoryAdapter);

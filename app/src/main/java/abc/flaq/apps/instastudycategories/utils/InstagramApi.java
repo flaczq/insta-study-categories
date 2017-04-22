@@ -115,7 +115,7 @@ public class InstagramApi {
     public static String getAccessTokenFromUrl(View view, String url) {
         int errorIndex = url.indexOf("?error=");
         if (errorIndex >= 0) {
-            Utils.showInfo(view, url.substring(errorIndex + "?error=".length()));
+            Utils.showError(view, url.substring(errorIndex + "?error=".length()));
             return null;
         }
 
@@ -130,7 +130,7 @@ public class InstagramApi {
     public static String getCodeFromUrl(View view, String url) {
         int errorIndex = url.indexOf("?error=");
         if (errorIndex >= 0) {
-            Utils.showInfo(view, url.substring(errorIndex + "?error=".length()));
+            Utils.showError(view, url.substring(errorIndex + "?error=".length()));
             return null;
         }
 

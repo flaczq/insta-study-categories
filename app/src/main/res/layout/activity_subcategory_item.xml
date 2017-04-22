@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:src="@drawable/c_biology"
         android:scaleType="centerCrop"
-        android:maxHeight="450px"
+        android:adjustViewBounds="true"
         android:contentDescription="category_item_image" />
 
     <TextView android:id="@+id/subcategory_item_name"
@@ -18,10 +18,9 @@
         android:background="@color/colorBackgroundForText"
         android:text="@string/subcategory_name.c_biology"
         android:fontFamily="casual"
-        android:textSize="32sp"
-        android:textStyle="bold"
+        android:textSize="26sp"
         android:textColor="#FFF"
-        android:paddingTop="10px"
+        android:paddingTop="5dp"
         android:gravity="center_horizontal|bottom"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true" />

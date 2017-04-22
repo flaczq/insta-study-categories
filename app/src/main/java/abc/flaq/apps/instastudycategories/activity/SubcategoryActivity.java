@@ -79,7 +79,7 @@ public class SubcategoryActivity extends SessionActivity {
         super.onResume();
         invalidateOptionsMenu();
         // Update subcategories when going back from User activity
-        if (Utils.isNotEmpty(subcategoryAdapter)) {
+        if (Utils.isNotEmpty(subcategoryAdapter)) { // FIXME: change categories sizes
             subcategoryAdapter = new SubcategoryAdapter(clazz, Session.getInstance().getSubcategories(categoryForeignId));
             gridView.setAdapter(subcategoryAdapter);
         }
@@ -174,7 +174,7 @@ public class SubcategoryActivity extends SessionActivity {
             isSnackbarShown = false;
 
             if (result.size() == 0) {
-                Utils.showInfo(rootView, "No subcategories found");
+                Utils.showError(rootView, "No subcategories found");
             } else {
                 subcategoryAdapter = new SubcategoryAdapter(clazz, result);
                 gridView.setAdapter(subcategoryAdapter);

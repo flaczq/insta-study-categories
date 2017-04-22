@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
+
 import java.util.List;
 
 import abc.flaq.apps.instastudycategories.R;
@@ -90,9 +92,15 @@ public class SubcategoryAdapter extends BaseAdapter {
         }
 
         final ViewHolder viewHolder = (ViewHolder) view.getTag();
-        Utils.setSubcategoryGridDesign(position, subcategory.getUsersSize(), maxSize, viewHolder.layout);
+        Utils.setSubcategoryGridDesign(subcategory.getUsersSize(), maxSize, viewHolder.image);
         String subcategoryName = Utils.getStringByName(context, STRINGS_SUBCATEGORY_PREFIX + subcategory.getName());
         viewHolder.name.setText(subcategoryName);
+
+        if (Utils.isEmpty(subcategory.getImageUrl())) {
+            viewHolder.image.setImageResource(R.drawable.c_biology); // FIXME: placeholder image
+        } else {
+            UrlImageViewHelper.setUrlDrawable(viewHolder.image, subcategory.getImageUrl(), R.drawable.c_biology);
+        }
 
         return view;
     }

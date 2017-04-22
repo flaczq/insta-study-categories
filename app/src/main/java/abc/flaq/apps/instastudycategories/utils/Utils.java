@@ -5,13 +5,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
-import android.widget.RelativeLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.Date;
@@ -108,58 +107,58 @@ public class Utils {
         int minSize = 10;
 
         if (size >= maxSize) {
-            textView.setMinHeight(GRID_MAX_HEIGHT);
-            textView.setMaxHeight(GRID_MAX_HEIGHT);
+            textView.setHeight(GRID_MAX_HEIGHT);
         } else if (size > minSize) {
-            textView.setMinHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
-            textView.setMaxHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
+            textView.setHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
         } else {
-            textView.setMinHeight(GRID_MAX_HEIGHT - 2*GRID_HEIGHT_DIFF);
-            textView.setMaxHeight(GRID_MAX_HEIGHT - 2*GRID_HEIGHT_DIFF);
+            textView.setHeight(GRID_MAX_HEIGHT - 2*GRID_HEIGHT_DIFF);
         }
 
-        // Ten colors max
+        // Max ten colors
         switch (position % 10) {
             case 0:
-                textView.setBackgroundColor(Color.parseColor("#B176B1"));
+                textView.setBackgroundColor(ContextCompat.getColor(textView.getContext(), R.color.colorCategoryBlue));
                 break;
             case 1:
-                textView.setBackgroundColor(Color.parseColor("#968089"));
+                textView.setBackgroundColor(ContextCompat.getColor(textView.getContext(), R.color.colorCategoryOrange));
+                break;
+            case 2:
+                textView.setBackgroundColor(ContextCompat.getColor(textView.getContext(), R.color.colorCategoryPink));
                 break;
             case 3:
-                textView.setBackgroundColor(Color.parseColor("#B176B1"));
+                textView.setBackgroundColor(ContextCompat.getColor(textView.getContext(), R.color.colorCategoryPurple));
                 break;
             case 4:
-                textView.setBackgroundColor(Color.parseColor("#968089"));
+                textView.setBackgroundColor(ContextCompat.getColor(textView.getContext(), R.color.colorCategoryBlueLight));
                 break;
             case 5:
-                textView.setBackgroundColor(Color.parseColor("#B176B1"));
+                textView.setBackgroundColor(ContextCompat.getColor(textView.getContext(), R.color.colorCategoryRed));
                 break;
             case 6:
-                textView.setBackgroundColor(Color.parseColor("#968089"));
+                textView.setBackgroundColor(ContextCompat.getColor(textView.getContext(), R.color.colorCategoryGreenLight));
                 break;
             case 7:
-                textView.setBackgroundColor(Color.parseColor("#B176B1"));
+                textView.setBackgroundColor(ContextCompat.getColor(textView.getContext(), R.color.colorCategoryCreamy));
                 break;
             case 8:
-                textView.setBackgroundColor(Color.parseColor("#968089"));
+                textView.setBackgroundColor(ContextCompat.getColor(textView.getContext(), R.color.colorCategoryGreen));
                 break;
             case 9:
             default:
-                textView.setBackgroundColor(Color.parseColor("#F19C7F"));
+                textView.setBackgroundColor(ContextCompat.getColor(textView.getContext(), R.color.colorCategoryGray));
                 break;
         }
     }
-    public static void setSubcategoryGridDesign(int position, int size, int maxSize, RelativeLayout layout) {
+    public static void setSubcategoryGridDesign(int size, int maxSize, ImageView imageView) {
         // FIXME: sort elements and set different sizes
         int minSize = 10;
 
         if (size >= maxSize) {
-            layout.setMinimumHeight(GRID_MAX_HEIGHT);
+            imageView.setMaxHeight(GRID_MAX_HEIGHT);
         } else if (size > minSize) {
-            layout.setMinimumHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
+            imageView.setMaxHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
         } else {
-            layout.setMinimumHeight(GRID_MAX_HEIGHT - 2*GRID_HEIGHT_DIFF);
+            imageView.setMaxHeight(GRID_MAX_HEIGHT - 2*GRID_HEIGHT_DIFF);
         }
     }
 

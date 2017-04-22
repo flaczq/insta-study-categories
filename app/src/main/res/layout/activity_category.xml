@@ -5,8 +5,10 @@
     android:id="@+id/activity_category"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackgroundLight"
     tools:context="abc.flaq.apps.instastudycategories.activity.CategoryActivity">
 
+    <!-- use StaggeredGridLayoutManager https://inducesmile.com/android/android-staggeredgridlayoutmanager-example-tutorial/ -->
     <com.etsy.android.grid.StaggeredGridView android:id="@+id/category_grid"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
