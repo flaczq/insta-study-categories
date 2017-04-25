@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">\"InstaStudyCategories-dev\"</string>
-    <string name="category_name.all">WSZ\nYS\nCY</string>
-    <string name="category_name.college">STU\nDIA</string>
-    <string name="category_name.high_school">LI\nCE\nUM</string>
-    <string name="category_name.work">PRA\nCA</string>
+    <string name="imageview.description">Opis obrazu</string>
 
-    <string name="subcategory_name.hs_biology">BIOLOGIA</string>
-    <string name="subcategory_name.hs_chemistry">CHEMIA</string>
-    <string name="subcategory_name.hs_maths">MATMA</string>
-    <string name="subcategory_name.hs_it">INFORMATYKA</string>
-    <string name="subcategory_name.c_biology">BIOLOGIA</string>
-    <string name="subcategory_name.c_chemistry">CHEMIA</string>
-    <string name="subcategory_name.w_doctor">LEKARZ</string>
-    <string name="subcategory_name.w_it">INFA</string>
+    <string name="category_name.all">Wszyscy</string>
+    <string name="category_name.college">Studia</string>
+    <string name="category_name.high_school">Liceum</string>
+    <string name="category_name.work">Praca</string>
+
+    <string name="subcategory_name.hs_biology">Biologia</string>
+    <string name="subcategory_name.hs_chemistry">Chemia</string>
+    <string name="subcategory_name.hs_maths">Matma</string>
+    <string name="subcategory_name.hs_it">Informatyka</string>
+    <string name="subcategory_name.c_biology">Biologia</string>
+    <string name="subcategory_name.c_chemistry">Chemia</string>
+    <string name="subcategory_name.w_doctor">Lekarz</string>
+    <string name="subcategory_name.w_it">Informatyk</string>
 </resources>

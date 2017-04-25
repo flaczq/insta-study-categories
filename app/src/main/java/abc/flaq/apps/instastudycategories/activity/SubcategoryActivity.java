@@ -79,9 +79,10 @@ public class SubcategoryActivity extends SessionActivity {
         super.onResume();
         invalidateOptionsMenu();
         // Update subcategories when going back from User activity
-        if (Utils.isNotEmpty(subcategoryAdapter)) { // FIXME: change categories sizes
+        if (Utils.isNotEmpty(subcategoryAdapter)) {
             subcategoryAdapter = new SubcategoryAdapter(clazz, Session.getInstance().getSubcategories(categoryForeignId));
             gridView.setAdapter(subcategoryAdapter);
+
         }
     }
 

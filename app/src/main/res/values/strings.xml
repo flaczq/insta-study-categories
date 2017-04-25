@@ -1,16 +1,18 @@
 <resources>
     <!--<string name="app_name">InstaStudyCategories</string>-->
-    <string name="category_name.all">ALL</string>
-    <string name="category_name.college">CO\nLLE\nGE</string>
-    <string name="category_name.high_school">HIGH\nSCH\nOOL</string>
-    <string name="category_name.work">WO\nRK</string>
+    <string name="imageview.description">Image description</string>
 
-    <string name="subcategory_name.hs_biology">BIOLOGY</string>
-    <string name="subcategory_name.hs_chemistry">CHEMISTRY</string>
-    <string name="subcategory_name.hs_maths">MATHS</string>
-    <string name="subcategory_name.hs_it">IT</string>
-    <string name="subcategory_name.c_biology">BIOLOGY</string>
-    <string name="subcategory_name.c_chemistry">CHEMISTRY</string>
-    <string name="subcategory_name.w_doctor">DOCTOR</string>
-    <string name="subcategory_name.w_it">IT</string>
+    <string name="category_name.all">All</string>
+    <string name="category_name.college">College</string>
+    <string name="category_name.high_school">Highschool</string>
+    <string name="category_name.work">Work</string>
+
+    <string name="subcategory_name.hs_biology">Biology</string>
+    <string name="subcategory_name.hs_chemistry">Chemistry</string>
+    <string name="subcategory_name.hs_maths">Maths</string>
+    <string name="subcategory_name.hs_it">It</string>
+    <string name="subcategory_name.c_biology">Biology</string>
+    <string name="subcategory_name.c_chemistry">Chemistry</string>
+    <string name="subcategory_name.w_doctor">Doctor</string>
+    <string name="subcategory_name.w_it">It</string>
 </resources>

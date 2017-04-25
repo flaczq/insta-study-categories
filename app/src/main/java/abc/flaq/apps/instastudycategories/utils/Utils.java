@@ -96,24 +96,23 @@ public class Utils {
         int nameId = context.getResources().getIdentifier(name, "string", context.getPackageName());
         return context.getString(nameId);
     }
-
     public static int getDrawableByName(Context context, String name) {
         int drawableId = context.getResources().getIdentifier(name, "drawable", context.getPackageName());
         return drawableId;
     }
-
-    public static void setCategoryGridDesign(int position, int size, int maxSize, TextView textView) {
-        // FIXME: sort elements and set different sizes
-        int minSize = 10;
-
-        if (size >= maxSize) {
-            textView.setHeight(GRID_MAX_HEIGHT);
-        } else if (size > minSize) {
-            textView.setHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
-        } else {
-            textView.setHeight(GRID_MAX_HEIGHT - 2*GRID_HEIGHT_DIFF);
+    public static int getCategoryDrawable(Context context, String name) {
+        return getDrawableByName(context, name);
+    }
+    public static int getSubcategoryDrawable(Context context, String name) {
+        // Remove subcategory prefix (hs_)
+        int index = name.indexOf("_");
+        if (index > 0) {
+            name = name.substring(index + 1);
         }
+        return getDrawableByName(context, name);
+    }
 
+    public static void setColorByPosition(int position, TextView textView) {
         // Max ten colors
         switch (position % 10) {
             case 0:
@@ -149,15 +148,38 @@ public class Utils {
                 break;
         }
     }
+    public static void setCategoryGridDesign(int position, int size, int maxSize, TextView textView) {
+        // FIXME: sort elements and set different sizes
+        int minSize = 10;
+
+        if (size >= maxSize) {
+            textView.setMinimumHeight(GRID_MAX_HEIGHT);
+            textView.setHeight(GRID_MAX_HEIGHT);
+            textView.setMaxHeight(GRID_MAX_HEIGHT);
+        } else if (size > minSize) {
+            textView.setMinimumHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
+            textView.setHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
+            textView.setMaxHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
+        } else {
+            textView.setMinimumHeight(GRID_MAX_HEIGHT - 2*GRID_HEIGHT_DIFF);
+            textView.setHeight(GRID_MAX_HEIGHT - 2*GRID_HEIGHT_DIFF);
+            textView.setMaxHeight(GRID_MAX_HEIGHT - 2*GRID_HEIGHT_DIFF);
+        }
+
+        setColorByPosition(position, textView);
+    }
     public static void setSubcategoryGridDesign(int size, int maxSize, ImageView imageView) {
         // FIXME: sort elements and set different sizes
         int minSize = 10;
 
         if (size >= maxSize) {
+            imageView.setMinimumHeight(GRID_MAX_HEIGHT);
             imageView.setMaxHeight(GRID_MAX_HEIGHT);
         } else if (size > minSize) {
+            imageView.setMinimumHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
             imageView.setMaxHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
         } else {
+            imageView.setMinimumHeight(GRID_MAX_HEIGHT - 2*GRID_HEIGHT_DIFF);
             imageView.setMaxHeight(GRID_MAX_HEIGHT - 2*GRID_HEIGHT_DIFF);
         }
     }

@@ -96,10 +96,15 @@ public class SubcategoryAdapter extends BaseAdapter {
         String subcategoryName = Utils.getStringByName(context, STRINGS_SUBCATEGORY_PREFIX + subcategory.getName());
         viewHolder.name.setText(subcategoryName);
 
+        int drawable = Utils.getSubcategoryDrawable(context, subcategory.getName());
         if (Utils.isEmpty(subcategory.getImageUrl())) {
-            viewHolder.image.setImageResource(R.drawable.c_biology); // FIXME: placeholder image
+            if (drawable == 0) {
+                viewHolder.image.setImageResource(R.drawable.placeholder_category);
+            } else {
+                viewHolder.image.setImageResource(drawable);
+            }
         } else {
-            UrlImageViewHelper.setUrlDrawable(viewHolder.image, subcategory.getImageUrl(), R.drawable.c_biology);
+            UrlImageViewHelper.setUrlDrawable(viewHolder.image, subcategory.getImageUrl(), R.drawable.placeholder_category);   // FIXME: images on server
         }
 
         return view;
