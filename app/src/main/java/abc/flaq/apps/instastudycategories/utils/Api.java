@@ -278,7 +278,7 @@ public class Api {
         String stream = getStream(is);
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
-            Utils.logError("Api.addSubcategory()", response.toString());
+            Utils.logError("Api.addCategory()", response.toString());
             return Boolean.FALSE;
         }
 
@@ -286,6 +286,9 @@ public class Api {
         // TODO: check if needed?
         //correctForeignId(API_CATEGORIES_URL + "/" + category.getId(), category);
         getAllCategories(true);
+
+        // Add current user to this new category
+        addUserToCategory(Session.getInstance().getUser(), category.getForeignId());
 
         return Boolean.TRUE;
     }
@@ -367,8 +370,8 @@ public class Api {
 
         return subcategories;
     }
-    public static Boolean addSubcategory(String subcategoryName, String categoryName) throws IOException, JSONException {
-        Subcategory subcategory = Factory.subcategoryFromName(subcategoryName, categoryName);
+    public static Boolean addSubcategory(String subcategoryName, String parentCategoryForeignId) throws IOException, JSONException {
+        Subcategory subcategory = Factory.subcategoryFromName(subcategoryName, parentCategoryForeignId);
         InputStreamReader is = postRequest(API_SUBCATEGORIES_URL, subcategory.toPostJson());
         String stream = getStream(is);
         Response response = mapper.readValue(stream, Response.class);
@@ -381,6 +384,9 @@ public class Api {
         // TODO: check if needed?
         //correctForeignId(API_SUBCATEGORIES_URL + "/" + subcategory.getId(), subcategory);
         getAllSubcategories(true);
+
+        // Add current user to this new subcategory
+        addUserToSubcategory(Session.getInstance().getUser(), subcategory.getForeignId());
 
         return Boolean.TRUE;
     }
@@ -528,7 +534,7 @@ public class Api {
     public static Boolean addUserToCategory(User user, String categoryForeignId) throws IOException, JSONException {
         List<String> categories = user.getCategories();
         if (categories.contains(categoryForeignId)) {
-            Utils.logDebug("Api.addUserToCategory()", "The user: " + user.toString() + " is already in category: " + categoryForeignId);
+            Utils.logDebug("Api.addUserToCategory()", "Użytkownik: " + user.toString() + " znajduje się już w kategorii: " + categoryForeignId);
             return Boolean.FALSE;
         }
 
@@ -555,7 +561,7 @@ public class Api {
         String categoryId = Utils.undoForeignId(categoryForeignId);
         Category category = getCategoryById(categoryId);
         if (Utils.isEmpty(category)) {
-            Utils.logDebug("Api.addUserToCategory()", "Couldn't increase size of users in category " + categoryId);
+            Utils.logDebug("Api.addUserToCategory()", "Zwiększenie liczby użytkowników w kategorii: " + categoryId + " zakończone niepowodzeniem");
         } else {
             correctSize(
                     API_CATEGORIES_URL + "/" + categoryId,
@@ -572,7 +578,7 @@ public class Api {
     public static Boolean addUserToSubcategory(User user, String subcategoryForeignId) throws IOException, JSONException {
         List<String> subcategories = user.getSubcategories();
         if (subcategories.contains(subcategoryForeignId)) {
-            Utils.logDebug("Api.addUserToSubcategory()", "User " + user.getUsername() + " is already in subcategory " + subcategoryForeignId);
+            Utils.logDebug("Api.addUserToSubcategory()", "Użytkownik " + user.getUsername() + " znajduje się już w podkategorii: " + subcategoryForeignId);
             return Boolean.FALSE;
         }
 
@@ -599,7 +605,7 @@ public class Api {
         String subcategoryId = Utils.undoForeignId(subcategoryForeignId);
         Subcategory subcategory = getSubcategoryById(subcategoryId);
         if (Utils.isEmpty(subcategory)) {
-            Utils.logDebug("Api.addUserToSubcategory()", "Couldn't increase size of users in subcategory " + subcategoryId);
+            Utils.logDebug("Api.addUserToSubcategory()", "Zwiększenie liczby użytkowników w podkategorii: " + subcategoryId + " zakończone niepowodzeniem");
         } else {
             correctSize(
                     API_SUBCATEGORIES_URL + "/" + subcategoryId,
@@ -631,7 +637,7 @@ public class Api {
     public static Boolean removeUserFromCategory(User user, String categoryForeignId) throws IOException, JSONException {
         List<String> categories = user.getCategories();
         if (!categories.contains(categoryForeignId)) {
-            Utils.logDebug("Api.removeUserFromCategory()", "The user: " + user.toString() + " isn't already in category: " + categoryForeignId);
+            Utils.logDebug("Api.removeUserFromCategory()", "Użytkownik: " + user.toString() + " nie znajdował się w kategorii: " + categoryForeignId);
             return Boolean.TRUE;
         }
 
@@ -658,7 +664,7 @@ public class Api {
         String categoryId = Utils.undoForeignId(categoryForeignId);
         Category category = getCategoryById(categoryId);
         if (Utils.isEmpty(category)) {
-            Utils.logDebug("Api.removeUserFromCategory()", "Couldn't decrease size of users in category " + categoryId);
+            Utils.logDebug("Api.removeUserFromCategory()", "Zmniejszenie liczby użytkowników w kategorii: " + categoryId + " zakończone niepowodzeniem");
         } else {
             correctSize(
                     API_CATEGORIES_URL + "/" + categoryId,
@@ -675,7 +681,7 @@ public class Api {
     public static Boolean removeUserFromSubcategory(User user, String subcategoryForeignId) throws IOException, JSONException {
         List<String> subcategories = user.getSubcategories();
         if (!subcategories.contains(subcategoryForeignId)) {
-            Utils.logDebug("Api.removeUserFromSubcategory()", "The user: " + user.toString() + " isn't already in subcategory: " + subcategoryForeignId);
+            Utils.logDebug("Api.removeUserFromSubcategory()", "Użytkownik: " + user.toString() + " nie znajdował się w podkategorii: " + subcategoryForeignId);
             return Boolean.TRUE;
         }
 
@@ -702,7 +708,7 @@ public class Api {
         String subcategoryId = Utils.undoForeignId(subcategoryForeignId);
         Subcategory subcategory = getSubcategoryById(subcategoryId);
         if (Utils.isEmpty(subcategory)) {
-            Utils.logDebug("Api.removeUserFromSubcategory()", "Couldn't decrease size of users in subcategory " + subcategoryId);
+            Utils.logDebug("Api.removeUserFromSubcategory()", "Zmniejszenie liczby użytkowników w podkategorii: " + subcategoryId + " zakończone niepowodzeniem");
         } else {
             correctSize(
                     API_SUBCATEGORIES_URL + "/" + subcategoryId,

@@ -42,9 +42,9 @@ public class Factory {
 
     public static Category categoryFromName(String categoryName) throws IOException, JSONException {
         Category category = new Category();
-        category.setForeignId(Utils.doForeignId(categoryName + new Date()));    // Update with _id after creating
+        category.setForeignId(Utils.doForeignId(categoryName + new Date().getTime()));    // Update with _id after creating
         category.setName(categoryName);
-        category.setUsersSize(1); // FIXME: call addUserToCategory() instead
+        category.setUsersSize(0);
         category.setSubcategoriesSize(0);
         category.setHashtags(new ArrayList<String>());
         category.setAsSubcategory(Boolean.FALSE);
@@ -53,16 +53,13 @@ public class Factory {
         return category;
     }
 
-    public static Subcategory subcategoryFromName(String subcategoryName, String categoryName) throws IOException, JSONException {
+    public static Subcategory subcategoryFromName(String subcategoryName, String parentCategoryForeignId) throws IOException, JSONException {
         Subcategory subcategory = new Subcategory();
-        subcategory.setForeignId(Utils.doForeignId(subcategoryName + new Date()));    // Update with _id after creating
+        subcategory.setForeignId(Utils.doForeignId(subcategoryName + new Date().getTime()));    // Update with _id after creating
         subcategory.setName(subcategoryName);
-        subcategory.setUsersSize(1); // FIXME: call addUserToSubcategory() instead
+        subcategory.setUsersSize(0);
         List<String> categories = new ArrayList<>();
-        Category parentCategory = Api.getCategoryByName(categoryName);
-        if (Utils.isNotEmpty(parentCategory)) {
-            categories.add(parentCategory.getForeignId());
-        }
+        categories.add(parentCategoryForeignId);
         subcategory.setCategories(categories);
         subcategory.setCategoriesSize(1);
         subcategory.setHashtags(new ArrayList<String>());

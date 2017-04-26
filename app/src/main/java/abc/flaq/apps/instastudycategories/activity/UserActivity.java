@@ -103,7 +103,7 @@ public class UserActivity extends SessionActivity {
         return true;
     }
     private void setCategoryMenuVisibility(Boolean joined) {
-        if (Utils.isNotEmpty(mainMenu) && !isCategory && Utils.isNotEmpty(Session.getInstance().getUser())) {
+        if (!isCategory && Utils.isNotEmpty(mainMenu) && Utils.isNotEmpty(Session.getInstance().getUser())) {
             mainMenu.findItem(R.id.menu_join).setVisible(!joined);
             mainMenu.findItem(R.id.menu_leave).setVisible(joined);
         }
@@ -218,7 +218,7 @@ public class UserActivity extends SessionActivity {
                 hasJoined = true;
                 setCategoryMenuVisibility(true);
             } else {
-                Utils.showError(rootView, "Can't add user to subcategory");
+                Utils.showError(rootView, "Dodanie użytkownika do podkategorii zakończone niepowodzeniem");
             }
         }
     }
@@ -259,7 +259,7 @@ public class UserActivity extends SessionActivity {
                 hasJoined = false;
                 setCategoryMenuVisibility(false);
             } else {
-                Utils.showError(rootView, "Can't remove user from subcategory");
+                Utils.showError(rootView, "Usunięcie użytkownika z podkategorii zakończone niepowodzeniem");
             }
         }
     }

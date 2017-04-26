@@ -132,9 +132,9 @@ public class CategoryActivity extends SessionActivity {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        if (Utils.isNotEmpty(dialog.getInputEditText())) {
-                            Utils.showInfo(rootView, "Zaproponowano " + dialog.getInputEditText().getText());
-                            // TODO: Api.addCategory(category)
+                        if (Utils.isNotEmpty(dialog.getInputEditText()) && Utils.isNotEmpty(dialog.getInputEditText().getText())) {
+                            Utils.showInfo(rootView, "Zaproponowano kategorię: " + dialog.getInputEditText().getText());
+                            new ProcessAddCategory().execute(dialog.getInputEditText().getText().toString());
                         }
                         dialog.dismiss();
                     }
@@ -175,6 +175,40 @@ public class CategoryActivity extends SessionActivity {
                 categoryAdapter = new CategoryAdapter(clazz, result);
                 gridView.setAdapter(categoryAdapter);
                 Session.getInstance().setCategories(result);
+            }
+        }
+    }
+
+    private class ProcessAddCategory extends AsyncTask<String, Void, Boolean> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+            String categoryName = params[0];
+            Boolean result = Boolean.FALSE;
+            try {
+                result = Api.addCategory(categoryName);
+            } catch (JSONException e) {
+                Utils.logError(clazz, "JSONException: " + e.toString());
+            } catch (IOException e) {
+                Utils.logError(clazz, "IOException: " + e.toString());
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+
+            if (result) {
+                Utils.showInfo(rootView, "Dodano nową kategorię");
+                categoryAdapter = new CategoryAdapter(clazz, Session.getInstance().getCategories());
+                gridView.setAdapter(categoryAdapter);
+            } else {
+                Utils.showError(rootView, "Dodanie nowej kategorii zakończone niepowodzeniem");
             }
         }
     }

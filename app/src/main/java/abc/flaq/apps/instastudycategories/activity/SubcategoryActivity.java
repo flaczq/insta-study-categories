@@ -137,9 +137,9 @@ public class SubcategoryActivity extends SessionActivity {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        if (Utils.isNotEmpty(dialog.getInputEditText())) {
-                            Utils.showInfo(rootView, "Zaproponowano " + dialog.getInputEditText().getText());
-                            // TODO: Api.addSubcategory(subcategory);
+                        if (Utils.isNotEmpty(dialog.getInputEditText()) && Utils.isNotEmpty(dialog.getInputEditText().getText())) {
+                            Utils.showInfo(rootView, "Zaproponowano podkategorię: " + dialog.getInputEditText().getText());
+                            new ProcessAddSubcategory().execute(dialog.getInputEditText().getText().toString());
                         }
                         dialog.dismiss();
                     }
@@ -175,11 +175,45 @@ public class SubcategoryActivity extends SessionActivity {
             isSnackbarShown = false;
 
             if (result.size() == 0) {
-                Utils.showError(rootView, "No subcategories found");
+                Utils.showError(rootView, "Nie znaleziono podkategorii");
             } else {
                 subcategoryAdapter = new SubcategoryAdapter(clazz, result);
                 gridView.setAdapter(subcategoryAdapter);
                 Session.getInstance().setSubcategories(categoryForeignId, result);
+            }
+        }
+    }
+
+    private class ProcessAddSubcategory extends AsyncTask<String, Void, Boolean> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+            String subcategoryName = params[0];
+            Boolean result = Boolean.FALSE;
+            try {
+                result = Api.addSubcategory(subcategoryName, categoryForeignId);
+            } catch (JSONException e) {
+                Utils.logError(clazz, "JSONException: " + e.toString());
+            } catch (IOException e) {
+                Utils.logError(clazz, "IOException: " + e.toString());
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+
+            if (result) {
+                Utils.showInfo(rootView, "Dodano nową podkategorię");
+                subcategoryAdapter = new SubcategoryAdapter(clazz, Session.getInstance().getSubcategories(categoryForeignId));
+                gridView.setAdapter(subcategoryAdapter);
+            } else {
+                Utils.showError(rootView, "Dodanie nowej podkategorii zakończone niepowodzeniem");
             }
         }
     }
