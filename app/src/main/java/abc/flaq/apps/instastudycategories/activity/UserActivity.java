@@ -164,9 +164,9 @@ public class UserActivity extends SessionActivity {
                     hasJoined = false;
                 }
             } catch (JSONException e) {
-                Utils.logError(clazz, "JSONException: " + e.toString());
+                Utils.logError(clazz, "JSONException: " + e.getMessage());
             } catch (IOException e) {
-                Utils.logError(clazz, "IOException: " + e.toString());
+                Utils.logError(clazz, "IOException: " + e.getMessage());
             }
             return null;
         }
@@ -199,9 +199,9 @@ public class UserActivity extends SessionActivity {
                     result = Api.addUserToSubcategory(Session.getInstance().getUser(), selectedForeignId);
                 }
             } catch (JSONException e) {
-                Utils.logError(clazz, "JSONException: " + e.toString());
+                Utils.logError(clazz, "JSONException: " + e.getMessage());
             } catch (IOException e) {
-                Utils.logError(clazz, "IOException: " + e.toString());
+                Utils.logError(clazz, "IOException: " + e.getMessage());
             }
             return result;
         }
@@ -240,9 +240,9 @@ public class UserActivity extends SessionActivity {
                     result = Api.removeUserFromSubcategory(Session.getInstance().getUser(), selectedForeignId);
                 }
             } catch (JSONException e) {
-                Utils.logError(clazz, "JSONException: " + e.toString());
+                Utils.logError(clazz, "JSONException: " + e.getMessage());
             } catch (IOException e) {
-                Utils.logError(clazz, "IOException: " + e.toString());
+                Utils.logError(clazz, "IOException: " + e.getMessage());
             }
             return result;
         }

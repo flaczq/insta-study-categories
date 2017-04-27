@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
+import android.graphics.drawable.Drawable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
@@ -23,6 +25,8 @@ import abc.flaq.apps.instastudycategories.R;
 import static abc.flaq.apps.instastudycategories.utils.Constants.DATE_FORMAT;
 import static abc.flaq.apps.instastudycategories.utils.Constants.GRID_HEIGHT_DIFF;
 import static abc.flaq.apps.instastudycategories.utils.Constants.GRID_MAX_HEIGHT;
+import static abc.flaq.apps.instastudycategories.utils.Constants.STRINGS_CATEGORY_PREFIX;
+import static abc.flaq.apps.instastudycategories.utils.Constants.STRINGS_SUBCATEGORY_PREFIX;
 
 public class Utils {
 
@@ -64,6 +68,34 @@ public class Utils {
         }
     }
 
+    public static void showInfo(View view, String message) {
+        Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
+    }
+    public static void showInfoDismiss(View view, String message) {
+        Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE)
+                .setActionTextColor(ContextCompat.getColor(view.getContext(), R.color.colorAccent))
+                .setAction("OK", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // dismiss
+                    }
+                }).show();
+    }
+    public static void showError(View view, String message) {
+        log(LOG_ERROR, view.getContext(), message);
+        Snackbar.make(view, "General error", Snackbar.LENGTH_LONG).show();
+    }
+    public static void showErrorDismiss(View view, String message) {
+        Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE)
+                .setActionTextColor(ContextCompat.getColor(view.getContext(), R.color.colorError))
+                .setAction("OK", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // dismiss
+                    }
+                }).show();
+    }
+
     public static <T> boolean isEmpty(T element) {
         if (element == null || "".equals(element) || "".equals(element.toString())) {
             return true;
@@ -92,18 +124,40 @@ public class Utils {
         return formattedDate;
     }
 
-    public static String getStringByName(Context context, String name) {
+    private static String getStringByName(Context context, String name) {
         int nameId = context.getResources().getIdentifier(name, "string", context.getPackageName());
+        if (nameId == 0) {
+            logDebug(context, "Nie znaleziono tłumaczenia dla nazwy: " + name);
+            return "";
+        }
         return context.getString(nameId);
     }
-    public static int getDrawableByName(Context context, String name) {
-        int drawableId = context.getResources().getIdentifier(name, "drawable", context.getPackageName());
-        return drawableId;
+    public static String getStringByCategoryName(Context context, String name) {
+        String result = getStringByName(context, STRINGS_CATEGORY_PREFIX + name);
+        if (isEmpty(result)) {
+            return name;
+        }
+        return result;
     }
-    public static int getCategoryDrawable(Context context, String name) {
+    public static String getStringBySubcategoryName(Context context, String name) {
+        String result = getStringByName(context, STRINGS_SUBCATEGORY_PREFIX + name);
+        if (isEmpty(result)) {
+            return name;
+        }
+        return result;
+    }
+    private static Drawable getDrawableByName(Context context, String name) {
+        int drawableId = context.getResources().getIdentifier(name, "drawable", context.getPackageName());
+        if (drawableId == 0) {
+            logDebug(context, "Nie znaleziono obrazu dla nazwy: " + name);
+            return null;
+        }
+        return ResourcesCompat.getDrawable(context.getResources(), drawableId, null);
+    }
+    public static Drawable getCategoryDrawable(Context context, String name) {
         return getDrawableByName(context, name);
     }
-    public static int getSubcategoryDrawable(Context context, String name) {
+    public static Drawable getSubcategoryDrawable(Context context, String name) {
         // Remove subcategory prefix (hs_)
         int index = name.indexOf("_");
         if (index > 0) {
@@ -112,7 +166,7 @@ public class Utils {
         return getDrawableByName(context, name);
     }
 
-    public static void setColorByPosition(int position, TextView textView) {
+    private static void setColorByPosition(int position, TextView textView) {
         // Max ten colors
         switch (position % 10) {
             case 0:
@@ -204,34 +258,6 @@ public class Utils {
         }
         string += "]";
         return string;
-    }
-
-    public static void showInfo(View view, String message) {
-        Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
-    }
-    public static void showInfoDismiss(View view, String message) {
-        Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE)
-                .setActionTextColor(ContextCompat.getColor(view.getContext(), R.color.colorAccent))
-                .setAction("OK", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        // dismiss
-                    }
-                }).show();
-    }
-    public static void showError(View view, String message) {
-        Utils.log(LOG_ERROR, view.getContext(), message);
-        Snackbar.make(view, "General error", Snackbar.LENGTH_LONG).show();
-    }
-    public static void showErrorDismiss(View view, String message) {
-        Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE)
-                .setActionTextColor(ContextCompat.getColor(view.getContext(), R.color.colorError))
-                .setAction("OK", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        // dismiss
-                    }
-                }).show();
     }
 
 }

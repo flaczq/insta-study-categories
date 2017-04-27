@@ -160,7 +160,7 @@ public class Api {
         String stream = getStream(is);
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
-            Utils.logError("Api.correctForeignId()", response.toString());
+            Utils.logError("Api.correctForeignId()", stream);
         } else {
             eveObject.update(response);
         }
@@ -170,7 +170,7 @@ public class Api {
         String stream = getStream(is);
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
-            Utils.logError("Api.correctSize()", response.toString());
+            Utils.logError("Api.correctSize()", stream);
         } else {
             eveObject.update(response);
         }
@@ -272,25 +272,26 @@ public class Api {
 
         return null;
     }
-    public static Boolean addCategory(String categoryName) throws IOException, JSONException {
+    public static String addCategory(String categoryName) throws IOException, JSONException {
+        //FIXME: nie działa
         Category category = Factory.categoryFromName(categoryName);
         InputStreamReader is = postRequest(API_SUBCATEGORIES_URL, category.toPostJson());
         String stream = getStream(is);
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
-            Utils.logError("Api.addCategory()", response.toString());
-            return Boolean.FALSE;
+            Utils.logError("Api.addCategory()", stream);
+            return null;
         }
 
+        // Set etag
         category.update(response);
-        // TODO: check if needed?
-        //correctForeignId(API_CATEGORIES_URL + "/" + category.getId(), category);
+        correctForeignId(API_CATEGORIES_URL + "/" + category.getId(), category);
         getAllCategories(true);
 
-        // Add current user to this new category
-        addUserToCategory(Session.getInstance().getUser(), category.getForeignId());
+        // Przeniesiono do activity
+        // addUserToCategory(Session.getInstance().getUser(), category.getForeignId());
 
-        return Boolean.TRUE;
+        return category.getForeignId();
     }
 
     // SUBCATEGORIES
@@ -370,25 +371,40 @@ public class Api {
 
         return subcategories;
     }
-    public static Boolean addSubcategory(String subcategoryName, String parentCategoryForeignId) throws IOException, JSONException {
+    public static String addSubcategory(String subcategoryName, String parentCategoryForeignId) throws IOException, JSONException {
         Subcategory subcategory = Factory.subcategoryFromName(subcategoryName, parentCategoryForeignId);
         InputStreamReader is = postRequest(API_SUBCATEGORIES_URL, subcategory.toPostJson());
         String stream = getStream(is);
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
-            Utils.logError("Api.addSubcategory()", response.toString());
-            return Boolean.FALSE;
+            Utils.logError("Api.addSubcategory()", stream);
+            return null;
         }
 
+        // Set etag
         subcategory.update(response);
-        // TODO: check if needed?
-        //correctForeignId(API_SUBCATEGORIES_URL + "/" + subcategory.getId(), subcategory);
+        correctForeignId(API_SUBCATEGORIES_URL + "/" + subcategory.getId(), subcategory);
+
+        String categoryId = Utils.undoForeignId(parentCategoryForeignId);
+        Category category = getCategoryById(categoryId);
+        if (Utils.isEmpty(category)) {
+            Utils.logDebug("Api.addSubcategory()", "Zwiększenie liczby podkategorii w kategorii: " + categoryId + " zakończone niepowodzeniem");
+        } else {
+            correctSize(
+                    API_CATEGORIES_URL + "/" + categoryId,
+                    category,
+                    "subcategoriesSize",
+                    category.getSubcategoriesSize() + 1
+            );
+        }
+        // Update sizes of category
+        getAllCategories(true);
         getAllSubcategories(true);
 
-        // Add current user to this new subcategory
-        addUserToSubcategory(Session.getInstance().getUser(), subcategory.getForeignId());
+        // Przeniesiono do activity
+        // addUserToSubcategory(Session.getInstance().getUser(), subcategory.getForeignId());
 
-        return Boolean.TRUE;
+        return subcategory.getForeignId();
     }
 
     // USERS
@@ -520,13 +536,12 @@ public class Api {
         String stream = getStream(is);
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
-            Utils.logError("Api.addUser()", response.toString());
+            Utils.logError("Api.addUser()", stream);
             return Boolean.FALSE;
         }
 
         user.update(response);
-        // TODO: check if needed?
-        //correctForeignId(API_USERS_URL + "/" + user.getId(), user);
+        correctForeignId(API_USERS_URL + "/" + user.getId(), user);
         getAllUsers(true);
 
         return Boolean.TRUE;
@@ -548,15 +563,13 @@ public class Api {
         String stream = getStream(is);
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
-            Utils.logError("Api.addUserToCategory()", response.toString());
+            Utils.logError("Api.addUserToCategory()", stream);
             categories.remove(categoryForeignId);
             return Boolean.FALSE;
         }
 
         user.update(response);
         getAllUsers(true);
-        // Update etag of category
-        getAllCategories(true);
 
         String categoryId = Utils.undoForeignId(categoryForeignId);
         Category category = getCategoryById(categoryId);
@@ -570,8 +583,8 @@ public class Api {
                     category.getUsersSize() + 1
             );
         }
-        // Update etag and sizes of category
-        getAllSubcategories(true);
+        // Update sizes of category
+        getAllCategories(true);
 
         return Boolean.TRUE;
     }
@@ -592,15 +605,13 @@ public class Api {
         String stream = getStream(is);
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
-            Utils.logError("Api.addUserToSubcategory()", response.toString());
+            Utils.logError("Api.addUserToSubcategory()", stream);
             subcategories.remove(subcategoryForeignId);
             return Boolean.FALSE;
         }
 
         user.update(response);
         getAllUsers(true);
-        // Update etag of category
-        getAllSubcategories(true);
 
         String subcategoryId = Utils.undoForeignId(subcategoryForeignId);
         Subcategory subcategory = getSubcategoryById(subcategoryId);
@@ -614,7 +625,7 @@ public class Api {
                     subcategory.getUsersSize() + 1
             );
         }
-        // Update etag and sizes of category
+        // Update sizes of subcategory
         getAllSubcategories(true);
 
         return Boolean.TRUE;
@@ -625,7 +636,7 @@ public class Api {
         String stream = getStream(is);
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
-            Utils.logError("Api.removeUser()", response.toString());
+            Utils.logError("Api.removeUser()", stream);
             return Boolean.FALSE;
         }
 
@@ -651,15 +662,13 @@ public class Api {
         String stream = getStream(is);
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
-            Utils.logError("Api.removeUserFromCategory()", response.toString());
+            Utils.logError("Api.removeUserFromCategory()", stream);
             categories.add(categoryForeignId);
             return Boolean.FALSE;
         }
 
         user.update(response);
         getAllUsers(true);
-        // Update etag of category
-        getAllCategories(true);
 
         String categoryId = Utils.undoForeignId(categoryForeignId);
         Category category = getCategoryById(categoryId);
@@ -673,8 +682,8 @@ public class Api {
                     category.getUsersSize() - 1
             );
         }
-        // Update etag and sizes of category
-        getAllSubcategories(true);
+        // Update sizes of category
+        getAllCategories(true);
 
         return Boolean.TRUE;
     }
@@ -695,15 +704,13 @@ public class Api {
         String stream = getStream(is);
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
-            Utils.logError("Api.removeUserFromSubcategory()", response.toString());
+            Utils.logError("Api.removeUserFromSubcategory()", stream);
             subcategories.add(subcategoryForeignId);
             return Boolean.FALSE;
         }
 
         user.update(response);
         getAllUsers(true);
-        // Update etag of category
-        getAllSubcategories(true);
 
         String subcategoryId = Utils.undoForeignId(subcategoryForeignId);
         Subcategory subcategory = getSubcategoryById(subcategoryId);
@@ -717,7 +724,7 @@ public class Api {
                     subcategory.getUsersSize() - 1
             );
         }
-        // Update etag and sizes of category
+        // Update sizes of subcategory
         getAllSubcategories(true);
 
         return Boolean.TRUE;

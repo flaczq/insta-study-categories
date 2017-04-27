@@ -1,6 +1,7 @@
 package abc.flaq.apps.instastudycategories.adapter;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +17,6 @@ import java.util.List;
 import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.pojo.Subcategory;
 import abc.flaq.apps.instastudycategories.utils.Utils;
-
-import static abc.flaq.apps.instastudycategories.utils.Constants.STRINGS_SUBCATEGORY_PREFIX;
 
 public class SubcategoryAdapter extends BaseAdapter {
 
@@ -93,15 +92,15 @@ public class SubcategoryAdapter extends BaseAdapter {
 
         final ViewHolder viewHolder = (ViewHolder) view.getTag();
         Utils.setSubcategoryGridDesign(subcategory.getUsersSize(), maxSize, viewHolder.image);
-        String subcategoryName = Utils.getStringByName(context, STRINGS_SUBCATEGORY_PREFIX + subcategory.getName());
+        String subcategoryName = Utils.getStringBySubcategoryName(context, subcategory.getName());
         viewHolder.name.setText(subcategoryName);
 
-        int drawable = Utils.getSubcategoryDrawable(context, subcategory.getName());
         if (Utils.isEmpty(subcategory.getImageUrl())) {
-            if (drawable == 0) {
+            Drawable drawable = Utils.getSubcategoryDrawable(context, subcategory.getName());
+            if (Utils.isEmpty(drawable)) {
                 viewHolder.image.setImageResource(R.drawable.placeholder_category);
             } else {
-                viewHolder.image.setImageResource(drawable);
+                viewHolder.image.setImageDrawable(drawable);
             }
         } else {
             UrlImageViewHelper.setUrlDrawable(viewHolder.image, subcategory.getImageUrl(), R.drawable.placeholder_category);   // FIXME: images on server

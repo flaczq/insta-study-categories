@@ -280,7 +280,7 @@ public class SessionActivity extends AppCompatActivity {
             try {
                 instagramToken = InstagramApi.getAccessTokenByCode(code);
             } catch (IOException e) {
-                Utils.logError(clazz, "IOException: " + e.toString());
+                Utils.logError(clazz, "IOException: " + e.getMessage());
             }
             return instagramToken;
         }
@@ -334,9 +334,9 @@ public class SessionActivity extends AppCompatActivity {
                     }
                 }
             } catch (IOException e) {
-                Utils.logError(clazz, "IOException: " + e.toString());
+                Utils.logError(clazz, "IOException: " + e.getMessage());
             } catch (JSONException e) {
-                Utils.logError(clazz, "JSONException: " + e.toString());
+                Utils.logError(clazz, "JSONException: " + e.getMessage());
             }
             return instagramUser;
         }
@@ -385,9 +385,9 @@ public class SessionActivity extends AppCompatActivity {
             try {
                 result = Api.addUser(user);
             } catch (JSONException e) {
-                Utils.logError(clazz, "JSONException: " + e.toString());
+                Utils.logError(clazz, "JSONException: " + e.getMessage());
             } catch (IOException e) {
-                Utils.logError(clazz, "IOException: " + e.toString());
+                Utils.logError(clazz, "IOException: " + e.getMessage());
             }
             return result;
         }
@@ -425,9 +425,9 @@ public class SessionActivity extends AppCompatActivity {
             try {
                 result = Api.removeUser(Session.getInstance().getUser());
             } catch (IOException e) {
-                Utils.logError(clazz, "IOException: " + e.toString());
+                Utils.logError(clazz, "IOException: " + e.getMessage());
             } catch (JSONException e) {
-                Utils.logError(clazz, "JSONException: " + e.toString());
+                Utils.logError(clazz, "JSONException: " + e.getMessage());
             }
             return result;
         }

@@ -87,12 +87,12 @@ public class Category extends EveObject implements Comparable<Category> {
     public String toPostJson() {
         String json = "{";
         json += "\"foreignId\":\"" + getForeignId() + "\",";
-        json += "\"name\":" + name + "\",";
-        json += "\"usersSize\":" + usersSize + "\",";
-        json += "\"subcategoriesSize\":" + subcategoriesSize + "\",";
-        json += "\"hashtags\":" + Utils.listToString(hashtags) + "\",";
-        json += "\"asSubcategory\":" + asSubcategory + "\",";
-        json += "\"imageUrl: " + imageUrl + "\",";
+        json += "\"name\":\"" + name + "\",";
+        json += "\"usersSize\":" + usersSize + ",";
+        json += "\"subcategoriesSize\":" + subcategoriesSize + ",";
+        json += "\"hashtags\":" + Utils.listToString(hashtags) + ",";
+        json += "\"asSubcategory\":" + asSubcategory + ",";
+        json += "\"imageUrl\":\"" + imageUrl + "\",";
         json += "\"active\":" + active;
         json += "}";
         return json;

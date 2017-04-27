@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -65,8 +67,9 @@ public class SubcategoryActivity extends SessionActivity {
                 }
             });
 
-            // Remember subcategories
-            if (Utils.isEmpty(Session.getInstance().getSubcategories(categoryForeignId))) {
+            // FIXME: Remember subcategories - prawdopodobnie do wywalenia z powodu przesuwania podkategorii z aktywnych do nieaktywnych?
+            if (Utils.isEmpty(Session.getInstance().getSubcategories(categoryForeignId)) ||
+                    Session.getInstance().getSubcategories(categoryForeignId).size() == 0) {
                 new ProcessSubcategories().execute();
             } else {
                 subcategoryAdapter = new SubcategoryAdapter(clazz, Session.getInstance().getSubcategories(categoryForeignId));
@@ -79,7 +82,7 @@ public class SubcategoryActivity extends SessionActivity {
         super.onResume();
         invalidateOptionsMenu();
         // Update subcategories when going back from User activity
-        if (Utils.isNotEmpty(subcategoryAdapter)) {
+        if (Utils.isNotEmpty(subcategoryAdapter) && subcategoryAdapter.getCount() > 0) {
             subcategoryAdapter = new SubcategoryAdapter(clazz, Session.getInstance().getSubcategories(categoryForeignId));
             gridView.setAdapter(subcategoryAdapter);
 
@@ -127,7 +130,7 @@ public class SubcategoryActivity extends SessionActivity {
                 .negativeText("Anuluj")
                 .titleColorRes(R.color.colorPrimaryDark)
                 .inputType(InputType.TYPE_CLASS_TEXT)
-                .inputRangeRes(1, -1, R.color.colorError)
+                .inputRangeRes(1, 20, R.color.colorError)
                 .input("Wpisz nazwę...", null, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
@@ -162,9 +165,9 @@ public class SubcategoryActivity extends SessionActivity {
                     Utils.logInfo(clazz, subcategory.toString());
                 }
             } catch (JSONException e) {
-                Utils.logError(clazz, "JSONException: " + e.toString());
+                Utils.logError(clazz, "JSONException: " + e.getMessage());
             } catch (IOException e) {
-                Utils.logError(clazz, "IOException: " + e.toString());
+                Utils.logError(clazz, "IOException: " + e.getMessage());
             }
             return subcategories;
         }
@@ -175,7 +178,14 @@ public class SubcategoryActivity extends SessionActivity {
             isSnackbarShown = false;
 
             if (result.size() == 0) {
-                Utils.showError(rootView, "Nie znaleziono podkategorii");
+                Snackbar.make(rootView, "Nie znaleziono podkategorii", Snackbar.LENGTH_INDEFINITE)
+                        .setActionTextColor(ContextCompat.getColor(clazz, R.color.colorError))
+                        .setAction("ODŚWIEŻ", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                // TODO: odswiez
+                            }
+                        }).show();
             } else {
                 subcategoryAdapter = new SubcategoryAdapter(clazz, result);
                 gridView.setAdapter(subcategoryAdapter);
@@ -195,11 +205,15 @@ public class SubcategoryActivity extends SessionActivity {
             String subcategoryName = params[0];
             Boolean result = Boolean.FALSE;
             try {
-                result = Api.addSubcategory(subcategoryName, categoryForeignId);
+                String subcategoryForeignId = Api.addSubcategory(subcategoryName, categoryForeignId);
+                if (Utils.isNotEmpty(subcategoryForeignId)) {
+                    result = Boolean.TRUE;
+                    Api.addUserToSubcategory(Session.getInstance().getUser(), subcategoryForeignId);
+                }
             } catch (JSONException e) {
-                Utils.logError(clazz, "JSONException: " + e.toString());
+                Utils.logError(clazz, "JSONException: " + e.getMessage());
             } catch (IOException e) {
-                Utils.logError(clazz, "IOException: " + e.toString());
+                Utils.logError(clazz, "IOException: " + e.getMessage());
             }
             return result;
         }

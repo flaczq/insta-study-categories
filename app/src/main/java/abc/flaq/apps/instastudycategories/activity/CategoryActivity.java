@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,6 +31,7 @@ import abc.flaq.apps.instastudycategories.utils.Api;
 import abc.flaq.apps.instastudycategories.utils.Session;
 import abc.flaq.apps.instastudycategories.utils.Utils;
 
+import static abc.flaq.apps.instastudycategories.utils.Constants.API_ALL_CATEGORY_NAME;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_FOREIGN_ID;
 
 public class CategoryActivity extends SessionActivity {
@@ -63,7 +66,7 @@ public class CategoryActivity extends SessionActivity {
         });
 
         // Remember categories
-        if (Utils.isEmpty(Session.getInstance().getCategories())) {
+        if (Utils.isEmpty(Session.getInstance().getCategories()) || Session.getInstance().getCategories().size() == 0) {
             new ProcessCategories().execute();
         } else {
             categoryAdapter = new CategoryAdapter(clazz, Session.getInstance().getCategories());
@@ -75,7 +78,7 @@ public class CategoryActivity extends SessionActivity {
         super.onResume();
         invalidateOptionsMenu();
         // Update categories when going back from User or Subcategory activity
-        if (Utils.isNotEmpty(categoryAdapter)) {
+        if (Utils.isNotEmpty(categoryAdapter) && categoryAdapter.getCount() > 0) {
             categoryAdapter = new CategoryAdapter(clazz, Session.getInstance().getCategories());
             gridView.setAdapter(categoryAdapter);
         }
@@ -122,11 +125,14 @@ public class CategoryActivity extends SessionActivity {
                 .negativeText("Anuluj")
                 .titleColorRes(R.color.colorPrimaryDark)
                 .inputType(InputType.TYPE_CLASS_TEXT)
-                .inputRangeRes(1, -1, R.color.colorError)
+                .inputRangeRes(1, 20, R.color.colorError)
                 .input("Wpisz nazwę...", null, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
-                        // nothing
+                        // TODO: sprawdzać, czy różne od nazw wszystkich kategorii
+                        if (Utils.isNotEmpty(input) && API_ALL_CATEGORY_NAME.equals(input.toString())) {
+                            dialog.getActionButton(DialogAction.POSITIVE).setEnabled(false);
+                        }
                     }
                 })
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
@@ -138,7 +144,9 @@ public class CategoryActivity extends SessionActivity {
                         }
                         dialog.dismiss();
                     }
-                }).show();
+                })
+                .alwaysCallInputCallback()
+                .show();
     }
 
     private class ProcessCategories extends AsyncTask<Void, Void, List<Category>> {
@@ -157,9 +165,9 @@ public class CategoryActivity extends SessionActivity {
                     Utils.logInfo(clazz, category.toString());
                 }
             } catch (JSONException e) {
-                Utils.logError(clazz, "JSONException: " + e.toString());
+                Utils.logError(clazz, "JSONException: " + e.getMessage());
             } catch (IOException e) {
-                Utils.logError(clazz, "IOException: " + e.toString());
+                Utils.logError(clazz, "IOException: " + e.getMessage());
             }
             return categories;
         }
@@ -170,7 +178,14 @@ public class CategoryActivity extends SessionActivity {
             preloader.setVisibility(View.GONE);
 
             if (result.size() == 0) {
-                Utils.showError(rootView, "No categories found");
+                Snackbar.make(rootView, "Nie znaleziono kategorii", Snackbar.LENGTH_INDEFINITE)
+                        .setActionTextColor(ContextCompat.getColor(clazz, R.color.colorError))
+                        .setAction("ODŚWIEŻ", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                // TODO: odswiez
+                            }
+                        }).show();
             } else {
                 categoryAdapter = new CategoryAdapter(clazz, result);
                 gridView.setAdapter(categoryAdapter);
@@ -190,11 +205,15 @@ public class CategoryActivity extends SessionActivity {
             String categoryName = params[0];
             Boolean result = Boolean.FALSE;
             try {
-                result = Api.addCategory(categoryName);
+                String categoryForeignId = Api.addCategory(categoryName);
+                if (Utils.isNotEmpty(categoryForeignId)) {
+                    result = Boolean.TRUE;
+                    Api.addUserToCategory(Session.getInstance().getUser(), categoryForeignId);
+                }
             } catch (JSONException e) {
-                Utils.logError(clazz, "JSONException: " + e.toString());
+                Utils.logError(clazz, "JSONException: " + e.getMessage());
             } catch (IOException e) {
-                Utils.logError(clazz, "IOException: " + e.toString());
+                Utils.logError(clazz, "IOException: " + e.getMessage());
             }
             return result;
         }
