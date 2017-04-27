@@ -60,7 +60,7 @@ public class EveObject {
         this.updated = updated;
     }
 
-    public void update(EveObject object) {
+    public void updateFromResponse(EveObject object) {
         id = object.getId();
         foreignId = Utils.doForeignId(object.getId());
         etag = object.getEtag();

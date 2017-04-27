@@ -57,7 +57,7 @@ public class SessionActivity extends AppCompatActivity {
     private User user;
     private String accessToken;
     private Dialog instagramDialog;
-    private Boolean isSnackbarShown = false;
+    private Boolean isApiWorking = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +89,7 @@ public class SessionActivity extends AppCompatActivity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (isSnackbarShown) {
+        if (isApiWorking) {
             return true;
         }
         switch (item.getItemId()) {
@@ -146,7 +146,7 @@ public class SessionActivity extends AppCompatActivity {
                 if (url.startsWith(INSTAGRAM_REDIRECT_URL)) {
                     String code = InstagramApi.getCodeFromUrl(rootView, url);
                     if (Utils.isEmpty(code)) {
-                        Utils.showError(rootView, "Instagram code is empty");
+                        Utils.showError(rootView, "Pustyk kod z Instagrama");
                         instagramDialog.dismiss();
                     } else {
                         Utils.logInfo(clazz, "Collected instagram code: " + code);
@@ -160,7 +160,7 @@ public class SessionActivity extends AppCompatActivity {
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 super.onReceivedError(view, request, error);
-                Utils.showError(rootView, "Instagram login error");
+                Utils.showError(rootView, "Błąd logowania do Instagrama");
                 instagramDialog.dismiss();
             }
         });
@@ -270,7 +270,7 @@ public class SessionActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            isSnackbarShown = true;
+            isApiWorking = true;
         }
 
         @Override
@@ -288,7 +288,7 @@ public class SessionActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(InstagramAccessToken result) {
             super.onPostExecute(result);
-            isSnackbarShown = false;
+            isApiWorking = false;
 
             if (Utils.isNotEmpty(result)) {
                 if (result.isError() || Utils.isEmpty(result.getAccessToken())) {
@@ -315,7 +315,7 @@ public class SessionActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            isSnackbarShown = true;
+            isApiWorking = true;
         }
 
         @Override
@@ -331,6 +331,9 @@ public class SessionActivity extends AppCompatActivity {
                         user = Factory.userFromInstagramUser(instagramUser.getData());
                     } else {
                         Utils.logInfo(clazz, "User already exists: " + user);
+                        // FIXME: może przenieść to do kolejnego asynctaska?
+                        user.updateFromInstagramUser(instagramUser.getData());
+                        Api.updateUser(user);
                     }
                 }
             } catch (IOException e) {
@@ -344,7 +347,7 @@ public class SessionActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(InstagramUser result) {
             super.onPostExecute(result);
-            isSnackbarShown = false;
+            isApiWorking = false;
 
             if (Utils.isNotEmpty(result) &&
                     Utils.isNotEmpty(result.getMeta()) &&
@@ -376,7 +379,7 @@ public class SessionActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            isSnackbarShown = true;
+            isApiWorking = true;
         }
 
         @Override
@@ -395,7 +398,7 @@ public class SessionActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
-            isSnackbarShown = false;
+            isApiWorking = false;
 
             if (result) {
                 Utils.showInfo(rootView, "Zalogowano");
@@ -416,7 +419,7 @@ public class SessionActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            isSnackbarShown = true;
+            isApiWorking = true;
         }
 
         @Override
@@ -435,7 +438,7 @@ public class SessionActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
-            isSnackbarShown = false;
+            isApiWorking = false;
 
             if (result) {
                 Utils.showInfo(rootView, "Usunięto konto użytkownika");

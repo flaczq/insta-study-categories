@@ -208,7 +208,6 @@ public class CategoryActivity extends SessionActivity {
                 String categoryForeignId = Api.addCategory(categoryName);
                 if (Utils.isNotEmpty(categoryForeignId)) {
                     result = Boolean.TRUE;
-                    Api.addUserToCategory(Session.getInstance().getUser(), categoryForeignId);
                 }
             } catch (JSONException e) {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());

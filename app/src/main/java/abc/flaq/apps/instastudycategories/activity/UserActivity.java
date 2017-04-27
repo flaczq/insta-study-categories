@@ -36,10 +36,10 @@ public class UserActivity extends SessionActivity {
     private UserAdapter userAdapter;
 
     private Menu mainMenu;
-    private String selectedForeignId;
+    private String passedForeignId;
     private Boolean isCategory = false;
     private Boolean hasJoined;
-    private Boolean isSnackbarShown = false;
+    private Boolean isApiWorking = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,21 +49,21 @@ public class UserActivity extends SessionActivity {
         listView = (ListView) findViewById(R.id.user_list);
 
         Intent intent = getIntent();
-        // Check if passed selectedForeignId is from category or subcategory
+        // Check if passedForeignId is from category or subcategory
         String categoryForeignId = intent.getStringExtra(INTENT_CATEGORY_FOREIGN_ID);
-        selectedForeignId = null;
+        passedForeignId = null;
         if (Utils.isNotEmpty(categoryForeignId)) {
             isCategory = true;
-            selectedForeignId = categoryForeignId;
+            passedForeignId = categoryForeignId;
         } else {
             String subcategoryForeignId = intent.getStringExtra(INTENT_SUBCATEGORY_FOREIGN_ID);
             if (Utils.isNotEmpty(subcategoryForeignId)) {
-                selectedForeignId = subcategoryForeignId;
+                passedForeignId = subcategoryForeignId;
             }
         }
 
-        if (Utils.isEmpty(selectedForeignId)) {
-            Utils.showError(rootView, "No category or subcategory id");
+        if (Utils.isEmpty(passedForeignId)) {
+            Utils.showError(rootView, "Brak id kategorii lub podkategorii");
         } else {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -110,7 +110,7 @@ public class UserActivity extends SessionActivity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (isSnackbarShown) {
+        if (isApiWorking) {
             return true;
         }
         switch (item.getItemId()) {
@@ -141,27 +141,28 @@ public class UserActivity extends SessionActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            isSnackbarShown = true;
+            isApiWorking = true;
         }
 
         @Override
         protected Void doInBackground(Void... params) {
             try {
                 if (isCategory) {
-                    users = Api.getUsersByCategoryForeignId(selectedForeignId);
+                    users = Api.getUsersByCategoryForeignId(passedForeignId);
                 } else {
-                    users = Api.getUsersBySubcategoryForeignId(selectedForeignId);
+                    users = Api.getUsersBySubcategoryForeignId(passedForeignId);
                 }
+                hasJoined = false;
                 for (User user : users) {
                     Utils.logInfo(clazz, user.toString());
                     if (Utils.isNotEmpty(Session.getInstance().getUser()) &&
                             user.getId().equals(Session.getInstance().getUser().getId())) {
-                        hasJoined = (Session.getInstance().getUser().getCategories().contains(selectedForeignId) ||
-                                Session.getInstance().getUser().getSubcategories().contains(selectedForeignId));
+                        if (isCategory) {
+                            hasJoined = Session.getInstance().getUser().getCategories().contains(passedForeignId);
+                        } else {
+                            hasJoined = Session.getInstance().getUser().getSubcategories().contains(passedForeignId);
+                        }
                     }
-                }
-                if (Utils.isEmpty(hasJoined)) {
-                    hasJoined = false;
                 }
             } catch (JSONException e) {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
@@ -174,7 +175,7 @@ public class UserActivity extends SessionActivity {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            isSnackbarShown = false;
+            isApiWorking = false;
 
             userAdapter = new UserAdapter(clazz, users);
             listView.setAdapter(userAdapter);
@@ -186,7 +187,7 @@ public class UserActivity extends SessionActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            isSnackbarShown = true;
+            isApiWorking = true;
         }
 
         @Override
@@ -194,9 +195,9 @@ public class UserActivity extends SessionActivity {
             Boolean result = Boolean.FALSE;
             try {
                 if (isCategory) {
-                    result = Api.addUserToCategory(Session.getInstance().getUser(), selectedForeignId);
+                    result = Api.addUserToCategory(Session.getInstance().getUser(), passedForeignId);
                 } else {
-                    result = Api.addUserToSubcategory(Session.getInstance().getUser(), selectedForeignId);
+                    result = Api.addUserToSubcategory(Session.getInstance().getUser(), passedForeignId);
                 }
             } catch (JSONException e) {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
@@ -209,7 +210,7 @@ public class UserActivity extends SessionActivity {
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
-            isSnackbarShown = false;
+            isApiWorking = false;
 
             if (result) {
                 Utils.showInfo(rootView, "Dodano użytkownika do podkategorii");
@@ -227,7 +228,7 @@ public class UserActivity extends SessionActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            isSnackbarShown = true;
+            isApiWorking = true;
         }
 
         @Override
@@ -235,9 +236,9 @@ public class UserActivity extends SessionActivity {
             Boolean result = Boolean.FALSE;
             try {
                 if (isCategory) {
-                    result = Api.removeUserFromCategory(Session.getInstance().getUser(), selectedForeignId);
+                    result = Api.removeUserFromCategory(Session.getInstance().getUser(), passedForeignId);
                 } else {
-                    result = Api.removeUserFromSubcategory(Session.getInstance().getUser(), selectedForeignId);
+                    result = Api.removeUserFromSubcategory(Session.getInstance().getUser(), passedForeignId);
                 }
             } catch (JSONException e) {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
@@ -250,7 +251,7 @@ public class UserActivity extends SessionActivity {
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
-            isSnackbarShown = false;
+            isApiWorking = false;
 
             if (result) {
                 Utils.showInfo(rootView, "Usunięto użytkownika z podkategorii");

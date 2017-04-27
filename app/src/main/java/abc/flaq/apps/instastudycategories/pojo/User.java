@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
+import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramUser;
 import abc.flaq.apps.instastudycategories.utils.Utils;
 
 public class User extends EveObject implements Comparable<User> {
@@ -146,6 +147,22 @@ public class User extends EveObject implements Comparable<User> {
         json += "\"active\":" + active;
         json += "}";
         return json;
+    }
+
+    public void updateFromInstagramUser(InstagramUser.InstagramUserData instagramUser) {
+        instagramId = instagramUser.getId();
+        fullname = instagramUser.getFullname();
+        username = instagramUser.getUsername();
+        bio = instagramUser.getBio();
+        profilePicUrl = instagramUser.getProfilePicUrl();
+        if (Utils.isEmpty(instagramUser.getCounts())) {
+            followers = 0;
+            media = 0;
+        } else {
+            followers = instagramUser.getCounts().getFollowers();
+            media = instagramUser.getCounts().getMedia();
+        }
+        active = Boolean.TRUE;
     }
 
 }

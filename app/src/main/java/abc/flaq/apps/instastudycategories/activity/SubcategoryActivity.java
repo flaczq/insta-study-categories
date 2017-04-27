@@ -42,7 +42,7 @@ public class SubcategoryActivity extends SessionActivity {
     private SubcategoryAdapter subcategoryAdapter;
 
     private String categoryForeignId;
-    private Boolean isSnackbarShown = false;
+    private Boolean isApiWorking = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +55,7 @@ public class SubcategoryActivity extends SessionActivity {
         categoryForeignId = intent.getStringExtra(INTENT_CATEGORY_FOREIGN_ID);
 
         if (Utils.isEmpty(categoryForeignId)) {
-            Utils.showError(rootView, "categoryForeignId is empty");
+            Utils.showError(rootView, "Puste categoryForeignId");
         } else {
             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -99,7 +99,7 @@ public class SubcategoryActivity extends SessionActivity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (isSnackbarShown) {
+        if (isApiWorking) {
             return true;
         }
         switch (item.getItemId()) {
@@ -153,7 +153,7 @@ public class SubcategoryActivity extends SessionActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            isSnackbarShown = true;
+            isApiWorking = true;
         }
 
         @Override
@@ -175,7 +175,7 @@ public class SubcategoryActivity extends SessionActivity {
         @Override
         protected void onPostExecute(List<Subcategory> result) {
             super.onPostExecute(result);
-            isSnackbarShown = false;
+            isApiWorking = false;
 
             if (result.size() == 0) {
                 Snackbar.make(rootView, "Nie znaleziono podkategorii", Snackbar.LENGTH_INDEFINITE)

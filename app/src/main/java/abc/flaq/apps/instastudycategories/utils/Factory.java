@@ -24,8 +24,13 @@ public class Factory {
         user.setUsername(instagramUser.getUsername());
         user.setBio(instagramUser.getBio());
         user.setProfilePicUrl(instagramUser.getProfilePicUrl());
-        user.setFollowers((Utils.isEmpty(instagramUser.getCounts()) ? 0 : instagramUser.getCounts().getFollowers()));
-        user.setMedia((Utils.isEmpty(instagramUser.getCounts()) ? 0 : instagramUser.getCounts().getMedia()));
+        if (Utils.isEmpty(instagramUser.getCounts())) {
+            user.setFollowers(0);
+            user.setMedia(0);
+        } else {
+            user.setFollowers(instagramUser.getCounts().getFollowers());
+            user.setMedia(instagramUser.getCounts().getMedia());
+        }
         // Adding user to "all" category by default
         List<String> categories = new ArrayList<>();
         Category allCategory = Api.getCategoryByName(API_ALL_CATEGORY_NAME);
