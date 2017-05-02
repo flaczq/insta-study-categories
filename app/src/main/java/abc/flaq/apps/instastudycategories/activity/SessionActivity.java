@@ -102,6 +102,9 @@ public class SessionActivity extends AppCompatActivity {
             case R.id.menu_leave:
                 // not available from here
                 break;
+            case R.id.menu_sort:
+                // not available from here
+                break;
             case R.id.menu_info:
                 if (Utils.isEmpty(Session.getInstance().getUser())) {
                     Utils.logDebug(clazz, "Instagram user data is empty");
@@ -217,6 +220,26 @@ public class SessionActivity extends AppCompatActivity {
         infoDialog.getIconView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Utils.showQuickInfo(rootView, "Otwieranie profilu Instagram...");
+                Uri instagramUri = Uri.parse(INSTAGRAM_URL + "_u/" + Session.getInstance().getUser().getUsername());
+                Intent nextIntent = new Intent(Intent.ACTION_VIEW, instagramUri);
+                nextIntent.setPackage(PACKAGE_INSTAGRAM);
+
+                if (Utils.isIntentAvailable(clazz, nextIntent)) {
+                    Utils.logDebug(clazz, "Instagram intent is available");
+                    clazz.startActivity(nextIntent);
+                } else {
+                    Utils.logDebug(clazz, "Instagram intent is NOT available");
+                    clazz.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + Session.getInstance().getUser().getUsername())));
+                }
+
+                infoDialog.dismiss();
+            }
+        });
+        infoDialog.getTitleView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Utils.showQuickInfo(rootView, "Otwieranie profilu Instagram...");
                 Uri instagramUri = Uri.parse(INSTAGRAM_URL + "_u/" + Session.getInstance().getUser().getUsername());
                 Intent nextIntent = new Intent(Intent.ACTION_VIEW, instagramUri);
                 nextIntent.setPackage(PACKAGE_INSTAGRAM);
@@ -241,6 +264,7 @@ public class SessionActivity extends AppCompatActivity {
             menu.findItem(R.id.menu_suggest).setVisible(isAuthenticated);
             menu.findItem(R.id.menu_join).setVisible(isAuthenticated);
             menu.findItem(R.id.menu_leave).setVisible(isAuthenticated);
+            menu.findItem(R.id.menu_sort).setVisible(isAuthenticated);
             menu.findItem(R.id.menu_info).setVisible(isAuthenticated);
             menu.findItem(R.id.menu_login).setVisible(!isAuthenticated);
         }

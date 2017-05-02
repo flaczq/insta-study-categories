@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--TODO: bez oddzielania wierszy, na całą szerokość, odstępy https://material.io/guidelines/components/lists.html -->
-<!--FIXME: obrazek u góry, pod spodem data, z prawej w kółeczku? follwersy-->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -19,37 +17,47 @@
         android:layout_height="wrap_content"
         android:text="Testowy 123"
         android:textSize="16sp"
-        android:textColor="#FFF"
+        android:textColor="@color/textColorPrimary"
         android:layout_toRightOf="@+id/user_item_profile_pic"
         android:layout_toEndOf="@+id/user_item_profile_pic"
-        android:layout_marginLeft="@dimen/users_margin_small"
-        android:layout_marginStart="@dimen/users_margin_small"
-        android:gravity="center_vertical"
-        android:layout_centerVertical="true" />
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="15dp"
+        android:layout_alignTop="@id/user_item_profile_pic" />
+    <TextView android:id="@+id/user_item_joined"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="01.02.2017"
+        android:textSize="13sp"
+        android:textColor="#CCC"
+        android:layout_toRightOf="@+id/user_item_profile_pic"
+        android:layout_toEndOf="@+id/user_item_profile_pic"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="15dp"
+        android:layout_alignBottom="@id/user_item_profile_pic" />
 
     <TextView android:id="@+id/user_item_followers"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="followersów: "
-        android:textSize="14sp"
-        android:textColor="#CCC"
-        android:layout_toRightOf="@+id/user_item_username"
-        android:layout_marginTop="@dimen/users_margin_small"
-        android:layout_marginRight="@dimen/users_margin_big"
-        android:layout_marginEnd="@dimen/users_margin_big"
-        android:gravity="center_vertical"
-        android:layout_centerVertical="true" />
-    <TextView android:id="@+id/user_item_joined"
+        android:text="123"
+        android:textSize="15sp"
+        android:textColor="@color/textColorPrimary"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_alignBaseline="@id/user_item_username" />
+    <TextView android:id="@+id/user_item_media"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="data: "
-        android:textSize="14sp"
-        android:textColor="#CCC"
-        android:layout_toRightOf="@+id/user_item_followers"
-        android:layout_marginBottom="@dimen/users_margin_small"
-        android:layout_marginRight="@dimen/users_margin_big"
-        android:layout_marginEnd="@dimen/users_margin_big"
-        android:gravity="center_vertical"
-        android:layout_centerVertical="true" />
+        android:text="63"
+        android:textSize="15sp"
+        android:textColor="@color/textColorPrimary"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_alignBaseline="@id/user_item_joined" />
 
 </RelativeLayout>

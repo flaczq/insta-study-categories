@@ -1,19 +1,24 @@
 package abc.flaq.apps.instastudycategories.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.PopupMenu;
+
+import com.crystal.crystalpreloaders.widgets.CrystalPreloader;
 
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import abc.flaq.apps.instastudycategories.R;
@@ -25,18 +30,23 @@ import abc.flaq.apps.instastudycategories.utils.Utils;
 
 import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_URL;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_FOREIGN_ID;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_NAME;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_FOREIGN_ID;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_NAME;
 import static abc.flaq.apps.instastudycategories.utils.Constants.PACKAGE_INSTAGRAM;
 
 public class UserActivity extends SessionActivity {
 
-    private final Activity clazz = this;
+    private final AppCompatActivity clazz = this;
     private View rootView;
     private ListView listView;
     private UserAdapter userAdapter;
+    private CrystalPreloader preloader;
 
+    private List<User> users = new ArrayList<>();
     private Menu mainMenu;
-    private String passedForeignId;
+    private String parentForeignId;
+    private String parentName;
     private Boolean isCategory = false;
     private Boolean hasJoined;
     private Boolean isApiWorking = false;
@@ -44,30 +54,37 @@ public class UserActivity extends SessionActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        rootView = findViewById(android.R.id.content);
         setContentView(R.layout.activity_user);
+
+        rootView = findViewById(android.R.id.content);
         listView = (ListView) findViewById(R.id.user_list);
+        preloader = (CrystalPreloader) findViewById(R.id.user_preloader);
 
         Intent intent = getIntent();
-        // Check if passedForeignId is from category or subcategory
+        // Check if parentForeignId is from newCategory or subcategory
         String categoryForeignId = intent.getStringExtra(INTENT_CATEGORY_FOREIGN_ID);
-        passedForeignId = null;
+        parentForeignId = null;
         if (Utils.isNotEmpty(categoryForeignId)) {
             isCategory = true;
-            passedForeignId = categoryForeignId;
+            parentForeignId = categoryForeignId;
+            parentName = Utils.getStringByCategoryName(clazz, intent.getStringExtra(INTENT_CATEGORY_NAME));
         } else {
             String subcategoryForeignId = intent.getStringExtra(INTENT_SUBCATEGORY_FOREIGN_ID);
             if (Utils.isNotEmpty(subcategoryForeignId)) {
-                passedForeignId = subcategoryForeignId;
+                parentForeignId = subcategoryForeignId;
+                parentName = Utils.getStringBySubcategoryName(clazz, intent.getStringExtra(INTENT_SUBCATEGORY_NAME));
             }
         }
 
-        if (Utils.isEmpty(passedForeignId)) {
+        if (Utils.isEmpty(parentForeignId)) {
             Utils.showError(rootView, "Brak id kategorii lub podkategorii");
         } else {
+            Utils.setActionBarTitle(clazz, parentName);
+
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
+                    Utils.showQuickInfo(rootView, "Otwieranie profilu Instagram...");
                     User selected = userAdapter.getItem(position);
                     Uri instagramUri = Uri.parse(INSTAGRAM_URL + "_u/" + selected.getUsername());
                     Intent nextIntent = new Intent(Intent.ACTION_VIEW, instagramUri);
@@ -118,12 +135,35 @@ public class UserActivity extends SessionActivity {
                 // not available from here
                 break;
             case R.id.menu_join:
-                Utils.showInfo(rootView, "Dodawanie do podkategorii...");
+                Utils.showQuickInfo(rootView, "Dodawanie do podkategorii...");
                 new ProcessAddUserToSubcategory().execute();
                 break;
             case R.id.menu_leave:
-                Utils.showInfo(rootView, "Usuwanie z podkategorii...");
+                Utils.showQuickInfo(rootView, "Usuwanie z podkategorii...");
                 new ProcessRemoveUserFromSubcategory().execute();
+                break;
+            case R.id.menu_sort:
+                PopupMenu popup = new PopupMenu(clazz, findViewById(R.id.menu_sort));
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        switch (menuItem.getItemId()) {
+                            // TODO
+                            case R.id.sort_menu_alphabetically:
+                                Collections.reverse(users);
+                                break;
+                            case R.id.sort_menu_date:
+                                Collections.reverse(users);
+                                break;
+                            default:
+                                break;
+                        }
+                        userAdapter.notifyDataSetChanged();
+                        return true;
+                    }
+                });
+                popup.inflate(R.menu.sort_menu);
+                popup.show();
                 break;
             case R.id.menu_info:
                 return super.onOptionsItemSelected(item);
@@ -136,21 +176,20 @@ public class UserActivity extends SessionActivity {
     }
 
     private class ProcessUsers extends AsyncTask<Void, Void, Void> {
-        private List<User> users;
-
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             isApiWorking = true;
+            preloader.setVisibility(View.VISIBLE);
         }
 
         @Override
         protected Void doInBackground(Void... params) {
             try {
                 if (isCategory) {
-                    users = Api.getUsersByCategoryForeignId(passedForeignId);
+                    users = Api.getUsersByCategoryForeignId(parentForeignId);
                 } else {
-                    users = Api.getUsersBySubcategoryForeignId(passedForeignId);
+                    users = Api.getUsersBySubcategoryForeignId(parentForeignId);
                 }
                 hasJoined = false;
                 for (User user : users) {
@@ -158,9 +197,9 @@ public class UserActivity extends SessionActivity {
                     if (Utils.isNotEmpty(Session.getInstance().getUser()) &&
                             user.getId().equals(Session.getInstance().getUser().getId())) {
                         if (isCategory) {
-                            hasJoined = Session.getInstance().getUser().getCategories().contains(passedForeignId);
+                            hasJoined = Session.getInstance().getUser().getCategories().contains(parentForeignId);
                         } else {
-                            hasJoined = Session.getInstance().getUser().getSubcategories().contains(passedForeignId);
+                            hasJoined = Session.getInstance().getUser().getSubcategories().contains(parentForeignId);
                         }
                     }
                 }
@@ -176,6 +215,7 @@ public class UserActivity extends SessionActivity {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             isApiWorking = false;
+            preloader.setVisibility(View.GONE);
 
             userAdapter = new UserAdapter(clazz, users);
             listView.setAdapter(userAdapter);
@@ -195,9 +235,9 @@ public class UserActivity extends SessionActivity {
             Boolean result = Boolean.FALSE;
             try {
                 if (isCategory) {
-                    result = Api.addUserToCategory(Session.getInstance().getUser(), passedForeignId);
+                    result = Api.addUserToCategory(Session.getInstance().getUser(), parentForeignId);
                 } else {
-                    result = Api.addUserToSubcategory(Session.getInstance().getUser(), passedForeignId);
+                    result = Api.addUserToSubcategory(Session.getInstance().getUser(), parentForeignId);
                 }
             } catch (JSONException e) {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
@@ -213,8 +253,8 @@ public class UserActivity extends SessionActivity {
             isApiWorking = false;
 
             if (result) {
-                Utils.showInfo(rootView, "Dodano użytkownika do podkategorii");
-                userAdapter.addItem(Session.getInstance().getUser());
+                //Utils.showInfo(rootView, "Dodano użytkownika do podkategorii");
+                users.add(0, Session.getInstance().getUser());
                 userAdapter.notifyDataSetChanged();
                 hasJoined = true;
                 setCategoryMenuVisibility(true);
@@ -236,9 +276,9 @@ public class UserActivity extends SessionActivity {
             Boolean result = Boolean.FALSE;
             try {
                 if (isCategory) {
-                    result = Api.removeUserFromCategory(Session.getInstance().getUser(), passedForeignId);
+                    result = Api.removeUserFromCategory(Session.getInstance().getUser(), parentForeignId);
                 } else {
-                    result = Api.removeUserFromSubcategory(Session.getInstance().getUser(), passedForeignId);
+                    result = Api.removeUserFromSubcategory(Session.getInstance().getUser(), parentForeignId);
                 }
             } catch (JSONException e) {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
@@ -254,8 +294,8 @@ public class UserActivity extends SessionActivity {
             isApiWorking = false;
 
             if (result) {
-                Utils.showInfo(rootView, "Usunięto użytkownika z podkategorii");
-                userAdapter.removeItem(Session.getInstance().getUser());
+                //Utils.showInfo(rootView, "Usunięto użytkownika z podkategorii");
+                Session.getInstance().getUser().removeFromList(users);
                 userAdapter.notifyDataSetChanged();
                 hasJoined = false;
                 setCategoryMenuVisibility(false);

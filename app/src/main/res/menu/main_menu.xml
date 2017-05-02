@@ -11,6 +11,9 @@
     <item android:id="@+id/menu_leave"
         android:title="Usuń"
         app:showAsAction="ifRoom" />
+    <item android:id="@+id/menu_sort"
+        android:title="Sortuj"
+        app:showAsAction="ifRoom" />
     <item android:id="@+id/menu_info"
         android:title="Info"
         app:showAsAction="ifRoom" />

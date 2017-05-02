@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import abc.flaq.apps.instastudycategories.utils.Utils;
 
@@ -66,6 +68,17 @@ public class EveObject {
         etag = object.getEtag();
         created = object.getCreated();
         updated = object.getUpdated();
+    }
+
+    public void removeFromList(List list) {
+        Iterator<EveObject> it = list.listIterator();
+        while (it.hasNext()) {
+            EveObject eveObject = it.next();
+            if (id.equals(eveObject.getId())) {
+                it.remove();
+                break;
+            }
+        }
     }
 
 }

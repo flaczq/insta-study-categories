@@ -82,9 +82,10 @@ public class UserAdapter extends BaseAdapter {
             final RelativeLayout layout = (RelativeLayout) view.findViewById(R.id.user_item_layout);
             final ImageView profilePic = (ImageView) view.findViewById(R.id.user_item_profile_pic);
             final TextView username = (TextView) view.findViewById(R.id.user_item_username);
-            final TextView followers = (TextView) view.findViewById(R.id.user_item_followers);
             final TextView joined = (TextView) view.findViewById(R.id.user_item_joined);
-            final UserAdapter.ViewHolder viewHolder = new UserAdapter.ViewHolder(layout, profilePic, username, followers, joined);
+            final TextView followers = (TextView) view.findViewById(R.id.user_item_followers);
+            final TextView media = (TextView) view.findViewById(R.id.user_item_media);
+            final UserAdapter.ViewHolder viewHolder = new UserAdapter.ViewHolder(layout, profilePic, username, joined, followers, media);
             view.setTag(viewHolder);
         }
 
@@ -96,9 +97,10 @@ public class UserAdapter extends BaseAdapter {
             } else {
                 UrlImageViewHelper.setUrlDrawable(viewHolder.profilePic, profilePicUrl, R.drawable.placeholder_profile_pic_72);
             }
-            viewHolder.username.setText(user.getUsername());
-            viewHolder.followers.append(user.getFollowers().toString());
-            viewHolder.joined.append(Utils.formatDate(user.getCreated()));
+            viewHolder.username.setText(user.getUsername());    // TODO: maksymalna szerokość
+            viewHolder.joined.setText(Utils.formatDate(user.getCreated()));
+            viewHolder.followers.setText(Utils.isEmpty(user.getFollowers()) ? "0" : user.getFollowers().toString());
+            viewHolder.media.setText(Utils.isEmpty(user.getMedia()) ? "0" : user.getMedia().toString());
         }
 
         return view;
@@ -108,15 +110,17 @@ public class UserAdapter extends BaseAdapter {
         private final RelativeLayout layout;
         private final ImageView profilePic;
         private final TextView username;
-        private final TextView followers;
         private final TextView joined;
+        private final TextView followers;
+        private final TextView media;
 
-        public ViewHolder(RelativeLayout layout, ImageView profilePic, TextView username, TextView followers, TextView joined) {
+        public ViewHolder(RelativeLayout layout, ImageView profilePic, TextView username, TextView joined, TextView followers, TextView media) {
             this.layout = layout;
             this.profilePic = profilePic;
             this.username = username;
-            this.followers = followers;
             this.joined = joined;
+            this.followers = followers;
+            this.media = media;
         }
     }
 

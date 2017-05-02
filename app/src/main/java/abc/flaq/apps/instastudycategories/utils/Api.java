@@ -272,7 +272,7 @@ public class Api {
 
         return null;
     }
-    public static String addCategory(String categoryName) throws IOException, JSONException {
+    public static Category addCategory(String categoryName) throws IOException, JSONException {
         Category category = Factory.categoryFromName(categoryName);
         InputStreamReader is = postRequest(API_CATEGORIES_URL, category.toPostJson());
         String stream = getStream(is);
@@ -287,7 +287,7 @@ public class Api {
         correctForeignId(API_CATEGORIES_URL + "/" + category.getId(), category);
         getAllCategories(true);
 
-        return category.getForeignId();
+        return category;
     }
 
     // SUBCATEGORIES
@@ -367,7 +367,7 @@ public class Api {
 
         return subcategories;
     }
-    public static String addSubcategory(String subcategoryName, String parentCategoryForeignId) throws IOException, JSONException {
+    public static Subcategory addSubcategory(String subcategoryName, String parentCategoryForeignId) throws IOException, JSONException {
         Subcategory subcategory = Factory.subcategoryFromName(subcategoryName, parentCategoryForeignId);
         InputStreamReader is = postRequest(API_SUBCATEGORIES_URL, subcategory.toPostJson());
         String stream = getStream(is);
@@ -397,8 +397,9 @@ public class Api {
         getAllCategories(true);
         getAllSubcategories(true);
 
-        return subcategory.getForeignId();
+        return subcategory;
     }
+    // TODO: opcje admina - usuwanie kategorii?
 
     // USERS
     public static List<User> getAllUsers(boolean force) throws IOException, JSONException {

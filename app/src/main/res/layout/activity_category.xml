@@ -21,8 +21,8 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:visibility="invisible"
-        app:crs_pl_size="large"
-        app:crs_pl_fg_color="@color/colorPreloader"
-        app:crs_pl_style="tornado_circle_2" />
+        app:crs_pl_size="medium"
+        app:crs_pl_fg_color="@color/colorPrimaryDark"
+        app:crs_pl_style="tornado_circle_1" />
 
 </RelativeLayout>

@@ -1,12 +1,12 @@
 package abc.flaq.apps.instastudycategories.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,20 +33,25 @@ import abc.flaq.apps.instastudycategories.utils.Utils;
 
 import static abc.flaq.apps.instastudycategories.utils.Constants.API_ALL_CATEGORY_NAME;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_FOREIGN_ID;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_NAME;
 
 public class CategoryActivity extends SessionActivity {
 
-    private final Activity clazz = this;
+    private final AppCompatActivity clazz = this;
     private View rootView;
     private StaggeredGridView gridView;
     private CategoryAdapter categoryAdapter;
     private CrystalPreloader preloader;
 
+    private List<Category> categories = new ArrayList<>();
+    private Boolean isApiWorking = false;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {     // FIXME: podnieść widok gdy wyświetla się snackbar
         super.onCreate(savedInstanceState);
-        rootView = findViewById(android.R.id.content);
         setContentView(R.layout.activity_category);
+
+        rootView = findViewById(android.R.id.content);
         gridView = (StaggeredGridView) findViewById(R.id.category_grid);
         preloader = (CrystalPreloader) findViewById(R.id.category_preloader);
 
@@ -61,6 +66,7 @@ public class CategoryActivity extends SessionActivity {
                     nextIntent = new Intent(clazz, SubcategoryActivity.class);
                 }
                 nextIntent.putExtra(INTENT_CATEGORY_FOREIGN_ID, selected.getForeignId());
+                nextIntent.putExtra(INTENT_CATEGORY_NAME, selected.getName());
                 clazz.startActivity(nextIntent);
             }
         });
@@ -90,11 +96,12 @@ public class CategoryActivity extends SessionActivity {
         setMainMenuVisibility(menu);
         menu.findItem(R.id.menu_join).setVisible(false);
         menu.findItem(R.id.menu_leave).setVisible(false);
+        menu.findItem(R.id.menu_sort).setVisible(false);
         return true;
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (preloader.isShown()) {
+        if (isApiWorking) {
             return true;
         }
         switch (item.getItemId()) {
@@ -105,6 +112,9 @@ public class CategoryActivity extends SessionActivity {
                 // not available from here
                 break;
             case R.id.menu_leave:
+                // not available from here
+                break;
+            case R.id.menu_sort:
                 // not available from here
                 break;
             case R.id.menu_info:
@@ -149,16 +159,16 @@ public class CategoryActivity extends SessionActivity {
                 .show();
     }
 
-    private class ProcessCategories extends AsyncTask<Void, Void, List<Category>> {
+    private class ProcessCategories extends AsyncTask<Void, Void, Void> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            isApiWorking = true;
             preloader.setVisibility(View.VISIBLE);
         }
 
         @Override
-        protected List<Category> doInBackground(Void... params) {
-            List<Category> categories = new ArrayList<>();
+        protected Void doInBackground(Void... params) {
             try {
                 categories = Api.getAllCategories(true);
                 for (Category category : categories) {
@@ -169,15 +179,16 @@ public class CategoryActivity extends SessionActivity {
             } catch (IOException e) {
                 Utils.logError(clazz, "IOException: " + e.getMessage());
             }
-            return categories;
+            return null;
         }
 
         @Override
-        protected void onPostExecute(List<Category> result) {
+        protected void onPostExecute(Void result) {
             super.onPostExecute(result);
+            isApiWorking = false;
             preloader.setVisibility(View.GONE);
 
-            if (result.size() == 0) {
+            if (categories.size() == 0) {
                 Snackbar.make(rootView, "Nie znaleziono kategorii", Snackbar.LENGTH_INDEFINITE)
                         .setActionTextColor(ContextCompat.getColor(clazz, R.color.colorError))
                         .setAction("ODŚWIEŻ", new View.OnClickListener() {
@@ -187,17 +198,20 @@ public class CategoryActivity extends SessionActivity {
                             }
                         }).show();
             } else {
-                categoryAdapter = new CategoryAdapter(clazz, result);
+                categoryAdapter = new CategoryAdapter(clazz, categories);
                 gridView.setAdapter(categoryAdapter);
-                Session.getInstance().setCategories(result);
+                Session.getInstance().setCategories(categories);
             }
         }
     }
 
     private class ProcessAddCategory extends AsyncTask<String, Void, Boolean> {
+        Category newCategory;   // TODO: ogranicz mozliwosc do x-razy
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            isApiWorking = true;
         }
 
         @Override
@@ -205,8 +219,8 @@ public class CategoryActivity extends SessionActivity {
             String categoryName = params[0];
             Boolean result = Boolean.FALSE;
             try {
-                String categoryForeignId = Api.addCategory(categoryName);
-                if (Utils.isNotEmpty(categoryForeignId)) {
+                newCategory = Api.addCategory(categoryName);
+                if (Utils.isNotEmpty(newCategory)) {
                     result = Boolean.TRUE;
                 }
             } catch (JSONException e) {
@@ -220,11 +234,16 @@ public class CategoryActivity extends SessionActivity {
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
+            isApiWorking = false;
 
             if (result) {
-                Utils.showInfo(rootView, "Dodano nową kategorię");
-                categoryAdapter = new CategoryAdapter(clazz, Session.getInstance().getCategories());
-                gridView.setAdapter(categoryAdapter);
+                // TODO: idz do nowej kategorii - zakladka nieaktywne
+                //Utils.showInfo(rootView, "Dodano nową kategorię");
+                //categoryAdapter = new CategoryAdapter(clazz, Session.getInstance().getCategories());
+                //gridView.setAdapter(categoryAdapter);
+                categories.add(newCategory);
+                //Session.getInstance().setCategories(categories);
+                categoryAdapter.notifyDataSetChanged();
             } else {
                 Utils.showError(rootView, "Dodanie nowej kategorii zakończone niepowodzeniem");
             }

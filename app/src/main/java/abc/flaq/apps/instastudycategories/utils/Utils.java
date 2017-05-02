@@ -1,5 +1,6 @@
 package abc.flaq.apps.instastudycategories.utils;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
@@ -71,6 +73,9 @@ public class Utils {
     public static void showInfo(View view, String message) {
         Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
     }
+    public static void showQuickInfo(View view, String message) {
+        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
+    }
     public static void showInfoDismiss(View view, String message) {
         Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE)
                 .setActionTextColor(ContextCompat.getColor(view.getContext(), R.color.colorAccent))
@@ -84,6 +89,10 @@ public class Utils {
     public static void showError(View view, String message) {
         log(LOG_ERROR, view.getContext(), message);
         Snackbar.make(view, "General error", Snackbar.LENGTH_LONG).show();
+    }
+    public static void showQuickError(View view, String message) {
+        log(LOG_ERROR, view.getContext(), message);
+        Snackbar.make(view, "General error", Snackbar.LENGTH_SHORT).show();
     }
     public static void showErrorDismiss(View view, String message) {
         Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE)
@@ -116,7 +125,8 @@ public class Utils {
     public static Boolean isIntentAvailable(Context context, Intent intent) {
         final PackageManager packageManager = context.getPackageManager();
         List<ResolveInfo> list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-        return (list.size() > 0);
+        Boolean isAvailable = (list.size() > 0);
+        return isAvailable;
     }
 
     public static String formatDate(Date date) {
@@ -235,6 +245,18 @@ public class Utils {
         } else {
             imageView.setMinimumHeight(GRID_MAX_HEIGHT - 2*GRID_HEIGHT_DIFF);
             imageView.setMaxHeight(GRID_MAX_HEIGHT - 2*GRID_HEIGHT_DIFF);
+        }
+    }
+
+    public static void setActionBarTitle(AppCompatActivity activity, String title) {
+        ActionBar actionBar = activity.getActionBar();
+        String formattedTitle = (title.substring(0, 1).toUpperCase() + title.substring(1));
+        if (isNotEmpty(actionBar)) {
+            actionBar.setTitle(formattedTitle);
+        }
+        android.support.v7.app.ActionBar supportActionBar = activity.getSupportActionBar();
+        if (isNotEmpty(supportActionBar)) {
+            supportActionBar.setTitle(formattedTitle);
         }
     }
 
