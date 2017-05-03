@@ -20,7 +20,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import abc.flaq.apps.instastudycategories.pojo.Category;
@@ -40,9 +39,9 @@ public class Api {
     private static ObjectMapper mapper = new ObjectMapper();
     private static Calendar calendar = Calendar.getInstance();
 
-    private static List<Category> allCategories = new ArrayList<>();
-    private static List<Subcategory> allSubcategories = new ArrayList<>();
-    private static List<User> allUsers = new ArrayList<>();
+    private static ArrayList<Category> allCategories = new ArrayList<>();
+    private static ArrayList<Subcategory> allSubcategories = new ArrayList<>();
+    private static ArrayList<User> allUsers = new ArrayList<>();
 
     public static String getStream(InputStreamReader isr) throws IOException {
         BufferedReader br = new BufferedReader(isr);
@@ -194,7 +193,7 @@ public class Api {
     }
 
     // CATEGORIES
-    public static List<Category> getAllCategories(boolean force) throws IOException, JSONException {
+    public static ArrayList<Category> getAllCategories(boolean force) throws IOException, JSONException {
         if (!force && allCategories.size() > 0) {
             return allCategories;
         }
@@ -204,7 +203,7 @@ public class Api {
         JSONArray items = getItems(stream);
 
         Category firstCategory = null;
-        List<Category> categories = new ArrayList<>();
+        ArrayList<Category> categories = new ArrayList<>();
         for (int i = 0; i < items.length(); i++) {
             Category category = mapper.readValue(items.getString(i), Category.class);
             correctDate(category);
@@ -291,7 +290,7 @@ public class Api {
     }
 
     // SUBCATEGORIES
-    public static List<Subcategory> getAllSubcategories(boolean force) throws IOException, JSONException {
+    public static ArrayList<Subcategory> getAllSubcategories(boolean force) throws IOException, JSONException {
         if (!force && allSubcategories.size() > 0) {
             for (Subcategory subcategory : allSubcategories) {
                 for (String categoryForeignId : subcategory.getCategories()) {
@@ -305,7 +304,7 @@ public class Api {
         String stream = getStream(is);
         JSONArray items = getItems(stream);
 
-        List<Subcategory> subcategories = new ArrayList<>();
+        ArrayList<Subcategory> subcategories = new ArrayList<>();
         for (int i = 0; i < items.length(); i++) {
             Subcategory subcategory = mapper.readValue(items.getString(i), Subcategory.class);
             correctDate(subcategory);
@@ -340,8 +339,8 @@ public class Api {
 
         return null;
     }
-    public static List<Subcategory> getSubcategoriesByCategoryForeignId(boolean force, String categoryForeignId) throws IOException, JSONException {
-        List<Subcategory> subcategories = new ArrayList<>();
+    public static ArrayList<Subcategory> getSubcategoriesByCategoryForeignId(boolean force, String categoryForeignId) throws IOException, JSONException {
+        ArrayList<Subcategory> subcategories = new ArrayList<>();
 
         if (!force && allSubcategories.size() > 0) {
             for (Subcategory subcategory : allSubcategories) {
@@ -402,7 +401,7 @@ public class Api {
     // TODO: opcje admina - usuwanie kategorii?
 
     // USERS
-    public static List<User> getAllUsers(boolean force) throws IOException, JSONException {
+    public static ArrayList<User> getAllUsers(boolean force) throws IOException, JSONException {
         if (!force && allUsers.size() > 0) {
             return allUsers;
         }
@@ -411,7 +410,7 @@ public class Api {
         String stream = getStream(is);
         JSONArray items = getItems(stream);
 
-        List<User> users = new ArrayList<>();
+        ArrayList<User> users = new ArrayList<>();
         for (int i = 0; i < items.length(); i++) {
             User user = mapper.readValue(items.getString(i), User.class);
             correctDate(user);
@@ -475,8 +474,8 @@ public class Api {
 
         return null;
     }
-    public static List<User> getUsersByCategoryForeignId(String categoryForeignId) throws IOException, JSONException {
-        List<User> users = new ArrayList<>();
+    public static ArrayList<User> getUsersByCategoryForeignId(String categoryForeignId) throws IOException, JSONException {
+        ArrayList<User> users = new ArrayList<>();
 
         if (allUsers.size() > 0) {
             for (User user : allUsers) {
@@ -500,8 +499,8 @@ public class Api {
 
         return users;
     }
-    public static List<User> getUsersBySubcategoryForeignId(String subcategoryForeignId) throws IOException, JSONException {
-        List<User> users = new ArrayList<>();
+    public static ArrayList<User> getUsersBySubcategoryForeignId(String subcategoryForeignId) throws IOException, JSONException {
+        ArrayList<User> users = new ArrayList<>();
 
         if (allUsers.size() > 0) {
             for (User user : allUsers) {
@@ -541,7 +540,7 @@ public class Api {
         return Boolean.TRUE;
     }
     public static Boolean addUserToCategory(User user, String categoryForeignId) throws IOException, JSONException {
-        List<String> categories = user.getCategories();
+        ArrayList<String> categories = user.getCategories();
         if (categories.contains(categoryForeignId)) {
             Utils.logDebug("Api.addUserToCategory()", "Użytkownik: " + user.toString() + " znajduje się już w kategorii: " + categoryForeignId);
             return Boolean.FALSE;
@@ -583,7 +582,7 @@ public class Api {
         return Boolean.TRUE;
     }
     public static Boolean addUserToSubcategory(User user, String subcategoryForeignId) throws IOException, JSONException {
-        List<String> subcategories = user.getSubcategories();
+        ArrayList<String> subcategories = user.getSubcategories();
         if (subcategories.contains(subcategoryForeignId)) {
             Utils.logDebug("Api.addUserToSubcategory()", "Użytkownik " + user.getUsername() + " znajduje się już w podkategorii: " + subcategoryForeignId);
             return Boolean.FALSE;
@@ -665,7 +664,7 @@ public class Api {
         return Boolean.TRUE;
     }
     public static Boolean removeUserFromCategory(User user, String categoryForeignId) throws IOException, JSONException {
-        List<String> categories = user.getCategories();
+        ArrayList<String> categories = user.getCategories();
         if (!categories.contains(categoryForeignId)) {
             Utils.logDebug("Api.removeUserFromCategory()", "Użytkownik: " + user.toString() + " nie znajdował się w kategorii: " + categoryForeignId);
             return Boolean.TRUE;
@@ -707,7 +706,7 @@ public class Api {
         return Boolean.TRUE;
     }
     public static Boolean removeUserFromSubcategory(User user, String subcategoryForeignId) throws IOException, JSONException {
-        List<String> subcategories = user.getSubcategories();
+        ArrayList<String> subcategories = user.getSubcategories();
         if (!subcategories.contains(subcategoryForeignId)) {
             Utils.logDebug("Api.removeUserFromSubcategory()", "Użytkownik: " + user.toString() + " nie znajdował się w podkategorii: " + subcategoryForeignId);
             return Boolean.TRUE;

@@ -1,20 +1,34 @@
 package abc.flaq.apps.instastudycategories.pojo;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import abc.flaq.apps.instastudycategories.utils.Utils;
 
-public class Category extends EveObject implements Comparable<Category> {
+public class Category extends EveObject implements Comparable<Category>, Parcelable {
 
     private String name = "";
     private Integer usersSize;
     private Integer subcategoriesSize;
-    private List<String> hashtags;
+    private ArrayList<String> hashtags;
     private Boolean asSubcategory;
     private String imageUrl = "";
     private Boolean active;
+
+    public Category() {
+    }
+    private Category(Parcel parcel) {
+        name = parcel.readString();
+        usersSize = parcel.readInt();
+        subcategoriesSize = parcel.readInt();
+        parcel.readStringList(hashtags);
+        asSubcategory = (parcel.readInt() == 1);
+        imageUrl = parcel.readString();
+        active = (parcel.readInt() == 1);
+    }
 
     public String getName() {
         return name;
@@ -37,10 +51,10 @@ public class Category extends EveObject implements Comparable<Category> {
         this.subcategoriesSize = subcategoriesSize;
     }
 
-    public List<String> getHashtags() {
+    public ArrayList<String> getHashtags() {
         return hashtags;
     }
-    public void setHashtags(List<String> hashtags) {
+    public void setHashtags(ArrayList<String> hashtags) {
         this.hashtags = hashtags;
     }
 
@@ -97,5 +111,29 @@ public class Category extends EveObject implements Comparable<Category> {
         json += "}";
         return json;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(getForeignId());
+        parcel.writeString(name);
+        parcel.writeInt(usersSize);
+        parcel.writeInt(subcategoriesSize);
+        parcel.writeStringList(hashtags);
+        parcel.writeInt(asSubcategory ? 1 : 0);
+        parcel.writeString(imageUrl);
+        parcel.writeInt(active ? 1 : 0);
+    }
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public Category createFromParcel(Parcel parcel) {
+            return new Category(parcel);
+        }
+        public Category[] newArray(int size) {
+            return new Category[size];
+        }
+    };
 
 }

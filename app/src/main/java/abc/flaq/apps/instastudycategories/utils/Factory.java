@@ -32,7 +32,7 @@ public class Factory {
             user.setMedia(instagramUser.getCounts().getMedia());
         }
         // Adding user to "all" category by default
-        List<String> categories = new ArrayList<>();
+        ArrayList<String> categories = new ArrayList<>();
         Category allCategory = Api.getCategoryByName(API_ALL_CATEGORY_NAME);
         if (Utils.isNotEmpty(allCategory)) {
             categories.add(allCategory.getForeignId());

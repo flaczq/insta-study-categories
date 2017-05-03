@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
@@ -259,13 +260,22 @@ public class Utils {
             supportActionBar.setTitle(formattedTitle);
         }
     }
-
     public static void setLocale(Context context, String language) {
         final Locale locale = new Locale(language);
         Locale.setDefault(locale);
         final Configuration config = new Configuration();
         config.locale = locale;
         context.getResources().updateConfiguration(config, context.getResources().getDisplayMetrics());
+    }
+    public static void removeBarShadow(AppCompatActivity activity) {
+        ActionBar actionBar = activity.getActionBar();
+        if (isNotEmpty(actionBar) && Build.VERSION.SDK_INT >= 21) {
+            actionBar.setElevation(0);
+        }
+        android.support.v7.app.ActionBar supportActionBar = activity.getSupportActionBar();
+        if (isNotEmpty(supportActionBar)) {
+            supportActionBar.setElevation(0);
+        }
     }
 
     public static String listToString(List<String> list) {

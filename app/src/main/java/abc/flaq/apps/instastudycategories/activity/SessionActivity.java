@@ -1,6 +1,5 @@
 package abc.flaq.apps.instastudycategories.activity;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -50,7 +49,7 @@ import static abc.flaq.apps.instastudycategories.utils.Constants.SETTINGS_ACCESS
 
 public class SessionActivity extends AppCompatActivity {
 
-    private final Activity clazz = this;
+    private final AppCompatActivity clazz = this;
     private View rootView;
 
     private Menu mainMenu;
@@ -62,6 +61,8 @@ public class SessionActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Utils.removeBarShadow(clazz);
+
         rootView = findViewById(android.R.id.content);
         accessToken = Session.getInstance().getSettings().getString(SETTINGS_ACCESS_TOKEN, null);
         Utils.logInfo(clazz, "Session access token: " + accessToken);
@@ -94,17 +95,13 @@ public class SessionActivity extends AppCompatActivity {
         }
         switch (item.getItemId()) {
             case R.id.menu_suggest:
-                // not available from here
-                break;
+                return super.onOptionsItemSelected(item);
             case R.id.menu_join:
-                // not available from here
-                break;
+                return super.onOptionsItemSelected(item);
             case R.id.menu_leave:
-                // not available from here
-                break;
+                return super.onOptionsItemSelected(item);
             case R.id.menu_sort:
-                // not available from here
-                break;
+                return super.onOptionsItemSelected(item);
             case R.id.menu_info:
                 if (Utils.isEmpty(Session.getInstance().getUser())) {
                     Utils.logDebug(clazz, "Instagram user data is empty");

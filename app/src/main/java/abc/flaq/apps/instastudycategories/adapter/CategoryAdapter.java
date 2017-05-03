@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.pojo.Category;
@@ -21,10 +21,10 @@ import abc.flaq.apps.instastudycategories.utils.Utils;
 public class CategoryAdapter extends BaseAdapter {
 
     private final Context context;
-    private final List<Category> categories;
+    private final ArrayList<Category> categories;
     private int maxSize;
 
-    public CategoryAdapter(Context context, List<Category> categories) {
+    public CategoryAdapter(Context context, ArrayList<Category> categories) {
         this.context = context;
         this.categories = categories;
         // Assuming categories are sorted by size desc

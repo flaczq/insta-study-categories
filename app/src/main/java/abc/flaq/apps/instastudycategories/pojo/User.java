@@ -2,7 +2,7 @@ package abc.flaq.apps.instastudycategories.pojo;
 
 import android.support.annotation.NonNull;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramUser;
 import abc.flaq.apps.instastudycategories.utils.Utils;
@@ -16,9 +16,9 @@ public class User extends EveObject implements Comparable<User> {
     private String profilePicUrl = "";
     private Integer followers;
     private Integer media;
-    private List<String> categories;
+    private ArrayList<String> categories;
     private Integer categoriesSize;
-    private List<String> subcategories;
+    private ArrayList<String> subcategories;
     private Integer subcategoriesSize;
     private Boolean active;
 
@@ -71,10 +71,10 @@ public class User extends EveObject implements Comparable<User> {
         this.media = media;
     }
 
-    public List<String> getCategories() {
+    public ArrayList<String> getCategories() {
         return categories;
     }
-    public void setCategories(List<String> categories) {
+    public void setCategories(ArrayList<String> categories) {
         this.categories = categories;
     }
 
@@ -85,10 +85,10 @@ public class User extends EveObject implements Comparable<User> {
         this.categoriesSize = categoriesSize;
     }
 
-    public List<String> getSubcategories() {
+    public ArrayList<String> getSubcategories() {
         return subcategories;
     }
-    public void setSubcategories(List<String> subcategories) {
+    public void setSubcategories(ArrayList<String> subcategories) {
         this.subcategories = subcategories;
     }
 

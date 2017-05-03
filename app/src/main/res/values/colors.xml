@@ -3,15 +3,17 @@
     <color name="colorPrimary">#337AB7</color>
     <color name="colorPrimaryDark">#286090</color>
     <color name="textColorPrimary">#FFFFFF</color>
+    <color name="textColorSecondary">#000000</color>
     <color name="windowBackground">#FFFFFF</color>
     <color name="navigationBarColor">#000000</color>
     <color name="colorAccent">#4CAF50</color>
     <color name="colorAccentAlpha">#804CAF50</color>
     <color name="colorError">#D32F2F</color>
     <color name="colorErrorAlpha">#80D32F2F</color>
-    <color name="colorBackgroundLight">#F7F7F7</color>
+    <color name="colorBackgroundLight">#F2F2F2</color>
     <color name="colorAdditionalAction">#808080</color>
     <color name="colorBackgroundForText">#90000000</color>
+    <color name="colorTabIndicator">#214F78</color>
 
     <color name="colorCategoryBlue">#0D6BB6</color>
     <color name="colorCategoryBlueLight">#90D4F7</color>

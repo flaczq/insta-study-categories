@@ -3,6 +3,7 @@ package abc.flaq.apps.instastudycategories.utils;
 import android.content.SharedPreferences;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,7 @@ public class Session {
     private SharedPreferences settings;
     private User user;
     private ImageView userProfilePic;
-    private List<Category> categories;
+    private ArrayList<Category> categories;
     private Map<String, List<Subcategory>> subcategoriesMap = new HashMap<>();
 
     public static Session getInstance() {
@@ -51,10 +52,10 @@ public class Session {
         this.userProfilePic = userProfilePic;
     }
 
-    public List<Category> getCategories() {
+    public ArrayList<Category> getCategories() {
         return categories;
     }
-    public void setCategories(List<Category> categories) {
+    public void setCategories(ArrayList<Category> categories) {
         this.categories = categories;
     }
 

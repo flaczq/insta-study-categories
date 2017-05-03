@@ -56,17 +56,21 @@ android {
     }*/
 }
 
+ext {
+    supportLibVersion = '25.3.1'
+}
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:design:25.3.1'
-    androidTestCompile 'junit:junit:4.12'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.0.pr1'
-    compile 'com.etsy.android.grid:library:1.0.5'
-    compile 'com.crystal:crystalpreloaders:1.0.0'
-    compile 'com.koushikdutta.urlimageviewhelper:urlimageviewhelper:1.0.4'
-    compile 'com.afollestad.material-dialogs:core:0.9.4.3'
+    androidTestCompile "junit:junit:4.12"
+    compile "com.android.support:appcompat-v7:${supportLibVersion}"
+    compile "com.android.support:design:${supportLibVersion}"
+    compile "com.fasterxml.jackson.core:jackson-databind:2.9.0.pr1"
+    compile "com.etsy.android.grid:library:1.0.5"
+    compile "com.crystal:crystalpreloaders:1.0.0"
+    compile "com.koushikdutta.urlimageviewhelper:urlimageviewhelper:1.0.4"
+    compile "com.afollestad.material-dialogs:core:0.9.4.3"
 }
