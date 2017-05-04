@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
@@ -84,10 +83,9 @@ public class SubcategoryAdapter extends BaseAdapter {
             final LayoutInflater layoutInflater = LayoutInflater.from(context);
             view = layoutInflater.inflate(R.layout.activity_subcategory_item, viewGroup, false);
 
-            final RelativeLayout layout = (RelativeLayout) view.findViewById(R.id.subcategory_item_layout);
             final ImageView image = (ImageView) view.findViewById(R.id.subcategory_item_image);
             final TextView name = (TextView) view.findViewById(R.id.subcategory_item_name);
-            viewHolder = new ViewHolder(layout, image, name);
+            viewHolder = new ViewHolder(image, name);
             view.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) view.getTag();
@@ -112,12 +110,10 @@ public class SubcategoryAdapter extends BaseAdapter {
     }
 
     private class ViewHolder {
-        private final RelativeLayout layout;
         private final ImageView image;
         private final TextView name;
 
-        private ViewHolder(RelativeLayout layout, ImageView image, TextView name) {
-            this.layout = layout;
+        private ViewHolder(ImageView image, TextView name) {
             this.image = image;
             this.name = name;
         }

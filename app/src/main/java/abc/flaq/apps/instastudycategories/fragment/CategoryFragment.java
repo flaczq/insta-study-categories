@@ -80,6 +80,7 @@ public class CategoryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setBroadcastReceiver();
+        setRefreshBroadcastReceiver();
         rootView = inflater.inflate(R.layout.activity_category, container, false);
         gridView = (StaggeredGridView) rootView.findViewById(R.id.category_grid);
         preloader = (CrystalPreloader) rootView.findViewById(R.id.category_preloader);
@@ -165,6 +166,12 @@ public class CategoryFragment extends Fragment {
         filter.addAction(INTENT_CATEGORY);
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(receiver, filter);
     }
+    private void setRefreshBroadcastReceiver() {
+        CategoryRefreshBroadcastReceiver receiver = new CategoryRefreshBroadcastReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("refresh");
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(receiver, filter);
+    }
 
     private void showSuggestCategoryDialog() {
         new MaterialDialog.Builder(getActivity())
@@ -196,6 +203,19 @@ public class CategoryFragment extends Fragment {
                 })
                 .alwaysCallInputCallback()
                 .show();
+    }
+
+    private void setActiveInactiveCategories() {
+        activeCategories.clear();
+        inactiveCategories.clear();
+
+        for (Category category : categories) {
+            if (category.isActive()) {
+                activeCategories.add(category);
+            } else {
+                inactiveCategories.add(category);
+            }
+        }
     }
 
     private class ProcessAddCategory extends AsyncTask<String, Void, Boolean> {
@@ -236,14 +256,8 @@ public class CategoryFragment extends Fragment {
                 categories.add(newCategory);
                 Session.getInstance().setCategories(categories);
 
-                inactiveCategories.add(newCategory);
-
-                gridView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        gridView.smoothScrollToPosition(inactiveCategories.size() - 1);
-                    }
-                });
+                Intent intent = new Intent("refresh");
+                LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
             } else {
                 Utils.showError(rootView, "Dodanie nowej kategorii zakończone niepowodzeniem");
             }
@@ -270,13 +284,7 @@ public class CategoryFragment extends Fragment {
                                 }
                             }).show();
                 } else {
-                    for (Category category : categories) {
-                        if (category.isActive()) {
-                            activeCategories.add(category);
-                        } else {
-                            inactiveCategories.add(category);
-                        }
-                    }
+                    setActiveInactiveCategories();
                 }
             }
             if (tabNo == TAB_ACTIVE) {
@@ -285,6 +293,15 @@ public class CategoryFragment extends Fragment {
                 categoryAdapter = new CategoryAdapter(getActivity(), inactiveCategories);
             }
             gridView.setAdapter(categoryAdapter);
+        }
+    }
+    private class CategoryRefreshBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            setActiveInactiveCategories();
+            categoryAdapter.notifyDataSetChanged();
+            // FIXME: smooth scroll
+            gridView.setSelection(inactiveCategories.size() - 1);
         }
     }
 
