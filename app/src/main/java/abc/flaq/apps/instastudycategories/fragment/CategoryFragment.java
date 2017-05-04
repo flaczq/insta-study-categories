@@ -7,7 +7,9 @@ import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -39,12 +41,15 @@ import abc.flaq.apps.instastudycategories.utils.Session;
 import abc.flaq.apps.instastudycategories.utils.Utils;
 
 import static abc.flaq.apps.instastudycategories.utils.Constants.API_ALL_CATEGORY_NAME;
+import static abc.flaq.apps.instastudycategories.utils.Constants.BUNDLE_CATEGORY_TAB_NO;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_FOREIGN_ID;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_LIST;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_NAME;
+import static abc.flaq.apps.instastudycategories.utils.Constants.TAB_ACTIVE;
+import static abc.flaq.apps.instastudycategories.utils.Constants.TAB_INACTIVE;
 
-public class ActiveFragment extends Fragment {
+public class CategoryFragment extends Fragment {
 
     private View rootView;
     private StaggeredGridView gridView;
@@ -52,13 +57,15 @@ public class ActiveFragment extends Fragment {
     private CrystalPreloader preloader;
 
     private int tabNo;
-    private ArrayList<Category> categories = new ArrayList<>();
     private Boolean isApiWorking = false;
+    private ArrayList<Category> categories = new ArrayList<>();
+    private ArrayList<Category> activeCategories = new ArrayList<>();   // FIXME: wywalic jednak! zmieniac adapter przy zmianie tab?
+    private ArrayList<Category> inactiveCategories = new ArrayList<>();
 
-    public static ActiveFragment newInstance(int tabNo) {
+    public static CategoryFragment newInstance(int tabNo) {
         Bundle args = new Bundle();
-        args.putInt("tabNo", tabNo);
-        ActiveFragment fragment = new ActiveFragment();
+        args.putInt(BUNDLE_CATEGORY_TAB_NO, tabNo);
+        CategoryFragment fragment = new CategoryFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -68,7 +75,7 @@ public class ActiveFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         Bundle args = getArguments();
-        tabNo = args.getInt("tabNo");
+        tabNo = args.getInt(BUNDLE_CATEGORY_TAB_NO);
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -95,14 +102,6 @@ public class ActiveFragment extends Fragment {
             }
         });
 
-        // Load categories from session
-        /*if (Utils.isEmpty(Session.getInstance().getCategories()) || Session.getInstance().getCategories().size() == 0) {
-            new ProcessCategories().execute();
-        } else {
-            categoryAdapter = new CategoryAdapter(getActivity(), Session.getInstance().getCategories());
-            gridView.setAdapter(categoryAdapter);
-        }*/
-
         return rootView;
     }
     @Override
@@ -110,9 +109,17 @@ public class ActiveFragment extends Fragment {
         super.onResume();
         getActivity().invalidateOptionsMenu();
         // Update categories when going back from User or Subcategory activity
-        if (Utils.isNotEmpty(categoryAdapter) && categoryAdapter.getCount() > 0) {
+        /*if (Utils.isNotEmpty(categoryAdapter) && categoryAdapter.getCount() > 0) {
             categoryAdapter = new CategoryAdapter(getActivity(), Session.getInstance().getCategories());
             gridView.setAdapter(categoryAdapter);
+        }*/
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && Utils.isNotEmpty(categoryAdapter)) {
+            categoryAdapter.notifyDataSetChanged();
         }
     }
 
@@ -223,13 +230,20 @@ public class ActiveFragment extends Fragment {
             isApiWorking = false;
 
             if (result) {
-                // TODO: idz do nowej kategorii - zakladka nieaktywne
                 //Utils.showInfo(rootView, "Dodano nową kategorię");
-                //categoryAdapter = new CategoryAdapter(getActivity(), Session.getInstance().getCategories());
-                //gridView.setAdapter(categoryAdapter);
+                ((CategoryActivity) getActivity()).changeTab(TAB_INACTIVE);
+
                 categories.add(newCategory);
-                //Session.getInstance().setCategories(categories);
-                categoryAdapter.notifyDataSetChanged();
+                Session.getInstance().setCategories(categories);
+
+                inactiveCategories.add(newCategory);
+
+                gridView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        gridView.smoothScrollToPosition(inactiveCategories.size() - 1);
+                    }
+                });
             } else {
                 Utils.showError(rootView, "Dodanie nowej kategorii zakończone niepowodzeniem");
             }
@@ -245,21 +259,30 @@ public class ActiveFragment extends Fragment {
             categories = intent.getParcelableArrayListExtra(INTENT_CATEGORY_LIST);
             if (Utils.isEmpty(categories)) {
                 categories = new ArrayList<>();
-                categoryAdapter = new CategoryAdapter(getActivity(), categories);
             } else {
-                ArrayList<Category> tabCategories = new ArrayList<>();
-                for (Category category : categories) {
-                    if (tabNo == 0) {
+                if (categories.size() == 0) {
+                    Snackbar.make(rootView, "Nie znaleziono kategorii", Snackbar.LENGTH_INDEFINITE)
+                            .setActionTextColor(ContextCompat.getColor(getActivity(), R.color.colorError))
+                            .setAction("ODŚWIEŻ", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    // TODO: odswiez
+                                }
+                            }).show();
+                } else {
+                    for (Category category : categories) {
                         if (category.isActive()) {
-                            tabCategories.add(category);
-                        }
-                    } else {
-                        if (!category.isActive()) {
-                            tabCategories.add(category);
+                            activeCategories.add(category);
+                        } else {
+                            inactiveCategories.add(category);
                         }
                     }
                 }
-                categoryAdapter = new CategoryAdapter(getActivity(), tabCategories);
+            }
+            if (tabNo == TAB_ACTIVE) {
+                categoryAdapter = new CategoryAdapter(getActivity(), activeCategories);
+            } else {
+                categoryAdapter = new CategoryAdapter(getActivity(), inactiveCategories);
             }
             gridView.setAdapter(categoryAdapter);
         }

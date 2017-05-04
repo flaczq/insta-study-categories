@@ -77,6 +77,7 @@ public class SubcategoryAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View view, ViewGroup viewGroup) {
+        final ViewHolder viewHolder;
         final Subcategory subcategory = subcategories.get(position);
 
         if (Utils.isEmpty(view)) {
@@ -86,11 +87,12 @@ public class SubcategoryAdapter extends BaseAdapter {
             final RelativeLayout layout = (RelativeLayout) view.findViewById(R.id.subcategory_item_layout);
             final ImageView image = (ImageView) view.findViewById(R.id.subcategory_item_image);
             final TextView name = (TextView) view.findViewById(R.id.subcategory_item_name);
-            final SubcategoryAdapter.ViewHolder viewHolder = new ViewHolder(layout, image, name);
+            viewHolder = new ViewHolder(layout, image, name);
             view.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) view.getTag();
         }
 
-        final ViewHolder viewHolder = (ViewHolder) view.getTag();
         Utils.setSubcategoryGridDesign(subcategory.getUsersSize(), maxSize, viewHolder.image);
         String subcategoryName = Utils.getStringBySubcategoryName(context, subcategory.getName());
         viewHolder.name.setText(subcategoryName);

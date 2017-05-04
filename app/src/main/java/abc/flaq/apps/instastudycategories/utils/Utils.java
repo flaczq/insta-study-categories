@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.Normalizer;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -115,6 +116,21 @@ public class Utils {
     public static <T> boolean isNotEmpty(T element) {
         return !isEmpty(element);
     }
+    public static boolean isNumeric(String element) {
+        if (isEmpty(element)) {
+            return false;
+        }
+        final int sz = element.length();
+        for (int i = 0; i < sz; i++) {
+            if (!Character.isDigit(element.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+    public static boolean isNotNumeric(String element) {
+        return !isNumeric(element);
+    }
 
     public static String doForeignId(String id) {
         return "fq" + id;
@@ -136,12 +152,13 @@ public class Utils {
     }
 
     private static String getStringByName(Context context, String name) {
-        int nameId = context.getResources().getIdentifier(name, "string", context.getPackageName());
-        if (nameId == 0) {
+        int stringId = context.getResources().getIdentifier(name, "string", context.getPackageName());
+        if (stringId == 0 ||
+                (isNumeric(name) && stringId == Integer.parseInt(name))) {
             logDebug(context, "Nie znaleziono tłumaczenia dla nazwy: " + name);
             return "";
         }
-        return context.getString(nameId);
+        return context.getString(stringId);
     }
     public static String getStringByCategoryName(Context context, String name) {
         String result = getStringByName(context, STRINGS_CATEGORY_PREFIX + name);
@@ -159,7 +176,8 @@ public class Utils {
     }
     private static Drawable getDrawableByName(Context context, String name) {
         int drawableId = context.getResources().getIdentifier(name, "drawable", context.getPackageName());
-        if (drawableId == 0) {
+        if (drawableId == 0 ||
+                (isNumeric(name) && drawableId == Integer.parseInt(name))) {
             logDebug(context, "Nie znaleziono obrazu dla nazwy: " + name);
             return null;
         }
@@ -290,6 +308,13 @@ public class Utils {
         }
         string += "]";
         return string;
+    }
+
+    public static String changeExtraCharacters(String characters) {
+        String noExtraCharacters = Normalizer
+                .normalize(characters, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
+        return noExtraCharacters;
     }
 
 }

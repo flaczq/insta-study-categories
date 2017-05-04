@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
@@ -62,23 +61,24 @@ public class CategoryAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View view, ViewGroup viewGroup) {
+        final ViewHolder viewHolder;
         final Category category = categories.get(position);
 
         if (Utils.isEmpty(view)) {
             final LayoutInflater layoutInflater = LayoutInflater.from(context);
             view = layoutInflater.inflate(R.layout.activity_category_item, viewGroup, false);
 
-            final RelativeLayout layout = (RelativeLayout) view.findViewById(R.id.category_item_layout);
             final ImageView image = (ImageView) view.findViewById(R.id.category_item_image);
             final TextView name = (TextView) view.findViewById(R.id.category_item_name);
-            final ViewHolder viewHolder = new ViewHolder(layout, image, name);
+            viewHolder = new ViewHolder(image, name);
             view.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) view.getTag();
         }
 
-        final ViewHolder viewHolder = (ViewHolder) view.getTag();
         Utils.setSubcategoryGridDesign(category.getUsersSize(), maxSize, viewHolder.image);
         String categoryName = Utils.getStringByCategoryName(context, category.getName());
-        viewHolder.name.setText(categoryName);
+        viewHolder.name.setText(Utils.changeExtraCharacters(categoryName));
 
         if (Utils.isEmpty(category.getImageUrl())) {
             Drawable drawable = Utils.getCategoryDrawable(context, category.getName());
@@ -95,12 +95,10 @@ public class CategoryAdapter extends BaseAdapter {
     }
 
     private class ViewHolder {
-        private final RelativeLayout layout;
         private final ImageView image;
         private final TextView name;
 
-        private ViewHolder(RelativeLayout layout, ImageView image, TextView name) {
-            this.layout = layout;
+        private ViewHolder(ImageView image, TextView name) {
             this.image = image;
             this.name = name;
         }
