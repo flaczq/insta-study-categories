@@ -14,7 +14,13 @@ public class TabAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return CategoryFragment.newInstance(position);
+        switch (position) {
+            case 0:
+            default:
+                return CategoryFragment.newInstance(position);  // FIXME: CategoryActiveFragment
+            case 1:
+                return CategoryFragment.newInstance(position);  // FIXME: CategoryInactiveFragment
+        }
     }
 
     @Override
