@@ -50,17 +50,17 @@ import static abc.flaq.apps.instastudycategories.utils.Constants.TAB_ACTIVE;
 import static abc.flaq.apps.instastudycategories.utils.Constants.TAB_INACTIVE;
 
 public class CategoryFragment extends Fragment {
-
+    // FIXME: rozdzielić na CategoryActiveFragment i CategoryInactiveFragment
     private View rootView;
     private StaggeredGridView gridView;
     private CategoryAdapter categoryAdapter;
-    private CrystalPreloader preloader;
+    private CrystalPreloader preloader; // TODO: przenieść do activity
 
     private int tabNo;
-    private Boolean isApiWorking = false;
+    private Boolean isApiWorking = false; // TODO: przenieść do activity
     private ArrayList<Category> categories = new ArrayList<>();
-    private ArrayList<Category> activeCategories = new ArrayList<>();   // FIXME: wywalic jednak! zmieniac adapter przy zmianie tab?
-    private ArrayList<Category> inactiveCategories = new ArrayList<>();
+    private ArrayList<Category> activeCategories = new ArrayList<>();   // TODO: wywalić
+    private ArrayList<Category> inactiveCategories = new ArrayList<>(); // TODO: wywalić
 
     public static CategoryFragment newInstance(int tabNo) {
         Bundle args = new Bundle();
@@ -73,19 +73,20 @@ public class CategoryFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+        setHasOptionsMenu(true); // TODO: wywalić
         Bundle args = getArguments();
         tabNo = args.getInt(BUNDLE_CATEGORY_TAB_NO);
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+         // FIXME: połączyć w jeden z różnymi akcjami
         setBroadcastReceiver();
         setRefreshBroadcastReceiver();
         rootView = inflater.inflate(R.layout.activity_category, container, false);
         gridView = (StaggeredGridView) rootView.findViewById(R.id.category_grid);
-        preloader = (CrystalPreloader) rootView.findViewById(R.id.category_preloader);
+        preloader = (CrystalPreloader) rootView.findViewById(R.id.category_preloader); // TODO: przenieść do activity
 
-        preloader.setVisibility(View.VISIBLE);
+        preloader.setVisibility(View.VISIBLE); // TODO: przenieść do activity
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -102,9 +103,10 @@ public class CategoryFragment extends Fragment {
                 getActivity().startActivity(nextIntent);
             }
         });
-
+        // TODO: gridview.setAdapter(categoryAdapter);
         return rootView;
     }
+    // TODO: przenieść do activity
     @Override
     public void onResume() {
         super.onResume();
@@ -115,7 +117,7 @@ public class CategoryFragment extends Fragment {
             gridView.setAdapter(categoryAdapter);
         }*/
     }
-
+    // TODO: przenieść do activity
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
@@ -123,7 +125,7 @@ public class CategoryFragment extends Fragment {
             categoryAdapter.notifyDataSetChanged();
         }
     }
-
+    // TODO: przenieść do activity
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -132,6 +134,7 @@ public class CategoryFragment extends Fragment {
         menu.findItem(R.id.menu_leave).setVisible(false);
         menu.findItem(R.id.menu_sort).setVisible(false);
     }
+    // TODO: przenieść do activity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (isApiWorking || preloader.isShown()) {
@@ -172,7 +175,7 @@ public class CategoryFragment extends Fragment {
         filter.addAction("refresh");
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(receiver, filter);
     }
-
+    // TODO: przenieść do activity
     private void showSuggestCategoryDialog() {
         new MaterialDialog.Builder(getActivity())
                 .title("Nowa kategoria")
@@ -204,7 +207,7 @@ public class CategoryFragment extends Fragment {
                 .alwaysCallInputCallback()
                 .show();
     }
-
+    // TODO: wywalić
     private void setActiveInactiveCategories() {
         activeCategories.clear();
         inactiveCategories.clear();
@@ -217,7 +220,7 @@ public class CategoryFragment extends Fragment {
             }
         }
     }
-
+    // TODO: przenieść do activity
     private class ProcessAddCategory extends AsyncTask<String, Void, Boolean> {
         Category newCategory;   // TODO: ogranicz mozliwosc do x-razy
 
@@ -253,7 +256,7 @@ public class CategoryFragment extends Fragment {
                 //Utils.showInfo(rootView, "Dodano nową kategorię");
                 ((CategoryActivity) getActivity()).changeTab(TAB_INACTIVE);
 
-                categories.add(newCategory);
+                categories.add(newCategory);    // FIXME: inactiveCategories
                 Session.getInstance().setCategories(categories);
 
                 Intent intent = new Intent("refresh");
@@ -298,6 +301,8 @@ public class CategoryFragment extends Fragment {
     private class CategoryRefreshBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
+            // FIXME: categories = intent.getParcelableArrayListExtra(INTENT_CATEGORY_LIST);
+            // FIXME: categoryAdapter.notifyDataSetChanged();
             setActiveInactiveCategories();
             categoryAdapter.notifyDataSetChanged();
             // FIXME: smooth scroll
