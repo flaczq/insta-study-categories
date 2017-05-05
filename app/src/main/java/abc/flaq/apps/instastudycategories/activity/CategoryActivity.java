@@ -46,6 +46,7 @@ public class CategoryActivity extends SessionActivity {
     public void changeTab(int tabNo) {
         pager.setCurrentItem(tabNo, true);
     }
+    // TODO: przenieść tu prawie wszystko z CategoryFragment
 
     private class ProcessCategories extends AsyncTask<Void, Void, Void> {
         @Override
@@ -77,6 +78,8 @@ public class CategoryActivity extends SessionActivity {
             }
 
             Intent intent = new Intent(INTENT_CATEGORY);
+            // TODO: rozdzielić kategorie na aktywne i nieaktywne
+            // TODO: przekazywać aktywne do INTENT_ACTIVE_CATEGORY i nieaktywne INTENT_INACTIVE_CATEGORY
             intent.putParcelableArrayListExtra(INTENT_CATEGORY_LIST, categories);
             LocalBroadcastManager.getInstance(clazz).sendBroadcast(intent);
         }
