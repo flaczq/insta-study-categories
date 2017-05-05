@@ -106,6 +106,16 @@ public class Utils {
                     }
                 }).show();
     }
+    public static void showConnectionError(final View view, String message) {
+        Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE)
+                .setActionTextColor(ContextCompat.getColor(view.getContext(), R.color.colorError))
+                .setAction("DALEJ", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View snackbarView) {
+                        showErrorDismiss(view, "Sprawdź połączenie z Internetem i spróbuj ponownie");
+                    }
+                }).show();
+    }
 
     public static <T> boolean isEmpty(T element) {
         if (element == null || "".equals(element) || "".equals(element.toString())) {
@@ -251,14 +261,12 @@ public class Utils {
 
         setColorByPosition(position, textView);
     }
-    public static void setSubcategoryGridDesign(int size, int maxSize, ImageView imageView) {
+    public static void setSubcategoryGridDesign(int size, ImageView imageView) {
         // FIXME: sort elements and set different sizes
-        int minSize = 10;
-
-        if (size >= maxSize) {
+        if (size >= 20) {
             imageView.setMinimumHeight(GRID_MAX_HEIGHT);
             imageView.setMaxHeight(GRID_MAX_HEIGHT);
-        } else if (size > minSize) {
+        } else if (size > 10) {
             imageView.setMinimumHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
             imageView.setMaxHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
         } else {
@@ -310,7 +318,7 @@ public class Utils {
         return string;
     }
 
-    public static String changeExtraCharacters(String characters) {
+    public static String simplifyCharacters(String characters) {
         String noExtraCharacters = Normalizer
                 .normalize(characters, Normalizer.Form.NFD)
                 .replaceAll("\\p{M}", "");

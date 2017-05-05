@@ -4,16 +4,18 @@
     <color name="colorPrimaryDark">#286090</color>
     <color name="textColorPrimary">#FFFFFF</color>
     <color name="textColorSecondary">#000000</color>
+    <color name="textColorDisabled">#214f78</color>
     <color name="windowBackground">#FFFFFF</color>
     <color name="navigationBarColor">#000000</color>
-    <color name="colorAccent">#4CAF50</color>
-    <color name="colorAccentAlpha">#804CAF50</color>
-    <color name="colorError">#D32F2F</color>
-    <color name="colorErrorAlpha">#80D32F2F</color>
+    <color name="colorAccent">#5CB85C</color>
+    <color name="colorAccentAlpha">#805CB85C</color>
+    <color name="colorError">#D9534F</color>
+    <color name="colorErrorAlpha">#80D9534F</color>
     <color name="colorBackgroundLight">#F2F2F2</color>
     <color name="colorAdditionalAction">#808080</color>
     <color name="colorBackgroundForText">#90000000</color>
-    <color name="colorTabIndicator">#214F78</color>
+    <color name="colorTabIndicator">#F0AD4E</color>
+    <color name="colorBlackTransparent">#40000000</color>
 
     <color name="colorCategoryBlue">#0D6BB6</color>
     <color name="colorCategoryBlueLight">#90D4F7</color>

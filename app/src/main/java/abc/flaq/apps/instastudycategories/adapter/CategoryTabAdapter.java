@@ -4,11 +4,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import abc.flaq.apps.instastudycategories.fragment.CategoryFragment;
+import abc.flaq.apps.instastudycategories.fragment.CategoryActiveFragment;
+import abc.flaq.apps.instastudycategories.fragment.CategoryInactiveFragment;
 
-public class TabAdapter extends FragmentPagerAdapter {
+public class CategoryTabAdapter extends FragmentPagerAdapter {
 
-    public TabAdapter(FragmentManager fm) {
+    public CategoryTabAdapter(FragmentManager fm) {
         super(fm);
     }
 
@@ -17,9 +18,9 @@ public class TabAdapter extends FragmentPagerAdapter {
         switch (position) {
             case 0:
             default:
-                return CategoryFragment.newInstance(position);  // FIXME: CategoryActiveFragment
+                return CategoryActiveFragment.newInstance(position);
             case 1:
-                return CategoryFragment.newInstance(position);  // FIXME: CategoryInactiveFragment
+                return CategoryInactiveFragment.newInstance(position);
         }
     }
 

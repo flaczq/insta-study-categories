@@ -21,13 +21,10 @@ public class SubcategoryAdapter extends BaseAdapter {
 
     private final Context context;
     private final List<Subcategory> subcategories;
-    private int maxSize;
 
     public SubcategoryAdapter(Context context, List<Subcategory> subcategories) {
         this.context = context;
         this.subcategories = subcategories;
-        // Assuming subcategories are sorted by size desc
-        this.maxSize = (subcategories.size() > 0 ? subcategories.get(0).getUsersSize() : -1);
     }
 
     @Override
@@ -91,7 +88,7 @@ public class SubcategoryAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) view.getTag();
         }
 
-        Utils.setSubcategoryGridDesign(subcategory.getUsersSize(), maxSize, viewHolder.image);
+        Utils.setSubcategoryGridDesign(subcategory.getUsersSize(), viewHolder.image);
         String subcategoryName = Utils.getStringBySubcategoryName(context, subcategory.getName());
         viewHolder.name.setText(subcategoryName);
 
