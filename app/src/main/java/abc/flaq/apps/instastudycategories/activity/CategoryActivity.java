@@ -47,7 +47,7 @@ public class CategoryActivity extends SessionActivity {
         pager.setCurrentItem(tabNo, true);
     }
     // TODO: przenieść tu prawie wszystko z CategoryFragment
-
+    
     private class ProcessCategories extends AsyncTask<Void, Void, Void> {
         @Override
         protected void onPreExecute() {
