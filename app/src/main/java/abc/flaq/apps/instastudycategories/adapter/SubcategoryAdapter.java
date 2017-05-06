@@ -20,24 +20,27 @@ import abc.flaq.apps.instastudycategories.utils.Utils;
 public class SubcategoryAdapter extends BaseAdapter {
 
     private final Context context;
+    private final LayoutInflater inflater;
+
     private final List<Subcategory> subcategories;
 
     public SubcategoryAdapter(Context context, List<Subcategory> subcategories) {
         this.context = context;
         this.subcategories = subcategories;
+        this.inflater = LayoutInflater.from(context);
     }
 
     @Override
     public int getCount() {
+        if (Utils.isEmpty(subcategories)) {
+            return 0;
+        }
         return subcategories.size();
     }
 
     @Override
     public Subcategory getItem(int position) {
-        if (position < subcategories.size()) {
-            return subcategories.get(position);
-        }
-        return null;
+        return subcategories.get(position);
     }
 
     @Override
@@ -45,74 +48,50 @@ public class SubcategoryAdapter extends BaseAdapter {
         return 0;
     }
 
-    public String getForeignId(int position) {
-        if (position < subcategories.size()) {
-            return subcategories.get(position).getForeignId();
-        }
-        return null;
-    }
-
-    public void addItem(Subcategory subcategory) {
-        subcategories.add(subcategory);
-    }
-
-    private Integer findItemById(Subcategory subcategory) {
-        for (int i = 0; i < subcategories.size(); i++) {
-            if (subcategory.getId().equals(subcategories.get(i).getId())) {
-                return i;
-            }
-        }
-        return -1;
-    }
-    public void updateItem(Subcategory subcategory) {
-        int index = findItemById(subcategory);
-        if (index >= 0) {
-            subcategories.add(index, subcategory);
-        }
-    }
-
     @Override
     public View getView(int position, View view, ViewGroup viewGroup) {
-        final ViewHolder viewHolder;
+        final SubcategoryViewHolder subcategoryViewHolder;
         final Subcategory subcategory = subcategories.get(position);
 
         if (Utils.isEmpty(view)) {
-            final LayoutInflater layoutInflater = LayoutInflater.from(context);
-            view = layoutInflater.inflate(R.layout.activity_subcategory_item, viewGroup, false);
+            view = inflater.inflate(R.layout.activity_subcategory_item, viewGroup, false);
 
-            final ImageView image = (ImageView) view.findViewById(R.id.subcategory_item_image);
-            final TextView name = (TextView) view.findViewById(R.id.subcategory_item_name);
-            viewHolder = new ViewHolder(image, name);
-            view.setTag(viewHolder);
+            subcategoryViewHolder = new SubcategoryViewHolder(view);
+            view.setTag(subcategoryViewHolder);
         } else {
-            viewHolder = (ViewHolder) view.getTag();
+            subcategoryViewHolder = (SubcategoryViewHolder) view.getTag();
         }
 
-        Utils.setSubcategoryGridDesign(subcategory.getUsersSize(), viewHolder.image);
-        String subcategoryName = Utils.getStringBySubcategoryName(context, subcategory.getName());
-        viewHolder.name.setText(subcategoryName);
-
-        if (Utils.isEmpty(subcategory.getImageUrl())) {
-            Drawable drawable = Utils.getSubcategoryDrawable(context, subcategory.getName());
-            if (Utils.isEmpty(drawable)) {
-                viewHolder.image.setImageResource(R.drawable.placeholder_category);
-            } else {
-                viewHolder.image.setImageDrawable(drawable);
-            }
-        } else {
-            UrlImageViewHelper.setUrlDrawable(viewHolder.image, subcategory.getImageUrl(), R.drawable.placeholder_category);   // FIXME: images on server
-        }
+        subcategoryViewHolder.bind(subcategory);
 
         return view;
     }
 
-    private class ViewHolder {
+    private class SubcategoryViewHolder {
         private final ImageView image;
         private final TextView name;
 
-        private ViewHolder(ImageView image, TextView name) {
-            this.image = image;
-            this.name = name;
+        private SubcategoryViewHolder(View view) {
+            image = (ImageView) view.findViewById(R.id.subcategory_item_image);
+            name = (TextView) view.findViewById(R.id.subcategory_item_name);
+        }
+
+        private void bind(Subcategory model) {
+            //Utils.setSubcategoryGridDesign(model.getUsersSize(), subcategoryViewHolder.image);
+            String subcategoryName = Utils.getStringBySubcategoryName(context, model.getName());
+            name.setText(subcategoryName);
+
+            if (Utils.isEmpty(model.getImageUrl())) {
+                Drawable drawable = Utils.getSubcategoryDrawable(context, model.getName());
+                if (Utils.isEmpty(drawable)) {
+                    image.setImageResource(R.drawable.placeholder_category);
+                } else {
+                    image.setImageDrawable(drawable);
+                }
+            } else {
+                // FIXME: images on server
+                UrlImageViewHelper.setUrlDrawable(image, model.getImageUrl(), R.drawable.placeholder_category);
+            }
         }
     }
 

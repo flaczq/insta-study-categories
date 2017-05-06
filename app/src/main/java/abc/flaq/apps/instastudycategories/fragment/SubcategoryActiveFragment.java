@@ -18,30 +18,29 @@ import com.etsy.android.grid.StaggeredGridView;
 import java.util.ArrayList;
 
 import abc.flaq.apps.instastudycategories.R;
-import abc.flaq.apps.instastudycategories.activity.SubcategoryActivity;
 import abc.flaq.apps.instastudycategories.activity.UserActivity;
-import abc.flaq.apps.instastudycategories.adapter.CategoryAdapter;
-import abc.flaq.apps.instastudycategories.pojo.Category;
+import abc.flaq.apps.instastudycategories.adapter.SubcategoryAdapter;
+import abc.flaq.apps.instastudycategories.pojo.Subcategory;
 import abc.flaq.apps.instastudycategories.utils.Utils;
 
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_ACTIVE;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_FOREIGN_ID;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_NAME;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_ACTIVE;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_FOREIGN_ID;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_NAME;
 
-public class CategoryActiveFragment extends Fragment {
+public class SubcategoryActiveFragment extends Fragment {
 
-    private CategoryAdapter categoryAdapter;
+    private SubcategoryAdapter subcategoryAdapter;
     private StaggeredGridView gridView;
     private CrystalPreloader preloader;
 
     private int tabNo;
-    private ArrayList<Category> activeCategories = new ArrayList<>();
+    private ArrayList<Subcategory> activeSubcategories = new ArrayList<>();
 
-    public static CategoryActiveFragment newInstance(int tabNo) {
+    public static SubcategoryActiveFragment newInstance(int tabNo) {
         Bundle args = new Bundle();
-        //args.putInt(BUNDLE_CATEGORY_TAB_NO, tabNo);
-        CategoryActiveFragment fragment = new CategoryActiveFragment();
+        //args.putInt(BUNDLE_SUBCATEGORY_TAB_NO, tabNo);
+        SubcategoryActiveFragment fragment = new SubcategoryActiveFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -50,30 +49,25 @@ public class CategoryActiveFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
-        //tabNo = args.getInt(BUNDLE_CATEGORY_TAB_NO);
+        //tabNo = args.getInt(BUNDLE_SUBCATEGORY_TAB_NO);
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.activity_category, container, false);
+        View rootView = inflater.inflate(R.layout.activity_subcategory, container, false);
 
-        preloader = (CrystalPreloader) rootView.findViewById(R.id.category_preloader);
+        preloader = (CrystalPreloader) rootView.findViewById(R.id.subcategory_preloader);
         preloader.setVisibility(View.VISIBLE);
 
-        categoryAdapter = new CategoryAdapter(getActivity(), activeCategories);
-        gridView = (StaggeredGridView) rootView.findViewById(R.id.category_grid);
-        gridView.setAdapter(categoryAdapter);
+        subcategoryAdapter = new SubcategoryAdapter(getActivity(), activeSubcategories);
+        gridView = (StaggeredGridView) rootView.findViewById(R.id.subcategory_grid);
+        gridView.setAdapter(subcategoryAdapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
-                Category selected = categoryAdapter.getItem(position);
-                Intent nextIntent;
-                if (selected.isAsSubcategory()) {
-                    nextIntent = new Intent(getActivity(), UserActivity.class);
-                } else {
-                    nextIntent = new Intent(getActivity(), SubcategoryActivity.class);
-                }
-                nextIntent.putExtra(INTENT_CATEGORY_FOREIGN_ID, selected.getForeignId());
-                nextIntent.putExtra(INTENT_CATEGORY_NAME, selected.getName());
+                Subcategory selected = subcategoryAdapter.getItem(position);
+                Intent nextIntent = new Intent(getActivity(), UserActivity.class);
+                nextIntent.putExtra(INTENT_SUBCATEGORY_FOREIGN_ID, selected.getForeignId());
+                nextIntent.putExtra(INTENT_SUBCATEGORY_NAME, selected.getName());
                 getActivity().startActivity(nextIntent);
             }
         });
@@ -94,23 +88,23 @@ public class CategoryActiveFragment extends Fragment {
 
     private void setBroadcastReceivers() {
         IntentFilter filter = new IntentFilter();
-        filter.addAction(INTENT_CATEGORY);
+        filter.addAction(INTENT_SUBCATEGORY);
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(receiver, filter);
     }
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.hasExtra(INTENT_CATEGORY_ACTIVE)) {
+            if (intent.hasExtra(INTENT_SUBCATEGORY_ACTIVE)) {
                 if (preloader.isShown()) {
                     preloader.setVisibility(View.GONE);
                 }
 
-                ArrayList<Category> newCategories = intent.getParcelableArrayListExtra(INTENT_CATEGORY_ACTIVE);
-                if (Utils.isNotEmpty(newCategories)) {
-                    activeCategories.clear();
-                    activeCategories.addAll(newCategories);
-                    categoryAdapter.notifyDataSetChanged();
+                ArrayList<Subcategory> newSubcategories = intent.getParcelableArrayListExtra(INTENT_SUBCATEGORY_ACTIVE);
+                if (Utils.isNotEmpty(newSubcategories)) {
+                    activeSubcategories.clear();
+                    activeSubcategories.addAll(newSubcategories);
+                    subcategoryAdapter.notifyDataSetChanged();
                 }
             }
         }

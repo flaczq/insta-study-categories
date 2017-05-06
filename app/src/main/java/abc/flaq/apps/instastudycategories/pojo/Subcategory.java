@@ -1,12 +1,14 @@
 package abc.flaq.apps.instastudycategories.pojo;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import java.util.List;
 
 import abc.flaq.apps.instastudycategories.utils.Utils;
 
-public class Subcategory extends EveObject implements Comparable<Subcategory> {
+public class Subcategory extends EveObject implements Comparable<Subcategory>, Parcelable {
 
     private String name = "";
     private Integer usersSize;
@@ -15,6 +17,18 @@ public class Subcategory extends EveObject implements Comparable<Subcategory> {
     private List<String> hashtags;
     private String imageUrl = "";
     private Boolean active;
+
+    public Subcategory() {
+    }
+    private Subcategory(Parcel parcel) {
+        name = parcel.readString();
+        usersSize = parcel.readInt();
+        parcel.readStringList(categories);
+        categoriesSize = parcel.readInt();
+        parcel.readStringList(hashtags);
+        imageUrl = parcel.readString();
+        active = (parcel.readInt() == 1);
+    }
 
     public String getName() {
         return name;
@@ -97,5 +111,29 @@ public class Subcategory extends EveObject implements Comparable<Subcategory> {
         json += "}";
         return json;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(getForeignId());
+        parcel.writeString(name);
+        parcel.writeInt(usersSize);
+        parcel.writeStringList(categories);
+        parcel.writeInt(categoriesSize);
+        parcel.writeStringList(hashtags);
+        parcel.writeString(imageUrl);
+        parcel.writeInt(active ? 1 : 0);
+    }
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public Subcategory createFromParcel(Parcel parcel) {
+            return new Subcategory(parcel);
+        }
+        public Subcategory[] newArray(int size) {
+            return new Subcategory[size];
+        }
+    };
 
 }

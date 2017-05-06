@@ -21,14 +21,14 @@ public class Session {
     private ArrayList<Category> categories;
     private Map<String, List<Subcategory>> subcategoriesMap = new HashMap<>();
 
+    private Session() {
+    }
+
     public static Session getInstance() {
         if (Utils.isEmpty(instance)) {
             instance = new Session();
         }
         return instance;
-    }
-
-    private Session() {
     }
 
     public SharedPreferences getSettings() {

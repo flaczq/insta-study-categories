@@ -4,19 +4,17 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
+import android.support.design.widget.TabLayout;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.crystal.crystalpreloaders.widgets.CrystalPreloader;
-import com.etsy.android.grid.StaggeredGridView;
 
 import org.json.JSONException;
 
@@ -25,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import abc.flaq.apps.instastudycategories.R;
-import abc.flaq.apps.instastudycategories.adapter.SubcategoryAdapter;
+import abc.flaq.apps.instastudycategories.adapter.SubcategoryTabAdapter;
 import abc.flaq.apps.instastudycategories.pojo.Subcategory;
 import abc.flaq.apps.instastudycategories.utils.Api;
 import abc.flaq.apps.instastudycategories.utils.Session;
@@ -33,16 +31,17 @@ import abc.flaq.apps.instastudycategories.utils.Utils;
 
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_FOREIGN_ID;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_NAME;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_FOREIGN_ID;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_NAME;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_ACTIVE;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_INACTIVE;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_INACTIVE_ADD_NEW;
+import static abc.flaq.apps.instastudycategories.utils.Constants.TAB_INACTIVE;
 
 public class SubcategoryActivity extends SessionActivity {
 
     private final AppCompatActivity clazz = this;
     private View rootView;
-    private StaggeredGridView gridView;
-    private SubcategoryAdapter subcategoryAdapter;
-    private CrystalPreloader preloader;
+    private ViewPager pager;
 
     private List<Subcategory> subcategories = new ArrayList<>();
     private String categoryForeignId;
@@ -51,11 +50,15 @@ public class SubcategoryActivity extends SessionActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_subcategory);
+        setContentView(R.layout.activity_subcategory_container);
 
         rootView = findViewById(android.R.id.content);
-        gridView = (StaggeredGridView) findViewById(R.id.subcategory_grid);
-        preloader = (CrystalPreloader) findViewById(R.id.subcategory_preloader);
+
+        pager = (ViewPager) findViewById(R.id.subcategory_pager);
+        pager.setAdapter(new SubcategoryTabAdapter(getSupportFragmentManager()));
+
+        TabLayout tabs = (TabLayout) findViewById(R.id.subcategory_tabs);
+        tabs.setupWithViewPager(pager);
 
         Intent intent = getIntent();
         categoryForeignId = intent.getStringExtra(INTENT_CATEGORY_FOREIGN_ID);
@@ -66,28 +69,10 @@ public class SubcategoryActivity extends SessionActivity {
             String categoryName = intent.getStringExtra(INTENT_CATEGORY_NAME);
             Utils.setActionBarTitle(clazz, Utils.getStringByCategoryName(clazz, categoryName));
 
-            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
-                    Subcategory selected = subcategoryAdapter.getItem(position);
-                    Intent nextIntent = new Intent(clazz, UserActivity.class);
-                    nextIntent.putExtra(INTENT_SUBCATEGORY_FOREIGN_ID, selected.getForeignId());
-                    nextIntent.putExtra(INTENT_SUBCATEGORY_NAME, selected.getName());
-                    clazz.startActivity(nextIntent);
-                }
-            });
-
-            // FIXME: Remember subcategories - prawdopodobnie do wywalenia z powodu przesuwania podkategorii z aktywnych do nieaktywnych?
-            if (Utils.isEmpty(Session.getInstance().getSubcategories(categoryForeignId)) ||
-                    Session.getInstance().getSubcategories(categoryForeignId).size() == 0) {
-                new ProcessSubcategories().execute();
-            } else {
-                subcategoryAdapter = new SubcategoryAdapter(clazz, Session.getInstance().getSubcategories(categoryForeignId));
-                gridView.setAdapter(subcategoryAdapter);
-            }
+            new ProcessSubcategories().execute();
         }
     }
-    @Override
+    /*@Override
     protected void onResume() {
         super.onResume();
         invalidateOptionsMenu();
@@ -98,7 +83,7 @@ public class SubcategoryActivity extends SessionActivity {
             gridView.setAdapter(subcategoryAdapter);
 
         }
-    }
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -149,14 +134,17 @@ public class SubcategoryActivity extends SessionActivity {
                 .input("Wpisz nazwę...", null, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
-                        // nothing
+                        // TODO: sprawdzać, czy różne od nazw wszystkich podkategorii
+                        /*if (Utils.isNotEmpty(input) && API_ALL_CATEGORY_NAME.equals(input.toString())) {
+                            dialog.getActionButton(DialogAction.POSITIVE).setEnabled(false);
+                        }*/
                     }
                 })
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         if (Utils.isNotEmpty(dialog.getInputEditText()) && Utils.isNotEmpty(dialog.getInputEditText().getText())) {
-                            Utils.showInfo(rootView, "Zaproponowano podkategorię: " + dialog.getInputEditText().getText());
+                            Utils.showInfo(rootView, "Zaproponowano nową podkategorię: " + dialog.getInputEditText().getText());
                             new ProcessAddSubcategory().execute(dialog.getInputEditText().getText().toString());
                         }
                         dialog.dismiss();
@@ -169,7 +157,6 @@ public class SubcategoryActivity extends SessionActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             isApiWorking = true;
-            preloader.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -191,22 +178,29 @@ public class SubcategoryActivity extends SessionActivity {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             isApiWorking = false;
-            preloader.setVisibility(View.GONE);
 
             if (subcategories.size() == 0) {
-                Snackbar.make(rootView, "Brak podkategorii", Snackbar.LENGTH_INDEFINITE)
-                        .setActionTextColor(ContextCompat.getColor(clazz, R.color.colorError))
-                        .setAction("ODŚWIEŻ", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                // TODO: odswiez
-                            }
-                        }).show();
+                Utils.showQuickInfo(rootView, "Brak podkategorii");
             } else {
-                subcategoryAdapter = new SubcategoryAdapter(clazz, subcategories);
-                gridView.setAdapter(subcategoryAdapter);
                 Session.getInstance().setSubcategories(categoryForeignId, subcategories);
             }
+
+            ArrayList<Subcategory> activeSubcategories = new ArrayList<>();
+            ArrayList<Subcategory> inactiveSubcategories = new ArrayList<>();
+            for (Subcategory subcategory : subcategories) {
+                if (subcategory.isActive()) {
+                    activeSubcategories.add(subcategory);
+                } else {
+                    inactiveSubcategories.add(subcategory);
+                }
+            }
+
+            Intent activeIntent = new Intent(INTENT_SUBCATEGORY);
+            activeIntent.putParcelableArrayListExtra(INTENT_SUBCATEGORY_ACTIVE, activeSubcategories);
+            LocalBroadcastManager.getInstance(clazz).sendBroadcast(activeIntent);
+            Intent inactiveIntent = new Intent(INTENT_SUBCATEGORY);
+            inactiveIntent.putParcelableArrayListExtra(INTENT_SUBCATEGORY_INACTIVE, inactiveSubcategories);
+            LocalBroadcastManager.getInstance(clazz).sendBroadcast(inactiveIntent);
         }
     }
 
@@ -243,13 +237,23 @@ public class SubcategoryActivity extends SessionActivity {
             isApiWorking = false;
 
             if (result) {
-                // TODO: idz do nowej podkategorii - zakladka nieaktywne
-                //Utils.showInfo(rootView, "Dodano nową podkategorię");
-                //subcategoryAdapter = new SubcategoryAdapter(clazz, Session.getInstance().getSubcategories(categoryForeignId));
-                //gridView.setAdapter(subcategoryAdapter);
+                Utils.showInfoDismiss(rootView, "Podkategoria będzie aktywna po uzyskaniu 10 głosów");
+                pager.setCurrentItem(TAB_INACTIVE, true);
+
                 subcategories.add(newSubcategory);
-                //Session.getInstance().setSubcategories(categoryForeignId, subcategories);
-                subcategoryAdapter.notifyDataSetChanged();
+                Session.getInstance().setSubcategories(categoryForeignId, subcategories);
+
+                ArrayList<Subcategory> inactiveSubcategories = new ArrayList<>();
+                for (Subcategory subcategory : subcategories) {
+                    if (!subcategory.isActive()) {
+                        inactiveSubcategories.add(subcategory);
+                    }
+                }
+
+                Intent intent = new Intent(INTENT_SUBCATEGORY);
+                intent.putParcelableArrayListExtra(INTENT_SUBCATEGORY_INACTIVE, inactiveSubcategories);
+                intent.putExtra(INTENT_SUBCATEGORY_INACTIVE_ADD_NEW, true);
+                LocalBroadcastManager.getInstance(clazz).sendBroadcast(intent);
             } else {
                 Utils.showError(rootView, "Dodanie nowej podkategorii zakończone niepowodzeniem");
             }

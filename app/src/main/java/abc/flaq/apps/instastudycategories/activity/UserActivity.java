@@ -33,7 +33,7 @@ import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_NAME;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_FOREIGN_ID;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_NAME;
-import static abc.flaq.apps.instastudycategories.utils.Constants.PACKAGE_INSTAGRAM;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_PACKAGE;
 
 public class UserActivity extends SessionActivity {
 
@@ -88,7 +88,7 @@ public class UserActivity extends SessionActivity {
                     User selected = userAdapter.getItem(position);
                     Uri instagramUri = Uri.parse(INSTAGRAM_URL + "_u/" + selected.getUsername());
                     Intent nextIntent = new Intent(Intent.ACTION_VIEW, instagramUri);
-                    nextIntent.setPackage(PACKAGE_INSTAGRAM);
+                    nextIntent.setPackage(INSTAGRAM_PACKAGE);
 
                     if (Utils.isIntentAvailable(clazz, nextIntent)) {
                         Utils.logDebug(clazz, "Instagram intent is available");

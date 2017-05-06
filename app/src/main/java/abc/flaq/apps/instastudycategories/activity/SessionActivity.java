@@ -44,7 +44,7 @@ import abc.flaq.apps.instastudycategories.utils.Utils;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_ENDPOINT_USER_SELF;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_REDIRECT_URL;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_URL;
-import static abc.flaq.apps.instastudycategories.utils.Constants.PACKAGE_INSTAGRAM;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_PACKAGE;
 import static abc.flaq.apps.instastudycategories.utils.Constants.SETTINGS_ACCESS_TOKEN;
 
 public class SessionActivity extends AppCompatActivity {
@@ -187,7 +187,7 @@ public class SessionActivity extends AppCompatActivity {
                 .onNegative(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        Utils.showInfo(rootView, "Wylogowano");
+                        Utils.showQuickInfo(rootView, "Wylogowano");
                         logOut();
                         dialog.dismiss();
                     }
@@ -220,7 +220,7 @@ public class SessionActivity extends AppCompatActivity {
                 Utils.showQuickInfo(rootView, "Otwieranie profilu Instagram...");
                 Uri instagramUri = Uri.parse(INSTAGRAM_URL + "_u/" + Session.getInstance().getUser().getUsername());
                 Intent nextIntent = new Intent(Intent.ACTION_VIEW, instagramUri);
-                nextIntent.setPackage(PACKAGE_INSTAGRAM);
+                nextIntent.setPackage(INSTAGRAM_PACKAGE);
 
                 if (Utils.isIntentAvailable(clazz, nextIntent)) {
                     Utils.logDebug(clazz, "Instagram intent is available");
@@ -239,7 +239,7 @@ public class SessionActivity extends AppCompatActivity {
                 Utils.showQuickInfo(rootView, "Otwieranie profilu Instagram...");
                 Uri instagramUri = Uri.parse(INSTAGRAM_URL + "_u/" + Session.getInstance().getUser().getUsername());
                 Intent nextIntent = new Intent(Intent.ACTION_VIEW, instagramUri);
-                nextIntent.setPackage(PACKAGE_INSTAGRAM);
+                nextIntent.setPackage(INSTAGRAM_PACKAGE);
 
                 if (Utils.isIntentAvailable(clazz, nextIntent)) {
                     Utils.logDebug(clazz, "Instagram intent is available");
@@ -380,7 +380,7 @@ public class SessionActivity extends AppCompatActivity {
                     if (isNewUser) {
                         new ProcessAddUser().execute();
                     } else {
-                        Utils.showInfo(rootView, "Zalogowano");
+                        Utils.showQuickInfo(rootView, "Zalogowano");
                         Session.getInstance().setUser(user);
                         setMainMenuVisibility(mainMenu);
 
@@ -422,7 +422,7 @@ public class SessionActivity extends AppCompatActivity {
             isApiWorking = false;
 
             if (result) {
-                Utils.showInfo(rootView, "Zalogowano");
+                Utils.showQuickInfo(rootView, "Zalogowano");
                 Session.getInstance().setUser(user);
                 saveAccessToken(accessToken);
 
@@ -462,7 +462,7 @@ public class SessionActivity extends AppCompatActivity {
             isApiWorking = false;
 
             if (result) {
-                Utils.showInfo(rootView, "Usunięto konto użytkownika");
+                Utils.showQuickInfo(rootView, "Usunięto konto użytkownika");
                 logOut();
             }
         }

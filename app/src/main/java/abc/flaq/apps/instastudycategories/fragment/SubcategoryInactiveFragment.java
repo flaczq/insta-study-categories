@@ -17,27 +17,27 @@ import com.etsy.android.grid.StaggeredGridView;
 import java.util.ArrayList;
 
 import abc.flaq.apps.instastudycategories.R;
-import abc.flaq.apps.instastudycategories.adapter.CategoryAdapter;
-import abc.flaq.apps.instastudycategories.pojo.Category;
+import abc.flaq.apps.instastudycategories.adapter.SubcategoryAdapter;
+import abc.flaq.apps.instastudycategories.pojo.Subcategory;
 import abc.flaq.apps.instastudycategories.utils.Utils;
 
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_INACTIVE;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_INACTIVE_ADD_NEW;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_INACTIVE;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_INACTIVE_ADD_NEW;
 
-public class CategoryInactiveFragment extends Fragment {
+public class SubcategoryInactiveFragment extends Fragment {
 
-    private CategoryAdapter categoryAdapter;
+    private SubcategoryAdapter subcategoryAdapter;
     private StaggeredGridView gridView;
     private CrystalPreloader preloader;
 
     private int tabNo;
-    private ArrayList<Category> inactiveCategories = new ArrayList<>();
+    private ArrayList<Subcategory> inactiveSubcategories = new ArrayList<>();
 
-    public static CategoryInactiveFragment newInstance(int tabNo) {
+    public static SubcategoryInactiveFragment newInstance(int tabNo) {
         Bundle args = new Bundle();
-        //args.putInt(BUNDLE_CATEGORY_TAB_NO, tabNo);
-        CategoryInactiveFragment fragment = new CategoryInactiveFragment();
+        //args.putInt(BUNDLE_SUBCATEGORY_TAB_NO, tabNo);
+        SubcategoryInactiveFragment fragment = new SubcategoryInactiveFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -46,17 +46,17 @@ public class CategoryInactiveFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
-        //tabNo = args.getInt(BUNDLE_CATEGORY_TAB_NO);
+        //tabNo = args.getInt(BUNDLE_SUBCATEGORY_TAB_NO);
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.activity_category, container, false);
-        preloader = (CrystalPreloader) rootView.findViewById(R.id.category_preloader);
+        View rootView = inflater.inflate(R.layout.activity_subcategory, container, false);
+        preloader = (CrystalPreloader) rootView.findViewById(R.id.subcategory_preloader);
         preloader.setVisibility(View.VISIBLE);
 
-        categoryAdapter = new CategoryAdapter(getActivity(), inactiveCategories);
-        gridView = (StaggeredGridView) rootView.findViewById(R.id.category_grid);
-        gridView.setAdapter(categoryAdapter);
+        subcategoryAdapter = new SubcategoryAdapter(getActivity(), inactiveSubcategories);
+        gridView = (StaggeredGridView) rootView.findViewById(R.id.subcategory_grid);
+        gridView.setAdapter(subcategoryAdapter);
 
         return rootView;
     }
@@ -74,28 +74,28 @@ public class CategoryInactiveFragment extends Fragment {
 
     private void setBroadcastReceivers() {
         IntentFilter filter = new IntentFilter();
-        filter.addAction(INTENT_CATEGORY);
+        filter.addAction(INTENT_SUBCATEGORY);
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(receiver, filter);
     }
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.hasExtra(INTENT_CATEGORY_INACTIVE)) {
+            if (intent.hasExtra(INTENT_SUBCATEGORY_INACTIVE)) {
                 if (preloader.isShown()) {
                     preloader.setVisibility(View.GONE);
                 }
 
-                ArrayList<Category> newCategories = intent.getParcelableArrayListExtra(INTENT_CATEGORY_INACTIVE);
+                ArrayList<Subcategory> newCategories = intent.getParcelableArrayListExtra(INTENT_SUBCATEGORY_INACTIVE);
                 if (Utils.isNotEmpty(newCategories)) {
-                    inactiveCategories.clear();
-                    inactiveCategories.addAll(newCategories);
-                    categoryAdapter.notifyDataSetChanged();
+                    inactiveSubcategories.clear();
+                    inactiveSubcategories.addAll(newCategories);
+                    subcategoryAdapter.notifyDataSetChanged();
                 }
             }
-            if (intent.hasExtra(INTENT_CATEGORY_INACTIVE_ADD_NEW)) {
+            if (intent.hasExtra(INTENT_SUBCATEGORY_INACTIVE_ADD_NEW)) {
                 // FIXME: NOT WORKING - Scroll to bottom to see new category
-                //gridView.setSelection(categoryAdapter.getCount() - 1);
+                //gridView.setSelection(subcategoryAdapter.getCount() - 1);
             }
         }
     };

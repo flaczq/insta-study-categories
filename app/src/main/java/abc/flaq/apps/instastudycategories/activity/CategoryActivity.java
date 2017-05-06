@@ -28,7 +28,6 @@ import abc.flaq.apps.instastudycategories.utils.Api;
 import abc.flaq.apps.instastudycategories.utils.Session;
 import abc.flaq.apps.instastudycategories.utils.Utils;
 
-import static abc.flaq.apps.instastudycategories.utils.Constants.API_ALL_CATEGORY_NAME;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_ACTIVE;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_INACTIVE;
@@ -120,16 +119,16 @@ public class CategoryActivity extends SessionActivity {
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                         // TODO: sprawdzać, czy różne od nazw wszystkich kategorii
-                        if (Utils.isNotEmpty(input) && API_ALL_CATEGORY_NAME.equals(input.toString())) {
+                        /*if (Utils.isNotEmpty(input) && API_ALL_CATEGORY_NAME.equals(input.toString())) {
                             dialog.getActionButton(DialogAction.POSITIVE).setEnabled(false);
-                        }
+                        }*/
                     }
                 })
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         if (Utils.isNotEmpty(dialog.getInputEditText()) && Utils.isNotEmpty(dialog.getInputEditText().getText())) {
-                            Utils.showInfo(rootView, "Zaproponowano kategorię: " + dialog.getInputEditText().getText());
+                            Utils.showInfo(rootView, "Zaproponowano nową kategorię: " + dialog.getInputEditText().getText());
                             new ProcessAddCategory().execute(dialog.getInputEditText().getText().toString());
                         }
                         dialog.dismiss();
@@ -164,7 +163,6 @@ public class CategoryActivity extends SessionActivity {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            isApiWorking = false;
 
             if (categories.size() == 0) {
                 Utils.showConnectionError(rootView, "Nie znaleziono kategorii");
@@ -223,7 +221,7 @@ public class CategoryActivity extends SessionActivity {
             isApiWorking = false;
 
             if (result) {
-                //Utils.showInfo(rootView, "Dodano nową kategorię");
+                Utils.showInfoDismiss(rootView, "Kategoria będzie aktywna po uzyskaniu 10 głosów");
                 pager.setCurrentItem(TAB_INACTIVE, true);
 
                 categories.add(newCategory);

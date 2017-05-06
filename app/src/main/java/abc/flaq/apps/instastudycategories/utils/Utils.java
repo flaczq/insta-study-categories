@@ -1,6 +1,7 @@
 package abc.flaq.apps.instastudycategories.utils;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,6 +14,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateFormat;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -208,6 +210,22 @@ public class Utils {
             name = name.substring(index + 1);
         }
         return getDrawableByName(context, name);
+    }
+
+    public static DisplayMetrics getScreenMetrics(Activity activity) {
+        DisplayMetrics metrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        return metrics;
+    }
+    public static int getScreenHeight(Activity activity) {
+        DisplayMetrics metrics = getScreenMetrics(activity);
+        int screenHeight = metrics.heightPixels;
+        return screenHeight;
+    }
+    public static int getScreenWidth(Activity activity) {
+        DisplayMetrics metrics = getScreenMetrics(activity);
+        int screenWidth = metrics.widthPixels;
+        return screenWidth;
     }
 
     private static void setColorByPosition(int position, TextView textView) {
