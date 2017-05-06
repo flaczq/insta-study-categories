@@ -33,9 +33,9 @@ public class Factory {
         }
         // Adding user to "all" category by default
         ArrayList<String> categories = new ArrayList<>();
-        Category allCategory = Api.getCategoryByName(API_ALL_CATEGORY_NAME);
-        if (Utils.isNotEmpty(allCategory)) {
-            categories.add(allCategory.getForeignId());
+        Category categoryAll = Api.getCategoryByName(API_ALL_CATEGORY_NAME);
+        if (Utils.isNotEmpty(categoryAll)) {
+            categories.add(categoryAll.getForeignId());
         }
         user.setCategories(categories);
         user.setCategoriesSize(categories.size());

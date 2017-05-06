@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- TODO: dodanie głosów dla nieaktywnych -->
     <ImageView android:id="@+id/category_item_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

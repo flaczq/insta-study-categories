@@ -77,14 +77,28 @@ public class Utils {
         }
     }
 
+    public static View findSnackbarView(View view) {
+        // Get current view - from farthest
+        View snackbarView = view.findViewById(R.id.user_list);
+        if (isEmpty(snackbarView)) {
+            snackbarView = view.findViewById(R.id.subcategory_grid);
+            if (isEmpty(snackbarView)) {
+                snackbarView = view.findViewById(R.id.category_grid);
+                if (isEmpty(snackbarView)) {
+                    snackbarView = view;
+                }
+            }
+        }
+        return snackbarView;
+    }
     public static void showInfo(View view, String message) {
-        Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_LONG).show();
     }
     public static void showQuickInfo(View view, String message) {
-        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_SHORT).show();
     }
     public static void showInfoDismiss(View view, String message) {
-        Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE)
+        Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_INDEFINITE)
                 .setActionTextColor(ContextCompat.getColor(view.getContext(), R.color.colorAccent))
                 .setAction("OK", new View.OnClickListener() {
                     @Override
@@ -95,14 +109,14 @@ public class Utils {
     }
     public static void showError(View view, String message) {
         log(LOG_ERROR, view.getContext(), message);
-        Snackbar.make(view, "General error", Snackbar.LENGTH_LONG).show();
+        Snackbar.make(findSnackbarView(view), "General error", Snackbar.LENGTH_LONG).show();
     }
     public static void showQuickError(View view, String message) {
         log(LOG_ERROR, view.getContext(), message);
-        Snackbar.make(view, "General error", Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(findSnackbarView(view), "General error", Snackbar.LENGTH_SHORT).show();
     }
     public static void showErrorDismiss(View view, String message) {
-        Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE)
+        Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_INDEFINITE)
                 .setActionTextColor(ContextCompat.getColor(view.getContext(), R.color.colorError))
                 .setAction("OK", new View.OnClickListener() {
                     @Override
@@ -112,7 +126,7 @@ public class Utils {
                 }).show();
     }
     public static void showConnectionError(final View view, String message) {
-        Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE)
+        Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_INDEFINITE)
                 .setActionTextColor(ContextCompat.getColor(view.getContext(), R.color.colorError))
                 .setAction("DALEJ", new View.OnClickListener() {
                     @Override
@@ -265,7 +279,6 @@ public class Utils {
         }
     }
     public static void setCategoryGridDesign(int position, int size, int maxSize, TextView textView) {
-        // FIXME: sort elements and set different sizes
         int minSize = 10;
 
         if (size >= maxSize) {
@@ -285,7 +298,6 @@ public class Utils {
         setColorByPosition(position, textView);
     }
     public static void setSubcategoryGridDesign(int size, ImageView imageView) {
-        // FIXME: sort elements and set different sizes
         if (size >= 20) {
             imageView.setMinimumHeight(GRID_MAX_HEIGHT);
             imageView.setMaxHeight(GRID_MAX_HEIGHT);

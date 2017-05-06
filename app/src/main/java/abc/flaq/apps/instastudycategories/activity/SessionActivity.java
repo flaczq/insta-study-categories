@@ -42,9 +42,9 @@ import abc.flaq.apps.instastudycategories.utils.Session;
 import abc.flaq.apps.instastudycategories.utils.Utils;
 
 import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_ENDPOINT_USER_SELF;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_PACKAGE;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_REDIRECT_URL;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_URL;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_PACKAGE;
 import static abc.flaq.apps.instastudycategories.utils.Constants.SETTINGS_ACCESS_TOKEN;
 
 public class SessionActivity extends AppCompatActivity {
@@ -131,7 +131,6 @@ public class SessionActivity extends AppCompatActivity {
     }
 
     private void showInstagramDialog(String url) {
-        // FIXME: mały pasek przed wczytaniem strony
         instagramDialog = new Dialog(clazz);
         if (Build.VERSION.SDK_INT >= 21) {
             CookieManager.getInstance().removeAllCookies(null);
@@ -171,7 +170,7 @@ public class SessionActivity extends AppCompatActivity {
     private void showInfoDialog() {
         MaterialDialog.Builder infoDialogBuilder = new MaterialDialog.Builder(clazz)
                 .title(Session.getInstance().getUser().getUsername())
-                // TODO: more...
+                // TODO: zdania
                 .content(Session.getInstance().getUser().getBio() +
                         "\nFollowersów: " + Session.getInstance().getUser().getFollowers() +
                         "\nData dołączenia: " + Utils.formatDate(Session.getInstance().getUser().getCreated()) +

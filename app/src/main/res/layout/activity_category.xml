@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/activity_category"
+    android:id="@+id/category_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackgroundLight"
@@ -12,16 +12,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:item_margin="@dimen/categories_margin_between_grids"
-        app:column_count="2" />
+        app:column_count="2"
+        app:layout_behavior="abc.flaq.apps.instastudycategories.utils.MoveUpBehavior" />
 
     <com.crystal.crystalpreloaders.widgets.CrystalPreloader android:id="@+id/category_preloader"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
+        android:layout_gravity="center"
         android:visibility="invisible"
         app:crs_pl_size="medium"
         app:crs_pl_fg_color="@color/colorPrimaryDark"
         app:crs_pl_style="tornado_circle_1" />
 
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

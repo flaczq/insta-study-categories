@@ -148,11 +148,17 @@ public class UserActivity extends SessionActivity {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
                         switch (menuItem.getItemId()) {
-                            // TODO
+                            // TODO: sortowanie
                             case R.id.sort_menu_alphabetically:
                                 Collections.reverse(users);
                                 break;
+                            case R.id.sort_menu_alphabetically_rev:
+                                Collections.reverse(users);
+                                break;
                             case R.id.sort_menu_date:
+                                Collections.reverse(users);
+                                break;
+                            case R.id.sort_menu_date_rev:
                                 Collections.reverse(users);
                                 break;
                             default:

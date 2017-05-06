@@ -225,37 +225,12 @@ public class Api {
         return categories;
     }
     public static Category getCategoryById(String id) throws IOException, JSONException {
-        if (allCategories.size() > 0) {
-            for (Category category : allCategories) {
-                if (id.equals(category.getId())) {
-                    return category;
-                }
-            }
-        }
-
         InputStreamReader is = getAuthorizedRequest(API_CATEGORIES_URL + "/" + id);
         String stream = getStream(is);
-        JSONArray items = getItems(stream);
-
-        for (int i = 0; i < items.length(); i++) {
-            Category category = mapper.readValue(items.getString(i), Category.class);
-            if (id.equals(category.getId())) {
-                //correctDate(category);
-                return category;
-            }
-        }
-
-        return null;
+        Category category = mapper.readValue(stream, Category.class);
+        return category;
     }
     public static Category getCategoryByName(String name) throws IOException, JSONException {
-        if (allCategories.size() > 0) {
-            for (Category category : allCategories) {
-                if (name.equals(category.getName())) {
-                    return category;
-                }
-            }
-        }
-
         Map<String, String> conditions = new HashMap<>();
         conditions.put("name", name);
         InputStreamReader is = getAuthorizedRequest(API_CATEGORIES_URL + getWhere(conditions));
@@ -321,24 +296,10 @@ public class Api {
         return subcategories;
     }
     public static Subcategory getSubcategoryById(String id) throws IOException, JSONException {
-        if (allSubcategories.size() > 0) {
-            for (Subcategory subcategory : allSubcategories) {
-                if (id.equals(subcategory.getId())) {
-                    return subcategory;
-                }
-            }
-        }
-
         InputStreamReader is = getAuthorizedRequest(API_SUBCATEGORIES_URL + "/" + id);
         String stream = getStream(is);
-
         Subcategory subcategory = mapper.readValue(stream, Subcategory.class);
-        if (id.equals(subcategory.getId())) {
-            //correctDate(subcategory);
-            return subcategory;
-        }
-
-        return null;
+        return subcategory;
     }
     public static ArrayList<Subcategory> getSubcategoriesByCategoryForeignId(boolean force, String categoryForeignId) throws IOException, JSONException {
         ArrayList<Subcategory> subcategories = new ArrayList<>();

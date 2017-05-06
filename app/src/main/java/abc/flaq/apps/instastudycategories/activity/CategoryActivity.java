@@ -44,7 +44,7 @@ public class CategoryActivity extends SessionActivity {
     private Boolean isApiWorking = false;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {     // FIXME: podnieść widok gdy wyświetla się snackbar
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category_container);
 
@@ -73,6 +73,7 @@ public class CategoryActivity extends SessionActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         setMainMenuVisibility(menu);
+        menu.findItem(R.id.menu_suggest).setVisible(false);
         menu.findItem(R.id.menu_join).setVisible(false);
         menu.findItem(R.id.menu_leave).setVisible(false);
         menu.findItem(R.id.menu_sort).setVisible(false);
@@ -85,7 +86,7 @@ public class CategoryActivity extends SessionActivity {
         }
         switch (item.getItemId()) {
             case R.id.menu_suggest:
-                showSuggestCategoryDialog();
+                // not available from here
                 break;
             case R.id.menu_join:
                 // not available from here
@@ -221,8 +222,9 @@ public class CategoryActivity extends SessionActivity {
             isApiWorking = false;
 
             if (result) {
-                Utils.showInfoDismiss(rootView, "Kategoria będzie aktywna po uzyskaniu 10 głosów");
                 pager.setCurrentItem(TAB_INACTIVE, true);
+                // FIXME: znajdź view drugiej zakładki i tam wyświetl snackbar
+                Utils.showInfoDismiss(rootView, "Kategoria stanie się aktywna po dołączeniu do niej 10 użytkowników");
 
                 categories.add(newCategory);
                 Session.getInstance().setCategories(categories);

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/activity_user"
+    android:id="@+id/user_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackgroundLight"
@@ -11,16 +11,18 @@
     <ListView android:id="@+id/user_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/categories_margin_between_grids" />
+        android:layout_margin="@dimen/categories_margin_between_grids"
+        app:layout_behavior="abc.flaq.apps.instastudycategories.utils.MoveUpBehavior" />
 
     <com.crystal.crystalpreloaders.widgets.CrystalPreloader android:id="@+id/user_preloader"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
+        android:layout_gravity="center"
         android:visibility="invisible"
         app:crs_pl_size="medium"
         app:crs_pl_fg_color="@color/colorPrimaryDark"
         app:crs_pl_style="tornado_circle_1" />
 
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

@@ -237,8 +237,9 @@ public class SubcategoryActivity extends SessionActivity {
             isApiWorking = false;
 
             if (result) {
-                Utils.showInfoDismiss(rootView, "Podkategoria będzie aktywna po uzyskaniu 10 głosów");
                 pager.setCurrentItem(TAB_INACTIVE, true);
+                // FIXME: znajdź view drugiej zakładki i tam wyświetl snackbar
+                Utils.showInfoDismiss(rootView, "Podkategoria stanie się aktywna po dołączeniu do niej 10 użytkowników");
 
                 subcategories.add(newSubcategory);
                 Session.getInstance().setSubcategories(categoryForeignId, subcategories);
