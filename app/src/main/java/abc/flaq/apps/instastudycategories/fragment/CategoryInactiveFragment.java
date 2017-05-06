@@ -82,13 +82,11 @@ public class CategoryInactiveFragment extends Fragment {
                     inactiveCategories.clear();
                     inactiveCategories.addAll(newCategories);
                     categoryAdapter.notifyDataSetChanged();
-                    // FIXME: nie działa - źle ustawia nowy element
-                    //gridView.invalidateViews();
                 }
             }
             if (intent.hasExtra(INTENT_CATEGORY_INACTIVE_ADD_NEW)) {
-                // Scroll to bottom to see new category
-                gridView.setSelection(categoryAdapter.getCount() - 1);
+                // FIXME: NOT WORKING - Scroll to bottom to see new category -
+                //gridView.setSelection(categoryAdapter.getCount() - 1);
             }
         }
     }

@@ -36,8 +36,8 @@ import static abc.flaq.apps.instastudycategories.utils.Constants.API_USERS_URL;
 
 public class Api {
 
-    private static ObjectMapper mapper = new ObjectMapper();
-    private static Calendar calendar = Calendar.getInstance();
+    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final Calendar calendar = Calendar.getInstance();
 
     private static ArrayList<Category> allCategories = new ArrayList<>();
     private static ArrayList<Subcategory> allSubcategories = new ArrayList<>();
@@ -141,6 +141,7 @@ public class Api {
         return handleResponse(connection);
     }
 
+    // Not used, correcting date during format and show
     private static void correctDate(EveObject eveObject) {
         Date date = eveObject.getCreated();
         calendar.setTime(date);
@@ -206,7 +207,7 @@ public class Api {
         ArrayList<Category> categories = new ArrayList<>();
         for (int i = 0; i < items.length(); i++) {
             Category category = mapper.readValue(items.getString(i), Category.class);
-            correctDate(category);
+            //correctDate(category);
             if (API_ALL_CATEGORY_NAME.equals(category.getName())) {
                 firstCategory = category;
             } else {
@@ -239,7 +240,7 @@ public class Api {
         for (int i = 0; i < items.length(); i++) {
             Category category = mapper.readValue(items.getString(i), Category.class);
             if (id.equals(category.getId())) {
-                correctDate(category);
+                //correctDate(category);
                 return category;
             }
         }
@@ -264,7 +265,7 @@ public class Api {
         for (int i = 0; i < items.length(); i++) {
             Category category = mapper.readValue(items.getString(i), Category.class);
             if (name.equals(category.getName())) {
-                correctDate(category);
+                //correctDate(category);
                 return category;
             }
         }
@@ -307,7 +308,7 @@ public class Api {
         ArrayList<Subcategory> subcategories = new ArrayList<>();
         for (int i = 0; i < items.length(); i++) {
             Subcategory subcategory = mapper.readValue(items.getString(i), Subcategory.class);
-            correctDate(subcategory);
+            //correctDate(subcategory);
             subcategories.add(subcategory);
 
             for (String categoryForeignId : subcategory.getCategories()) {
@@ -333,7 +334,7 @@ public class Api {
 
         Subcategory subcategory = mapper.readValue(stream, Subcategory.class);
         if (id.equals(subcategory.getId())) {
-            correctDate(subcategory);
+            //correctDate(subcategory);
             return subcategory;
         }
 
@@ -357,7 +358,7 @@ public class Api {
 
             for (int i = 0; i < items.length(); i++) {
                 Subcategory subcategory = mapper.readValue(items.getString(i), Subcategory.class);
-                correctDate(subcategory);
+                //correctDate(subcategory);
                 subcategories.add(subcategory);
             }
         }
@@ -413,7 +414,7 @@ public class Api {
         ArrayList<User> users = new ArrayList<>();
         for (int i = 0; i < items.length(); i++) {
             User user = mapper.readValue(items.getString(i), User.class);
-            correctDate(user);
+            //correctDate(user);
             users.add(user);
             if (Utils.isNotEmpty(Session.getInstance().getUser()) &&
                     Utils.isNotEmpty(Session.getInstance().getUser().getId()) &&
@@ -442,7 +443,7 @@ public class Api {
         for (int i = 0; i < items.length(); i++) {
             User user = mapper.readValue(items.getString(i), User.class);
             if (id.equals(user.getId())) {
-                correctDate(user);
+                //correctDate(user);
                 return user;
             }
         }
@@ -467,7 +468,7 @@ public class Api {
         for (int i = 0; i < items.length(); i++) {
             User user = mapper.readValue(items.getString(i), User.class);
             if (instagramId.equals(user.getInstagramId())) {
-                correctDate(user);
+                //correctDate(user);
                 return user;
             }
         }
@@ -492,7 +493,7 @@ public class Api {
 
             for (int i = 0; i < items.length(); i++) {
                 User user = mapper.readValue(items.getString(i), User.class);
-                correctDate(user);
+                //correctDate(user);
                 users.add(user);
             }
         }
@@ -517,7 +518,7 @@ public class Api {
 
             for (int i = 0; i < items.length(); i++) {
                 User user = mapper.readValue(items.getString(i), User.class);
-                correctDate(user);
+                //correctDate(user);
                 users.add(user);
             }
         }

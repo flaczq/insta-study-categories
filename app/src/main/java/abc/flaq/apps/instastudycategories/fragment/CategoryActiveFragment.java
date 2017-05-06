@@ -102,7 +102,6 @@ public class CategoryActiveFragment extends Fragment {
                     activeCategories.clear();
                     activeCategories.addAll(newCategories);
                     categoryAdapter.notifyDataSetChanged();
-                    //gridView.invalidateViews();
                 }
             }
         }

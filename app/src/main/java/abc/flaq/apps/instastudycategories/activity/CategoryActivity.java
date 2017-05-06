@@ -28,6 +28,7 @@ import abc.flaq.apps.instastudycategories.utils.Api;
 import abc.flaq.apps.instastudycategories.utils.Session;
 import abc.flaq.apps.instastudycategories.utils.Utils;
 
+import static abc.flaq.apps.instastudycategories.utils.Constants.API_ALL_CATEGORY_NAME;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_ACTIVE;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_INACTIVE;
@@ -119,9 +120,9 @@ public class CategoryActivity extends SessionActivity {
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                         // TODO: sprawdzać, czy różne od nazw wszystkich kategorii
-                        /*if (Utils.isNotEmpty(input) && API_ALL_CATEGORY_NAME.equals(input.toString())) {
+                        if (Utils.isNotEmpty(input) && API_ALL_CATEGORY_NAME.equals(input.toString())) {
                             dialog.getActionButton(DialogAction.POSITIVE).setEnabled(false);
-                        }*/
+                        }
                     }
                 })
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
@@ -226,7 +227,7 @@ public class CategoryActivity extends SessionActivity {
                 pager.setCurrentItem(TAB_INACTIVE, true);
 
                 categories.add(newCategory);
-                //Session.getInstance().setCategories(categories);
+                Session.getInstance().setCategories(categories);
 
                 ArrayList<Category> inactiveCategories = new ArrayList<>();
                 for (Category category : categories) {

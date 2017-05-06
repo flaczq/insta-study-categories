@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.text.Normalizer;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -33,6 +34,8 @@ import static abc.flaq.apps.instastudycategories.utils.Constants.STRINGS_CATEGOR
 import static abc.flaq.apps.instastudycategories.utils.Constants.STRINGS_SUBCATEGORY_PREFIX;
 
 public class Utils {
+
+    private static final Calendar calendar = Calendar.getInstance();
 
     private static final int LOG_DEBUG = 0;
     private static final int LOG_ERROR = 1;
@@ -157,7 +160,9 @@ public class Utils {
     }
 
     public static String formatDate(Date date) {
-        String formattedDate = DateFormat.format(DATE_FORMAT, date).toString();
+        calendar.setTime(date);
+        calendar.add(Calendar.HOUR_OF_DAY, 2);
+        String formattedDate = DateFormat.format(DATE_FORMAT, calendar.getTime()).toString();
         return formattedDate;
     }
 
