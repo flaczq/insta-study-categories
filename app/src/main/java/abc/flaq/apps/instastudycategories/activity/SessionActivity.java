@@ -351,7 +351,6 @@ public class SessionActivity extends AppCompatActivity {
                         user = Factory.userFromInstagramUser(instagramUser.getData());
                     } else {
                         Utils.logInfo(clazz, "User already exists: " + user);
-                        // FIXME: może przenieść to do kolejnego asynctaska?
                         user.updateFromInstagramUser(instagramUser.getData());
                         Api.updateUser(user);
                     }
@@ -381,13 +380,13 @@ public class SessionActivity extends AppCompatActivity {
                     } else {
                         Utils.showQuickInfo(rootView, "Zalogowano");
                         Session.getInstance().setUser(user);
-                        setMainMenuVisibility(mainMenu);
+                        saveAccessToken(accessToken);
 
                         ImageView profilePic = new ImageView(clazz);
                         UrlImageViewHelper.setUrlDrawable(profilePic, Session.getInstance().getUser().getProfilePicUrl(), R.drawable.placeholder_profile_pic_72);
                         Session.getInstance().setUserProfilePic(profilePic);
 
-                        saveAccessToken(accessToken);
+                        setMainMenuVisibility(mainMenu);
                         invalidateOptionsMenu();
                     }
                 }

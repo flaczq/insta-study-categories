@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
@@ -20,24 +19,27 @@ import abc.flaq.apps.instastudycategories.utils.Utils;
 public class UserAdapter extends BaseAdapter {
 
     private final Context context;
+    private final LayoutInflater inflater;
+
     private final List<User> users;
 
     public UserAdapter(Context context, List<User> users) {
         this.context = context;
         this.users = users;
+        this.inflater = LayoutInflater.from(context);
     }
 
     @Override
     public int getCount() {
+        if (Utils.isEmpty(users)) {
+            return 0;
+        }
         return users.size();
     }
 
     @Override
     public User getItem(int position) {
-        if (position < users.size()) {
-            return users.get(position);
-        }
-        return null;
+        return users.get(position);
     }
 
     @Override
@@ -45,82 +47,54 @@ public class UserAdapter extends BaseAdapter {
         return 0;
     }
 
-    public String getId(int position) {
-        if (position < users.size()) {
-            return users.get(position).getId();
-        }
-        return null;
-    }
-
-    public void addItem(User user) {
-        users.add(0, user);
-    }
-
-    private Integer findItemById(User user) {
-        for (int i = 0; i < users.size(); i++) {
-            if (user.getId().equals(users.get(i).getId())) {
-                return i;
-            }
-        }
-        return -1;
-    }
-    public void removeItem(User user) {
-        int index = findItemById(user);
-        if (index >= 0) {
-            users.remove(index);
-        }
-    }
-
     @Override
     public View getView(int position, View view, ViewGroup viewGroup) {
+        final UserViewHolder userViewHolder;
         final User user = users.get(position);
 
         if (Utils.isEmpty(view)) {
-            final LayoutInflater layoutInflater = LayoutInflater.from(context);
-            view = layoutInflater.inflate(R.layout.activity_user_item, viewGroup, false);
+            view = inflater.inflate(R.layout.activity_user_item, viewGroup, false);
 
-            final RelativeLayout layout = (RelativeLayout) view.findViewById(R.id.user_item_layout);
-            final ImageView profilePic = (ImageView) view.findViewById(R.id.user_item_profile_pic);
-            final TextView username = (TextView) view.findViewById(R.id.user_item_username);
-            final TextView joined = (TextView) view.findViewById(R.id.user_item_joined);
-            final TextView followers = (TextView) view.findViewById(R.id.user_item_followers);
-            final TextView media = (TextView) view.findViewById(R.id.user_item_media);
-            final UserAdapter.ViewHolder viewHolder = new UserAdapter.ViewHolder(layout, profilePic, username, joined, followers, media);
-            view.setTag(viewHolder);
+            userViewHolder = new UserViewHolder(view);
+            view.setTag(userViewHolder);
+        } else {
+            userViewHolder = (UserViewHolder) view.getTag();
         }
 
-        final ViewHolder viewHolder = (ViewHolder) view.getTag();
-        if (Utils.isNotEmpty(user)) {
-            String profilePicUrl = user.getProfilePicUrl();
-            if (Utils.isEmpty(profilePicUrl)) {
-                viewHolder.profilePic.setImageResource(R.drawable.placeholder_profile_pic_72);
-            } else {
-                UrlImageViewHelper.setUrlDrawable(viewHolder.profilePic, profilePicUrl, R.drawable.placeholder_profile_pic_72);
-            }
-            viewHolder.username.setText(user.getUsername());    // TODO: maksymalna szerokość
-            viewHolder.joined.setText(Utils.formatDate(user.getCreated()));
-            viewHolder.followers.setText(Utils.isEmpty(user.getFollowers()) ? "0" : user.getFollowers().toString());
-            viewHolder.media.setText(Utils.isEmpty(user.getMedia()) ? "0" : user.getMedia().toString());
-        }
+        userViewHolder.bind(user);
 
         return view;
     }
 
-    private class ViewHolder {
-        private final RelativeLayout layout;
+    private class UserViewHolder {
         private final ImageView profilePic;
         private final TextView username;
         private final TextView joined;
         private final TextView followers;
         private final TextView media;
 
-        public ViewHolder(RelativeLayout layout, ImageView profilePic, TextView username, TextView joined, TextView followers, TextView media) {
-            this.layout = layout;
-            this.profilePic = profilePic;
-            this.username = username;
-            this.joined = joined;
-            this.followers = followers;
-            this.media = media;
+        public UserViewHolder(View view) {
+            profilePic = (ImageView) view.findViewById(R.id.user_item_profile_pic);
+            username = (TextView) view.findViewById(R.id.user_item_username);
+            joined = (TextView) view.findViewById(R.id.user_item_joined);
+            followers = (TextView) view.findViewById(R.id.user_item_followers);
+            media = (TextView) view.findViewById(R.id.user_item_media);
+        }
+
+        private void bind(User model) {
+            if (Utils.isNotEmpty(model)) {
+                String profilePicUrl = model.getProfilePicUrl();
+                if (Utils.isEmpty(profilePicUrl)) {
+                    profilePic.setImageResource(R.drawable.placeholder_profile_pic_72);
+                } else {
+                    UrlImageViewHelper.setUrlDrawable(profilePic, profilePicUrl, R.drawable.placeholder_profile_pic_72);
+                }
+
+                username.setText(model.getUsername());    // TODO: maksymalna szerokość
+                joined.setText(Utils.formatDate(model.getCreated()));
+                followers.setText("☻ " + (Utils.isEmpty(model.getFollowers()) ? "0" : model.getFollowers().toString()));
+                media.setText("⚿ " + (Utils.isEmpty(model.getMedia()) ? "0" : model.getMedia().toString()));
+            }
         }
     }
 

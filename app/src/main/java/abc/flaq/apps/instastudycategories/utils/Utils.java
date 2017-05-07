@@ -92,48 +92,85 @@ public class Utils {
         return snackbarView;
     }
     public static void showInfo(View view, String message) {
-        Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_LONG).show();
+        Snackbar snackbar = Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_LONG);
+        TextView snackbarTextView = (TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
+        if (isNotEmpty(snackbarTextView)) {
+            snackbarTextView.setMaxLines(6);
+        }
+        snackbar.show();
     }
     public static void showQuickInfo(View view, String message) {
-        Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_SHORT).show();
+        Snackbar snackbar = Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_SHORT);
+        TextView snackbarTextView = (TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
+        if (isNotEmpty(snackbarTextView)) {
+            snackbarTextView.setMaxLines(6);
+        }
+        snackbar.show();
     }
     public static void showInfoDismiss(View view, String message) {
-        Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_INDEFINITE)
+        Snackbar snackbar = Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_INDEFINITE)
                 .setActionTextColor(ContextCompat.getColor(view.getContext(), R.color.colorAccent))
                 .setAction("OK", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         // dismiss
                     }
-                }).show();
+                });
+        TextView snackbarTextView = (TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
+        if (isNotEmpty(snackbarTextView)) {
+            snackbarTextView.setMaxLines(6);
+        }
+        snackbar.show();
     }
     public static void showError(View view, String message) {
         log(LOG_ERROR, view.getContext(), message);
-        Snackbar.make(findSnackbarView(view), "General error", Snackbar.LENGTH_LONG).show();
+
+        Snackbar snackbar = Snackbar.make(findSnackbarView(view), "General error", Snackbar.LENGTH_LONG);
+        TextView snackbarTextView = (TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
+        if (isNotEmpty(snackbarTextView)) {
+            snackbarTextView.setMaxLines(6);
+        }
+        snackbar.show();
     }
     public static void showQuickError(View view, String message) {
         log(LOG_ERROR, view.getContext(), message);
-        Snackbar.make(findSnackbarView(view), "General error", Snackbar.LENGTH_SHORT).show();
+
+        Snackbar snackbar = Snackbar.make(findSnackbarView(view), "General error", Snackbar.LENGTH_SHORT);
+        TextView snackbarTextView = (TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
+        if (isNotEmpty(snackbarTextView)) {
+            snackbarTextView.setMaxLines(6);
+        }
+        snackbar.show();
     }
     public static void showErrorDismiss(View view, String message) {
-        Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_INDEFINITE)
+        Snackbar snackbar = Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_INDEFINITE)
                 .setActionTextColor(ContextCompat.getColor(view.getContext(), R.color.colorError))
                 .setAction("OK", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         // dismiss
                     }
-                }).show();
+                });
+        TextView snackbarTextView = (TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
+        if (isNotEmpty(snackbarTextView)) {
+            snackbarTextView.setMaxLines(6);
+        }
+        snackbar.show();
     }
     public static void showConnectionError(final View view, String message) {
-        Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_INDEFINITE)
+        Snackbar snackbar = Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_INDEFINITE)
                 .setActionTextColor(ContextCompat.getColor(view.getContext(), R.color.colorError))
                 .setAction("DALEJ", new View.OnClickListener() {
                     @Override
                     public void onClick(View snackbarView) {
                         showErrorDismiss(view, "Sprawdź połączenie z Internetem i spróbuj ponownie");
                     }
-                }).show();
+                });
+        TextView snackbarTextView = (TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
+        if (isNotEmpty(snackbarTextView)) {
+            snackbarTextView.setMaxLines(6);
+        }
+        snackbar.show();
     }
 
     public static <T> boolean isEmpty(T element) {

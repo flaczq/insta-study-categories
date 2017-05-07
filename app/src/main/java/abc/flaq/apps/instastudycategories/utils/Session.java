@@ -20,6 +20,8 @@ public class Session {
     private ImageView userProfilePic;
     private ArrayList<Category> categories;
     private Map<String, List<Subcategory>> subcategoriesMap = new HashMap<>();
+    private Boolean isCategoryChanged = false;
+    private Boolean isSubcategoryChanged = false;
 
     private Session() {
     }
@@ -64,6 +66,20 @@ public class Session {
     }
     public void setSubcategories(String id, List<Subcategory> subcategories) {
         this.subcategoriesMap.put(id, subcategories);
+    }
+
+    public Boolean isCategoryChanged() {
+        return isCategoryChanged;
+    }
+    public void setCategoryChanged(Boolean categoryChanged) {
+        isCategoryChanged = categoryChanged;
+    }
+
+    public Boolean isSubcategoryChanged() {
+        return isSubcategoryChanged;
+    }
+    public void setSubcategoryChanged(Boolean subcategoryChanged) {
+        isSubcategoryChanged = subcategoryChanged;
     }
 
 }

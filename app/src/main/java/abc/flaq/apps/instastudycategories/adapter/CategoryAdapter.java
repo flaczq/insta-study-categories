@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.pojo.Category;
@@ -68,16 +69,19 @@ public class CategoryAdapter extends BaseAdapter {
     }
 
     private class CategoryViewHolder {
+        private final TextView users;
         private final ImageView image;
         private final TextView name;
 
         private CategoryViewHolder(View view) {
+            users = (TextView) view.findViewById(R.id.category_item_subcategories);
             image = (ImageView) view.findViewById(R.id.category_item_image);
             name = (TextView) view.findViewById(R.id.category_item_name);
         }
 
         private void bind(Category model) {
             //Utils.setSubcategoryGridDesign(model.getUsersSize(), image);
+            users.setText(String.format(Locale.ENGLISH, "▣ %d", model.getUsersSize()));
             String categoryName = Utils.getStringByCategoryName(context, model.getName());
             name.setText(Utils.simplifyCharacters(categoryName));
 

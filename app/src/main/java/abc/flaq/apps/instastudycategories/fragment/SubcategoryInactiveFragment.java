@@ -10,6 +10,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 
 import com.crystal.crystalpreloaders.widgets.CrystalPreloader;
 import com.etsy.android.grid.StaggeredGridView;
@@ -17,13 +18,17 @@ import com.etsy.android.grid.StaggeredGridView;
 import java.util.ArrayList;
 
 import abc.flaq.apps.instastudycategories.R;
+import abc.flaq.apps.instastudycategories.activity.UserActivity;
 import abc.flaq.apps.instastudycategories.adapter.SubcategoryAdapter;
 import abc.flaq.apps.instastudycategories.pojo.Subcategory;
 import abc.flaq.apps.instastudycategories.utils.Utils;
 
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_END;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_FOREIGN_ID;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_INACTIVE;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_INACTIVE_ADD_NEW;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_NAME;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_START;
 
 public class SubcategoryInactiveFragment extends Fragment {
 
@@ -51,12 +56,24 @@ public class SubcategoryInactiveFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.activity_subcategory, container, false);
+
         preloader = (CrystalPreloader) rootView.findViewById(R.id.subcategory_preloader);
         preloader.setVisibility(View.VISIBLE);
 
         subcategoryAdapter = new SubcategoryAdapter(getActivity(), inactiveSubcategories);
+
         gridView = (StaggeredGridView) rootView.findViewById(R.id.subcategory_grid);
         gridView.setAdapter(subcategoryAdapter);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
+                Subcategory selected = subcategoryAdapter.getItem(position);
+                Intent nextIntent = new Intent(getActivity(), UserActivity.class);
+                nextIntent.putExtra(INTENT_SUBCATEGORY_FOREIGN_ID, selected.getForeignId());
+                nextIntent.putExtra(INTENT_SUBCATEGORY_NAME, selected.getName());
+                getActivity().startActivity(nextIntent);
+            }
+        });
 
         return rootView;
     }
@@ -81,11 +98,15 @@ public class SubcategoryInactiveFragment extends Fragment {
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (intent.hasExtra(INTENT_SUBCATEGORY_START)) {
+                gridView.setVisibility(View.INVISIBLE);
+                preloader.setVisibility(View.VISIBLE);
+            }
+            if (intent.hasExtra(INTENT_SUBCATEGORY_END)) {
+                preloader.setVisibility(View.GONE);
+                gridView.setVisibility(View.VISIBLE);
+            }
             if (intent.hasExtra(INTENT_SUBCATEGORY_INACTIVE)) {
-                if (preloader.isShown()) {
-                    preloader.setVisibility(View.GONE);
-                }
-
                 ArrayList<Subcategory> newCategories = intent.getParcelableArrayListExtra(INTENT_SUBCATEGORY_INACTIVE);
                 if (Utils.isNotEmpty(newCategories)) {
                     inactiveSubcategories.clear();
@@ -93,10 +114,10 @@ public class SubcategoryInactiveFragment extends Fragment {
                     subcategoryAdapter.notifyDataSetChanged();
                 }
             }
-            if (intent.hasExtra(INTENT_SUBCATEGORY_INACTIVE_ADD_NEW)) {
-                // FIXME: NOT WORKING - Scroll to bottom to see new category
-                //gridView.setSelection(subcategoryAdapter.getCount() - 1);
-            }
+            // FIXME: NOT WORKING - Scroll to bottom to see new category
+            /*if (intent.hasExtra(INTENT_SUBCATEGORY_INACTIVE_ADD_NEW)) {
+                gridView.setSelection(subcategoryAdapter.getCount() - 1);
+            }*/
         }
     };
 

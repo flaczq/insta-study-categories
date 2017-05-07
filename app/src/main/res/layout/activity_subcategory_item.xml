@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- TODO: u góry liczba userów -->
     <ImageView android:id="@+id/subcategory_item_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -12,7 +11,18 @@
         android:scaleType="centerCrop"
         android:adjustViewBounds="true"
         android:contentDescription="@string/imageview.description" />
-
+    <TextView android:id="@+id/subcategory_item_users"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorBackgroundForText"
+        android:text="☻ 123"
+        android:fontFamily="casual"
+        android:textSize="16sp"
+        android:textColor="@color/textColorPrimary"
+        android:paddingTop="3dp"
+        android:gravity="center_horizontal|top"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true" />
     <TextView android:id="@+id/subcategory_item_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

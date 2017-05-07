@@ -23,6 +23,7 @@ import java.util.List;
 
 import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.adapter.UserAdapter;
+import abc.flaq.apps.instastudycategories.pojo.Subcategory;
 import abc.flaq.apps.instastudycategories.pojo.User;
 import abc.flaq.apps.instastudycategories.utils.Api;
 import abc.flaq.apps.instastudycategories.utils.Session;
@@ -213,6 +214,7 @@ public class UserActivity extends SessionActivity {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
             } catch (IOException e) {
                 Utils.logError(clazz, "IOException: " + e.getMessage());
+                Utils.showConnectionError(rootView, "Błąd pobierania listy użytkowników");
             }
             return null;
         }
@@ -243,12 +245,14 @@ public class UserActivity extends SessionActivity {
                 if (isCategory) {
                     result = Api.addUserToCategory(Session.getInstance().getUser(), parentForeignId);
                 } else {
-                    result = Api.addUserToSubcategory(Session.getInstance().getUser(), parentForeignId);
+                    Subcategory subcategory = Api.getSubcategoryById(parentForeignId);
+                    result = Api.addUserToSubcategory(Session.getInstance().getUser(), subcategory);
                 }
             } catch (JSONException e) {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
             } catch (IOException e) {
                 Utils.logError(clazz, "IOException: " + e.getMessage());
+                Utils.showConnectionError(rootView, "Błąd dodawania użytkownika do podkategorii");
             }
             return result;
         }
@@ -264,6 +268,8 @@ public class UserActivity extends SessionActivity {
                 userAdapter.notifyDataSetChanged();
                 hasJoined = true;
                 setCategoryMenuVisibility(true);
+                Session.getInstance().setSubcategoryChanged(true);
+                Session.getInstance().setCategoryChanged(true);
             } else {
                 Utils.showError(rootView, "Dodanie użytkownika do podkategorii zakończone niepowodzeniem");
             }
@@ -290,6 +296,7 @@ public class UserActivity extends SessionActivity {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
             } catch (IOException e) {
                 Utils.logError(clazz, "IOException: " + e.getMessage());
+                Utils.showConnectionError(rootView, "Błąd dodawania użytkownika do kategorii");
             }
             return result;
         }
@@ -305,6 +312,8 @@ public class UserActivity extends SessionActivity {
                 userAdapter.notifyDataSetChanged();
                 hasJoined = false;
                 setCategoryMenuVisibility(false);
+                Session.getInstance().setSubcategoryChanged(true);
+                Session.getInstance().setCategoryChanged(true);
             } else {
                 Utils.showError(rootView, "Usunięcie użytkownika z podkategorii zakończone niepowodzeniem");
             }

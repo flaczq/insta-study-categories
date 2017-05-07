@@ -25,8 +25,10 @@ import abc.flaq.apps.instastudycategories.utils.Utils;
 
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_ACTIVE;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_END;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_FOREIGN_ID;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_NAME;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_START;
 
 public class SubcategoryActiveFragment extends Fragment {
 
@@ -59,6 +61,7 @@ public class SubcategoryActiveFragment extends Fragment {
         preloader.setVisibility(View.VISIBLE);
 
         subcategoryAdapter = new SubcategoryAdapter(getActivity(), activeSubcategories);
+
         gridView = (StaggeredGridView) rootView.findViewById(R.id.subcategory_grid);
         gridView.setAdapter(subcategoryAdapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -95,11 +98,15 @@ public class SubcategoryActiveFragment extends Fragment {
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (intent.hasExtra(INTENT_SUBCATEGORY_START)) {
+                gridView.setVisibility(View.INVISIBLE);
+                preloader.setVisibility(View.VISIBLE);
+            }
+            if (intent.hasExtra(INTENT_SUBCATEGORY_END)) {
+                preloader.setVisibility(View.GONE);
+                gridView.setVisibility(View.VISIBLE);
+            }
             if (intent.hasExtra(INTENT_SUBCATEGORY_ACTIVE)) {
-                if (preloader.isShown()) {
-                    preloader.setVisibility(View.GONE);
-                }
-
                 ArrayList<Subcategory> newSubcategories = intent.getParcelableArrayListExtra(INTENT_SUBCATEGORY_ACTIVE);
                 if (Utils.isNotEmpty(newSubcategories)) {
                     activeSubcategories.clear();

@@ -10,6 +10,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 
 import com.crystal.crystalpreloaders.widgets.CrystalPreloader;
 import com.etsy.android.grid.StaggeredGridView;
@@ -17,13 +18,18 @@ import com.etsy.android.grid.StaggeredGridView;
 import java.util.ArrayList;
 
 import abc.flaq.apps.instastudycategories.R;
+import abc.flaq.apps.instastudycategories.activity.SubcategoryActivity;
+import abc.flaq.apps.instastudycategories.activity.UserActivity;
 import abc.flaq.apps.instastudycategories.adapter.CategoryAdapter;
 import abc.flaq.apps.instastudycategories.pojo.Category;
 import abc.flaq.apps.instastudycategories.utils.Utils;
 
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_END;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_FOREIGN_ID;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_INACTIVE;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_INACTIVE_ADD_NEW;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_NAME;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_START;
 
 public class CategoryInactiveFragment extends Fragment {
 
@@ -51,12 +57,29 @@ public class CategoryInactiveFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.activity_category, container, false);
+
         preloader = (CrystalPreloader) rootView.findViewById(R.id.category_preloader);
         preloader.setVisibility(View.VISIBLE);
 
         categoryAdapter = new CategoryAdapter(getActivity(), inactiveCategories);
+
         gridView = (StaggeredGridView) rootView.findViewById(R.id.category_grid);
         gridView.setAdapter(categoryAdapter);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
+                Category selected = categoryAdapter.getItem(position);
+                Intent nextIntent;
+                if (selected.isAsSubcategory()) {
+                    nextIntent = new Intent(getActivity(), UserActivity.class);
+                } else {
+                    nextIntent = new Intent(getActivity(), SubcategoryActivity.class);
+                }
+                nextIntent.putExtra(INTENT_CATEGORY_FOREIGN_ID, selected.getForeignId());
+                nextIntent.putExtra(INTENT_CATEGORY_NAME, selected.getName());
+                getActivity().startActivity(nextIntent);
+            }
+        });
 
         return rootView;
     }
@@ -81,11 +104,15 @@ public class CategoryInactiveFragment extends Fragment {
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (intent.hasExtra(INTENT_CATEGORY_START)) {
+                gridView.setVisibility(View.INVISIBLE);
+                preloader.setVisibility(View.VISIBLE);
+            }
+            if (intent.hasExtra(INTENT_CATEGORY_END)) {
+                preloader.setVisibility(View.GONE);
+                gridView.setVisibility(View.VISIBLE);
+            }
             if (intent.hasExtra(INTENT_CATEGORY_INACTIVE)) {
-                if (preloader.isShown()) {
-                    preloader.setVisibility(View.GONE);
-                }
-
                 ArrayList<Category> newCategories = intent.getParcelableArrayListExtra(INTENT_CATEGORY_INACTIVE);
                 if (Utils.isNotEmpty(newCategories)) {
                     inactiveCategories.clear();
@@ -93,10 +120,10 @@ public class CategoryInactiveFragment extends Fragment {
                     categoryAdapter.notifyDataSetChanged();
                 }
             }
-            if (intent.hasExtra(INTENT_CATEGORY_INACTIVE_ADD_NEW)) {
-                // FIXME: NOT WORKING - Scroll to bottom to see new category
-                //gridView.setSelection(categoryAdapter.getCount() - 1);
-            }
+            // FIXME: NOT WORKING - Scroll to bottom to see new category
+            /*if (intent.hasExtra(INTENT_CATEGORY_INACTIVE_ADD_NEW)) {
+                gridView.setSelection(categoryAdapter.getCount() - 1);
+            }*/
         }
     };
 

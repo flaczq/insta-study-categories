@@ -30,9 +30,10 @@ import abc.flaq.apps.instastudycategories.utils.Utils;
 
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_ACTIVE;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_END;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_INACTIVE;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_INACTIVE_ADD_NEW;
-import static abc.flaq.apps.instastudycategories.utils.Constants.TAB_INACTIVE;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_START;
+import static abc.flaq.apps.instastudycategories.utils.Constants.TAB_ACTIVE;
 
 public class CategoryActivity extends SessionActivity {
 
@@ -58,22 +59,20 @@ public class CategoryActivity extends SessionActivity {
 
         new ProcessCategories().execute();
     }
-    /*@Override
-    public void onResume() {
+    @Override
+    protected void onResume() {
         super.onResume();
-        invalidateOptionsMenu();
-        // Update categories when going back from User or Subcategory activity
-        if (Utils.isNotEmpty(categoryAdapter) && categoryAdapter.getCount() > 0) {
-            categoryAdapter = new CategoryAdapter(getActivity(), Session.getInstance().getCategories());
-            gridView.setAdapter(categoryAdapter);
+        // Update categories when going back from User activity and user has joined or left the subcategory in category
+        if (Session.getInstance().isCategoryChanged()) {
+            Session.getInstance().setCategoryChanged(false);
+            new ProcessCategories().execute();
         }
-    }*/
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         setMainMenuVisibility(menu);
-        menu.findItem(R.id.menu_suggest).setVisible(false);
         menu.findItem(R.id.menu_join).setVisible(false);
         menu.findItem(R.id.menu_leave).setVisible(false);
         menu.findItem(R.id.menu_sort).setVisible(false);
@@ -86,7 +85,7 @@ public class CategoryActivity extends SessionActivity {
         }
         switch (item.getItemId()) {
             case R.id.menu_suggest:
-                // not available from here
+                showSuggestCategoryDialog();
                 break;
             case R.id.menu_join:
                 // not available from here
@@ -129,7 +128,7 @@ public class CategoryActivity extends SessionActivity {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         if (Utils.isNotEmpty(dialog.getInputEditText()) && Utils.isNotEmpty(dialog.getInputEditText().getText())) {
-                            Utils.showInfo(rootView, "Zaproponowano nową kategorię: " + dialog.getInputEditText().getText());
+                            //Utils.showInfo(rootView, "Zaproponowano nową kategorię: " + dialog.getInputEditText().getText());
                             new ProcessAddCategory().execute(dialog.getInputEditText().getText().toString());
                         }
                         dialog.dismiss();
@@ -138,12 +137,30 @@ public class CategoryActivity extends SessionActivity {
                 .alwaysCallInputCallback()
                 .show();
     }
-    
+
+    private void startCategoryFragment() {
+        Intent activeIntent = new Intent(INTENT_CATEGORY);
+        activeIntent.putExtra(INTENT_CATEGORY_START, true);
+        LocalBroadcastManager.getInstance(clazz).sendBroadcast(activeIntent);
+        Intent inactiveIntent = new Intent(INTENT_CATEGORY_INACTIVE);
+        inactiveIntent.putExtra(INTENT_CATEGORY_START, true);
+        LocalBroadcastManager.getInstance(clazz).sendBroadcast(inactiveIntent);
+    }
+    private void endCategoryFragment() {
+        Intent activeIntent = new Intent(INTENT_CATEGORY);
+        activeIntent.putExtra(INTENT_CATEGORY_END, true);
+        LocalBroadcastManager.getInstance(clazz).sendBroadcast(activeIntent);
+        Intent inactiveIntent = new Intent(INTENT_CATEGORY_INACTIVE);
+        inactiveIntent.putExtra(INTENT_CATEGORY_END, true);
+        LocalBroadcastManager.getInstance(clazz).sendBroadcast(inactiveIntent);
+    }
+
     private class ProcessCategories extends AsyncTask<Void, Void, Void> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             isApiWorking = true;
+            startCategoryFragment();
         }
 
         @Override
@@ -157,6 +174,7 @@ public class CategoryActivity extends SessionActivity {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
             } catch (IOException e) {
                 Utils.logError(clazz, "IOException: " + e.getMessage());
+                Utils.showConnectionError(rootView, "Błąd pobierania kategorii");
             }
             return null;
         }
@@ -184,9 +202,11 @@ public class CategoryActivity extends SessionActivity {
 
             Intent activeIntent = new Intent(INTENT_CATEGORY);
             activeIntent.putParcelableArrayListExtra(INTENT_CATEGORY_ACTIVE, activeCategories);
+            activeIntent.putExtra(INTENT_CATEGORY_END, true);
             LocalBroadcastManager.getInstance(clazz).sendBroadcast(activeIntent);
             Intent inactiveIntent = new Intent(INTENT_CATEGORY);
             inactiveIntent.putParcelableArrayListExtra(INTENT_CATEGORY_INACTIVE, inactiveCategories);
+            inactiveIntent.putExtra(INTENT_CATEGORY_END, true);
             LocalBroadcastManager.getInstance(clazz).sendBroadcast(inactiveIntent);
         }
     }
@@ -196,7 +216,9 @@ public class CategoryActivity extends SessionActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            pager.setCurrentItem(TAB_ACTIVE, true);
             isApiWorking = true;
+            startCategoryFragment();
         }
 
         @Override
@@ -212,6 +234,7 @@ public class CategoryActivity extends SessionActivity {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
             } catch (IOException e) {
                 Utils.logError(clazz, "IOException: " + e.getMessage());
+                Utils.showConnectionError(rootView, "Błąd dodawania kategorii");
             }
             return result;
         }
@@ -222,24 +245,13 @@ public class CategoryActivity extends SessionActivity {
             isApiWorking = false;
 
             if (result) {
-                pager.setCurrentItem(TAB_INACTIVE, true);
-                // FIXME: znajdź view drugiej zakładki i tam wyświetl snackbar
-                Utils.showInfoDismiss(rootView, "Kategoria stanie się aktywna po dołączeniu do niej 10 użytkowników");
+                Utils.showInfoDismiss(rootView,
+                        "Nowa kategoria znajduje się w zakładce NIEAKTYWNE.\n" +
+                                "Stanie się aktywna po dołączeniu do jej podkategorii 10 użytkowników."
+                );
 
-                categories.add(newCategory);
-                Session.getInstance().setCategories(categories);
-
-                ArrayList<Category> inactiveCategories = new ArrayList<>();
-                for (Category category : categories) {
-                    if (!category.isActive()) {
-                        inactiveCategories.add(category);
-                    }
-                }
-
-                Intent intent = new Intent(INTENT_CATEGORY);
-                intent.putParcelableArrayListExtra(INTENT_CATEGORY_INACTIVE, inactiveCategories);
-                intent.putExtra(INTENT_CATEGORY_INACTIVE_ADD_NEW, true);
-                LocalBroadcastManager.getInstance(clazz).sendBroadcast(intent);
+                endCategoryFragment();
+                new ProcessCategories().execute();
             } else {
                 Utils.showError(rootView, "Dodanie nowej kategorii zakończone niepowodzeniem");
             }
