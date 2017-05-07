@@ -23,6 +23,7 @@ import java.util.List;
 
 import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.adapter.UserAdapter;
+import abc.flaq.apps.instastudycategories.pojo.Category;
 import abc.flaq.apps.instastudycategories.pojo.Subcategory;
 import abc.flaq.apps.instastudycategories.pojo.User;
 import abc.flaq.apps.instastudycategories.utils.Api;
@@ -85,8 +86,8 @@ public class UserActivity extends SessionActivity {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
-                    Utils.showQuickInfo(rootView, "Otwieranie profilu Instagram...");
                     User selected = userAdapter.getItem(position);
+                    Utils.showQuickInfo(rootView, "Otwieranie profilu " + selected.getUsername() + "...");
                     Uri instagramUri = Uri.parse(INSTAGRAM_URL + "_u/" + selected.getUsername());
                     Intent nextIntent = new Intent(Intent.ACTION_VIEW, instagramUri);
                     nextIntent.setPackage(INSTAGRAM_PACKAGE);
@@ -136,11 +137,9 @@ public class UserActivity extends SessionActivity {
                 // not available from here
                 break;
             case R.id.menu_join:
-                Utils.showQuickInfo(rootView, "Dodawanie do podkategorii...");
                 new ProcessAddUserToSubcategory().execute();
                 break;
             case R.id.menu_leave:
-                Utils.showQuickInfo(rootView, "Usuwanie z podkategorii...");
                 new ProcessRemoveUserFromSubcategory().execute();
                 break;
             case R.id.menu_sort:
@@ -223,7 +222,7 @@ public class UserActivity extends SessionActivity {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             isApiWorking = false;
-            preloader.setVisibility(View.GONE);
+            preloader.setVisibility(View.INVISIBLE);
 
             userAdapter = new UserAdapter(clazz, users);
             listView.setAdapter(userAdapter);
@@ -236,6 +235,8 @@ public class UserActivity extends SessionActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             isApiWorking = true;
+            listView.setVisibility(View.INVISIBLE);
+            preloader.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -243,9 +244,10 @@ public class UserActivity extends SessionActivity {
             Boolean result = Boolean.FALSE;
             try {
                 if (isCategory) {
-                    result = Api.addUserToCategory(Session.getInstance().getUser(), parentForeignId);
+                    Category category = Api.getCategoryById(Utils.undoForeignId(parentForeignId));
+                    result = Api.addUserToCategory(Session.getInstance().getUser(), category);
                 } else {
-                    Subcategory subcategory = Api.getSubcategoryById(parentForeignId);
+                    Subcategory subcategory = Api.getSubcategoryById(Utils.undoForeignId(parentForeignId));
                     result = Api.addUserToSubcategory(Session.getInstance().getUser(), subcategory);
                 }
             } catch (JSONException e) {
@@ -261,15 +263,20 @@ public class UserActivity extends SessionActivity {
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
             isApiWorking = false;
+            preloader.setVisibility(View.INVISIBLE);
+            listView.setVisibility(View.VISIBLE);
 
             if (result) {
-                //Utils.showInfo(rootView, "Dodano użytkownika do podkategorii");
+                Utils.showInfo(rootView,
+                        "Dodano użytkownika do podkategorii"
+                );
+
                 users.add(0, Session.getInstance().getUser());
                 userAdapter.notifyDataSetChanged();
                 hasJoined = true;
                 setCategoryMenuVisibility(true);
+
                 Session.getInstance().setSubcategoryChanged(true);
-                Session.getInstance().setCategoryChanged(true);
             } else {
                 Utils.showError(rootView, "Dodanie użytkownika do podkategorii zakończone niepowodzeniem");
             }
@@ -281,6 +288,8 @@ public class UserActivity extends SessionActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             isApiWorking = true;
+            listView.setVisibility(View.INVISIBLE);
+            preloader.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -288,9 +297,11 @@ public class UserActivity extends SessionActivity {
             Boolean result = Boolean.FALSE;
             try {
                 if (isCategory) {
-                    result = Api.removeUserFromCategory(Session.getInstance().getUser(), parentForeignId);
+                    Category category = Api.getCategoryById(Utils.undoForeignId(parentForeignId));
+                    result = Api.removeUserFromCategory(Session.getInstance().getUser(), category);
                 } else {
-                    result = Api.removeUserFromSubcategory(Session.getInstance().getUser(), parentForeignId);
+                    Subcategory subcategory = Api.getSubcategoryById(Utils.undoForeignId(parentForeignId));
+                    result = Api.removeUserFromSubcategory(Session.getInstance().getUser(), subcategory);
                 }
             } catch (JSONException e) {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
@@ -305,15 +316,20 @@ public class UserActivity extends SessionActivity {
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
             isApiWorking = false;
+            preloader.setVisibility(View.INVISIBLE);
+            listView.setVisibility(View.VISIBLE);
 
             if (result) {
-                //Utils.showInfo(rootView, "Usunięto użytkownika z podkategorii");
+                Utils.showInfo(rootView,
+                        "Usunięto użytkownika z podkategorii"
+                );
+
                 Session.getInstance().getUser().removeFromList(users);
                 userAdapter.notifyDataSetChanged();
                 hasJoined = false;
                 setCategoryMenuVisibility(false);
+
                 Session.getInstance().setSubcategoryChanged(true);
-                Session.getInstance().setCategoryChanged(true);
             } else {
                 Utils.showError(rootView, "Usunięcie użytkownika z podkategorii zakończone niepowodzeniem");
             }

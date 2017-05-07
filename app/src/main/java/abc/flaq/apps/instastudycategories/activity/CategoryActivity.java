@@ -3,6 +3,7 @@ package abc.flaq.apps.instastudycategories.activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.LocalBroadcastManager;
@@ -57,14 +58,25 @@ public class CategoryActivity extends SessionActivity {
         TabLayout tabs = (TabLayout) findViewById(R.id.category_tabs);
         tabs.setupWithViewPager(pager);
 
-        new ProcessCategories().execute();
+        if (Utils.isEmpty(Session.getInstance().getCategories())) {
+            new ProcessCategories().execute();
+        } else {
+            categories = Session.getInstance().getCategories();
+
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    endProcessCategoryFragment();
+                }
+            }, 50);
+        }
     }
     @Override
     protected void onResume() {
         super.onResume();
         // Update categories when going back from User activity and user has joined or left the subcategory in category
         if (Session.getInstance().isCategoryChanged()) {
-            Session.getInstance().setCategoryChanged(false);
             new ProcessCategories().execute();
         }
     }
@@ -139,18 +151,38 @@ public class CategoryActivity extends SessionActivity {
     }
 
     private void startCategoryFragment() {
-        Intent activeIntent = new Intent(INTENT_CATEGORY);
-        activeIntent.putExtra(INTENT_CATEGORY_START, true);
-        LocalBroadcastManager.getInstance(clazz).sendBroadcast(activeIntent);
-        Intent inactiveIntent = new Intent(INTENT_CATEGORY_INACTIVE);
-        inactiveIntent.putExtra(INTENT_CATEGORY_START, true);
-        LocalBroadcastManager.getInstance(clazz).sendBroadcast(inactiveIntent);
+        Intent intent = new Intent(INTENT_CATEGORY);
+        intent.putExtra(INTENT_CATEGORY_START, true);
+        LocalBroadcastManager.getInstance(clazz).sendBroadcast(intent);
     }
     private void endCategoryFragment() {
+        Intent intent = new Intent(INTENT_CATEGORY);
+        intent.putExtra(INTENT_CATEGORY_END, true);
+        LocalBroadcastManager.getInstance(clazz).sendBroadcast(intent);
+    }
+    private void endProcessCategoryFragment() {
+        if (categories.size() == 0) {
+            Utils.showConnectionError(rootView, "Nie znaleziono kategorii");
+        } else {
+            Session.getInstance().setCategories(categories);
+        }
+
+        ArrayList<Category> activeCategories = new ArrayList<>();
+        ArrayList<Category> inactiveCategories = new ArrayList<>();
+        for (Category category : categories) {
+            if (category.isActive()) {
+                activeCategories.add(category);
+            } else {
+                inactiveCategories.add(category);
+            }
+        }
+
         Intent activeIntent = new Intent(INTENT_CATEGORY);
+        activeIntent.putParcelableArrayListExtra(INTENT_CATEGORY_ACTIVE, activeCategories);
         activeIntent.putExtra(INTENT_CATEGORY_END, true);
         LocalBroadcastManager.getInstance(clazz).sendBroadcast(activeIntent);
-        Intent inactiveIntent = new Intent(INTENT_CATEGORY_INACTIVE);
+        Intent inactiveIntent = new Intent(INTENT_CATEGORY);
+        inactiveIntent.putParcelableArrayListExtra(INTENT_CATEGORY_INACTIVE, inactiveCategories);
         inactiveIntent.putExtra(INTENT_CATEGORY_END, true);
         LocalBroadcastManager.getInstance(clazz).sendBroadcast(inactiveIntent);
     }
@@ -160,7 +192,17 @@ public class CategoryActivity extends SessionActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             isApiWorking = true;
-            startCategoryFragment();
+
+            // Don't show preloader when going back from User activity
+            if (!Session.getInstance().isCategoryChanged()) {
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        startCategoryFragment();
+                    }
+                }, 50);
+            }
         }
 
         @Override
@@ -182,37 +224,14 @@ public class CategoryActivity extends SessionActivity {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
+            isApiWorking = false;
+            Session.getInstance().setCategoryChanged(false);
 
-            if (categories.size() == 0) {
-                Utils.showConnectionError(rootView, "Nie znaleziono kategorii");
-            } else {
-                isApiWorking = false;
-                Session.getInstance().setCategories(categories);
-            }
-
-            ArrayList<Category> activeCategories = new ArrayList<>();
-            ArrayList<Category> inactiveCategories = new ArrayList<>();
-            for (Category category : categories) {
-                if (category.isActive()) {
-                    activeCategories.add(category);
-                } else {
-                    inactiveCategories.add(category);
-                }
-            }
-
-            Intent activeIntent = new Intent(INTENT_CATEGORY);
-            activeIntent.putParcelableArrayListExtra(INTENT_CATEGORY_ACTIVE, activeCategories);
-            activeIntent.putExtra(INTENT_CATEGORY_END, true);
-            LocalBroadcastManager.getInstance(clazz).sendBroadcast(activeIntent);
-            Intent inactiveIntent = new Intent(INTENT_CATEGORY);
-            inactiveIntent.putParcelableArrayListExtra(INTENT_CATEGORY_INACTIVE, inactiveCategories);
-            inactiveIntent.putExtra(INTENT_CATEGORY_END, true);
-            LocalBroadcastManager.getInstance(clazz).sendBroadcast(inactiveIntent);
+            endProcessCategoryFragment();
         }
     }
     private class ProcessAddCategory extends AsyncTask<String, Void, Boolean> {
-        Category newCategory;   // TODO: ogranicz mozliwosc do x-razy
-
+        //TODO: ogranicz mozliwosc do x-razy
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -226,7 +245,7 @@ public class CategoryActivity extends SessionActivity {
             String categoryName = params[0];
             Boolean result = Boolean.FALSE;
             try {
-                newCategory = Api.addCategory(categoryName);
+                Category newCategory = Api.addCategory(categoryName);
                 if (Utils.isNotEmpty(newCategory)) {
                     result = Boolean.TRUE;
                 }

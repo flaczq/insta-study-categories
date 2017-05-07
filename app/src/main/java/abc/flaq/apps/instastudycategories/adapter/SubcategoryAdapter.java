@@ -83,7 +83,7 @@ public class SubcategoryAdapter extends BaseAdapter {
             //Utils.setSubcategoryGridDesign(model.getUsersSize(), subcategoryViewHolder.image);
             users.setText(String.format(Locale.ENGLISH, "☻ %d", model.getUsersSize()));
             String subcategoryName = Utils.getStringBySubcategoryName(context, model.getName());
-            name.setText(subcategoryName);
+            name.setText(Utils.simplifyCharacters(subcategoryName));
 
             if (Utils.isEmpty(model.getImageUrl())) {
                 Drawable drawable = Utils.getSubcategoryDrawable(context, model.getName());

@@ -59,7 +59,7 @@ public class CategoryActiveFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.activity_category, container, false);
 
         preloader = (CrystalPreloader) rootView.findViewById(R.id.category_preloader);
-        preloader.setVisibility(View.VISIBLE);
+        //preloader.setVisibility(View.VISIBLE);
 
         categoryAdapter = new CategoryAdapter(getActivity(), activeCategories);
 
@@ -109,7 +109,7 @@ public class CategoryActiveFragment extends Fragment {
                 preloader.setVisibility(View.VISIBLE);
             }
             if (intent.hasExtra(INTENT_CATEGORY_END)) {
-                preloader.setVisibility(View.GONE);
+                preloader.setVisibility(View.INVISIBLE);
                 gridView.setVisibility(View.VISIBLE);
             }
             if (intent.hasExtra(INTENT_CATEGORY_ACTIVE)) {

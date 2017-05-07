@@ -3,6 +3,7 @@ package abc.flaq.apps.instastudycategories.activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.LocalBroadcastManager;
@@ -70,15 +71,26 @@ public class SubcategoryActivity extends SessionActivity {
             String categoryName = intent.getStringExtra(INTENT_CATEGORY_NAME);
             Utils.setActionBarTitle(clazz, Utils.getStringByCategoryName(clazz, categoryName));
 
-            new ProcessSubcategories().execute();
+            if (Utils.isEmpty(Session.getInstance().getSubcategories(categoryForeignId))) {
+                new ProcessSubcategories().execute();
+            } else {
+                subcategories = Session.getInstance().getSubcategories(categoryForeignId);
+
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        endProcessSubcategoryFragment();
+                    }
+                }, 50);
+            }
         }
     }
     @Override
     protected void onResume() {
         super.onResume();
-        // Update subcategories when going back from User activity and user has joined or left the subcategory
+        // Load subcategories when going back from User activity and user has joined or left the subcategory
         if (Session.getInstance().isSubcategoryChanged()) {
-            Session.getInstance().setSubcategoryChanged(false);
             new ProcessSubcategories().execute();
         }
     }
@@ -142,7 +154,7 @@ public class SubcategoryActivity extends SessionActivity {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         if (Utils.isNotEmpty(dialog.getInputEditText()) && Utils.isNotEmpty(dialog.getInputEditText().getText())) {
-                            Utils.showInfo(rootView, "Zaproponowano nową podkategorię: " + dialog.getInputEditText().getText());
+                            //Utils.showInfo(rootView, "Zaproponowano nową podkategorię: " + dialog.getInputEditText().getText());
                             new ProcessAddSubcategory().execute(dialog.getInputEditText().getText().toString());
                         }
                         dialog.dismiss();
@@ -151,18 +163,38 @@ public class SubcategoryActivity extends SessionActivity {
     }
 
     private void startSubcategoryFragment() {
-        Intent activeIntent = new Intent(INTENT_SUBCATEGORY);
-        activeIntent.putExtra(INTENT_SUBCATEGORY_START, true);
-        LocalBroadcastManager.getInstance(clazz).sendBroadcast(activeIntent);
-        Intent inactiveIntent = new Intent(INTENT_SUBCATEGORY_INACTIVE);
-        inactiveIntent.putExtra(INTENT_SUBCATEGORY_START, true);
-        LocalBroadcastManager.getInstance(clazz).sendBroadcast(inactiveIntent);
+        Intent intent = new Intent(INTENT_SUBCATEGORY);
+        intent.putExtra(INTENT_SUBCATEGORY_START, true);
+        LocalBroadcastManager.getInstance(clazz).sendBroadcast(intent);
     }
     private void endSubcategoryFragment() {
+        Intent intent = new Intent(INTENT_SUBCATEGORY);
+        intent.putExtra(INTENT_SUBCATEGORY_END, true);
+        LocalBroadcastManager.getInstance(clazz).sendBroadcast(intent);
+    }
+    private void endProcessSubcategoryFragment() {
+        if (subcategories.size() == 0) {
+            Utils.showQuickInfo(rootView, "Brak podkategorii");
+        } else {
+            Session.getInstance().setSubcategories(categoryForeignId, subcategories);
+        }
+
+        ArrayList<Subcategory> activeSubcategories = new ArrayList<>();
+        ArrayList<Subcategory> inactiveSubcategories = new ArrayList<>();
+        for (Subcategory subcategory : subcategories) {
+            if (subcategory.isActive()) {
+                activeSubcategories.add(subcategory);
+            } else {
+                inactiveSubcategories.add(subcategory);
+            }
+        }
+
         Intent activeIntent = new Intent(INTENT_SUBCATEGORY);
+        activeIntent.putParcelableArrayListExtra(INTENT_SUBCATEGORY_ACTIVE, activeSubcategories);
         activeIntent.putExtra(INTENT_SUBCATEGORY_END, true);
         LocalBroadcastManager.getInstance(clazz).sendBroadcast(activeIntent);
-        Intent inactiveIntent = new Intent(INTENT_SUBCATEGORY_INACTIVE);
+        Intent inactiveIntent = new Intent(INTENT_SUBCATEGORY);
+        inactiveIntent.putParcelableArrayListExtra(INTENT_SUBCATEGORY_INACTIVE, inactiveSubcategories);
         inactiveIntent.putExtra(INTENT_SUBCATEGORY_END, true);
         LocalBroadcastManager.getInstance(clazz).sendBroadcast(inactiveIntent);
     }
@@ -172,7 +204,17 @@ public class SubcategoryActivity extends SessionActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             isApiWorking = true;
-            startSubcategoryFragment();
+
+            // Don't show preloader when going back from User activity
+            if (!Session.getInstance().isSubcategoryChanged()) {
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        startSubcategoryFragment();
+                    }
+                }, 50);
+            }
         }
 
         @Override
@@ -195,31 +237,9 @@ public class SubcategoryActivity extends SessionActivity {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             isApiWorking = false;
+            Session.getInstance().setSubcategoryChanged(false);
 
-            if (subcategories.size() == 0) {
-                Utils.showQuickInfo(rootView, "Brak podkategorii");
-            } else {
-                Session.getInstance().setSubcategories(categoryForeignId, subcategories);
-            }
-
-            ArrayList<Subcategory> activeSubcategories = new ArrayList<>();
-            ArrayList<Subcategory> inactiveSubcategories = new ArrayList<>();
-            for (Subcategory subcategory : subcategories) {
-                if (subcategory.isActive()) {
-                    activeSubcategories.add(subcategory);
-                } else {
-                    inactiveSubcategories.add(subcategory);
-                }
-            }
-
-            Intent activeIntent = new Intent(INTENT_SUBCATEGORY);
-            activeIntent.putParcelableArrayListExtra(INTENT_SUBCATEGORY_ACTIVE, activeSubcategories);
-            activeIntent.putExtra(INTENT_SUBCATEGORY_END, true);
-            LocalBroadcastManager.getInstance(clazz).sendBroadcast(activeIntent);
-            Intent inactiveIntent = new Intent(INTENT_SUBCATEGORY);
-            inactiveIntent.putParcelableArrayListExtra(INTENT_SUBCATEGORY_INACTIVE, inactiveSubcategories);
-            inactiveIntent.putExtra(INTENT_SUBCATEGORY_END, true);
-            LocalBroadcastManager.getInstance(clazz).sendBroadcast(inactiveIntent);
+            endProcessSubcategoryFragment();
         }
     }
 
@@ -265,6 +285,8 @@ public class SubcategoryActivity extends SessionActivity {
                 );
 
                 endSubcategoryFragment();
+                Session.getInstance().setCategoryChanged(true);
+
                 new ProcessSubcategories().execute();
             } else {
                 Utils.showError(rootView, "Dodanie nowej podkategorii zakończone niepowodzeniem");

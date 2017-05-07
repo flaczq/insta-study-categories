@@ -92,8 +92,8 @@ public class UserAdapter extends BaseAdapter {
 
                 username.setText(model.getUsername());    // TODO: maksymalna szerokość
                 joined.setText(Utils.formatDate(model.getCreated()));
-                followers.setText("☻ " + (Utils.isEmpty(model.getFollowers()) ? "0" : model.getFollowers().toString()));
-                media.setText("⚿ " + (Utils.isEmpty(model.getMedia()) ? "0" : model.getMedia().toString()));
+                followers.setText("\uD83D\uDC68 " + (Utils.isEmpty(model.getFollowers()) ? "0" : model.getFollowers().toString()));
+                media.setText("\uD83D\uDCF7 " + (Utils.isEmpty(model.getMedia()) ? "0" : model.getMedia().toString()));
             }
         }
     }

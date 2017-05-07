@@ -216,7 +216,7 @@ public class SessionActivity extends AppCompatActivity {
         infoDialog.getIconView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Utils.showQuickInfo(rootView, "Otwieranie profilu Instagram...");
+                Utils.showQuickInfo(rootView, "Otwieranie profilu " + Session.getInstance().getUser().getUsername() + "...");
                 Uri instagramUri = Uri.parse(INSTAGRAM_URL + "_u/" + Session.getInstance().getUser().getUsername());
                 Intent nextIntent = new Intent(Intent.ACTION_VIEW, instagramUri);
                 nextIntent.setPackage(INSTAGRAM_PACKAGE);
@@ -235,7 +235,7 @@ public class SessionActivity extends AppCompatActivity {
         infoDialog.getTitleView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Utils.showQuickInfo(rootView, "Otwieranie profilu Instagram...");
+                Utils.showQuickInfo(rootView, "Otwieranie profilu " + Session.getInstance().getUser().getUsername() + "...");
                 Uri instagramUri = Uri.parse(INSTAGRAM_URL + "_u/" + Session.getInstance().getUser().getUsername());
                 Intent nextIntent = new Intent(Intent.ACTION_VIEW, instagramUri);
                 nextIntent.setPackage(INSTAGRAM_PACKAGE);
@@ -352,6 +352,7 @@ public class SessionActivity extends AppCompatActivity {
                     } else {
                         Utils.logInfo(clazz, "User already exists: " + user);
                         user.updateFromInstagramUser(instagramUser.getData());
+                        // TODO: update all users
                         Api.updateUser(user);
                     }
                 }

@@ -58,7 +58,7 @@ public class SubcategoryInactiveFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.activity_subcategory, container, false);
 
         preloader = (CrystalPreloader) rootView.findViewById(R.id.subcategory_preloader);
-        preloader.setVisibility(View.VISIBLE);
+        //preloader.setVisibility(View.VISIBLE);
 
         subcategoryAdapter = new SubcategoryAdapter(getActivity(), inactiveSubcategories);
 
@@ -103,7 +103,7 @@ public class SubcategoryInactiveFragment extends Fragment {
                 preloader.setVisibility(View.VISIBLE);
             }
             if (intent.hasExtra(INTENT_SUBCATEGORY_END)) {
-                preloader.setVisibility(View.GONE);
+                preloader.setVisibility(View.INVISIBLE);
                 gridView.setVisibility(View.VISIBLE);
             }
             if (intent.hasExtra(INTENT_SUBCATEGORY_INACTIVE)) {

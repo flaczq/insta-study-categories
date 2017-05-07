@@ -523,14 +523,14 @@ public class Api {
 
         return Boolean.TRUE;
     }
-    public static Boolean addUserToCategory(User user, String categoryForeignId) throws IOException, JSONException {
+    public static Boolean addUserToCategory(User user, Category category) throws IOException, JSONException {
         ArrayList<String> categories = user.getCategories();
-        if (categories.contains(categoryForeignId)) {
-            Utils.logDebug("Api.addUserToCategory()", "Użytkownik: " + user.toString() + " znajduje się już w kategorii: " + categoryForeignId);
+        if (categories.contains(category.getForeignId())) {
+            Utils.logDebug("Api.addUserToCategory()", "Użytkownik: " + user.toString() + " znajduje się już w kategorii: " + category.getForeignId());
             return Boolean.FALSE;
         }
 
-        categories.add(categoryForeignId);
+        categories.add(category.getForeignId());
         InputStreamReader is = patchRequest(
                 API_USERS_URL + "/" + user.getId(),
                 user.getEtag(),
@@ -541,15 +541,14 @@ public class Api {
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
             Utils.logError("Api.addUserToCategory()", stream);
-            categories.remove(categoryForeignId);
+            categories.remove(category.getForeignId());
             return Boolean.FALSE;
         }
 
         user.updateFromResponse(response);
         getAllUsers(true);
 
-        String categoryId = Utils.undoForeignId(categoryForeignId);
-        Category category = getCategoryById(categoryId);
+        String categoryId = category.getId();
         if (Utils.isEmpty(category)) {
             Utils.logDebug("Api.addUserToCategory()", "Zwiększenie liczby użytkowników w kategorii: " + categoryId + " zakończone niepowodzeniem");
         } else {
@@ -695,14 +694,14 @@ public class Api {
 
         return Boolean.TRUE;
     }
-    public static Boolean removeUserFromCategory(User user, String categoryForeignId) throws IOException, JSONException {
+    public static Boolean removeUserFromCategory(User user, Category category) throws IOException, JSONException {
         ArrayList<String> categories = user.getCategories();
-        if (!categories.contains(categoryForeignId)) {
-            Utils.logDebug("Api.removeUserFromCategory()", "Użytkownik: " + user.toString() + " nie znajdował się w kategorii: " + categoryForeignId);
+        if (!categories.contains(category.getForeignId())) {
+            Utils.logDebug("Api.removeUserFromCategory()", "Użytkownik: " + user.toString() + " nie znajdował się w kategorii: " + category.getForeignId());
             return Boolean.TRUE;
         }
 
-        categories.remove(categoryForeignId);
+        categories.remove(category.getForeignId());
         InputStreamReader is = patchRequest(
                 API_USERS_URL + "/" + user.getId(),
                 user.getEtag(),
@@ -713,15 +712,14 @@ public class Api {
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
             Utils.logError("Api.removeUserFromCategory()", stream);
-            categories.add(categoryForeignId);
+            categories.add(category.getForeignId());
             return Boolean.FALSE;
         }
 
         user.updateFromResponse(response);
         getAllUsers(true);
 
-        String categoryId = Utils.undoForeignId(categoryForeignId);
-        Category category = getCategoryById(categoryId);
+        String categoryId = category.getId();
         if (Utils.isEmpty(category)) {
             Utils.logDebug("Api.removeUserFromCategory()", "Zmniejszenie liczby użytkowników w kategorii: " + categoryId + " zakończone niepowodzeniem");
         } else {
@@ -737,14 +735,14 @@ public class Api {
 
         return Boolean.TRUE;
     }
-    public static Boolean removeUserFromSubcategory(User user, String subcategoryForeignId) throws IOException, JSONException {
+    public static Boolean removeUserFromSubcategory(User user, Subcategory subcategory) throws IOException, JSONException {
         ArrayList<String> subcategories = user.getSubcategories();
-        if (!subcategories.contains(subcategoryForeignId)) {
-            Utils.logDebug("Api.removeUserFromSubcategory()", "Użytkownik: " + user.toString() + " nie znajdował się w podkategorii: " + subcategoryForeignId);
+        if (!subcategories.contains(subcategory.getForeignId())) {
+            Utils.logDebug("Api.removeUserFromSubcategory()", "Użytkownik: " + user.toString() + " nie znajdował się w podkategorii: " + subcategory.getForeignId());
             return Boolean.TRUE;
         }
 
-        subcategories.remove(subcategoryForeignId);
+        subcategories.remove(subcategory.getForeignId());
         InputStreamReader is = patchRequest(
                 API_USERS_URL + "/" + user.getId(),
                 user.getEtag(),
@@ -755,15 +753,14 @@ public class Api {
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
             Utils.logError("Api.removeUserFromSubcategory()", stream);
-            subcategories.add(subcategoryForeignId);
+            subcategories.add(subcategory.getForeignId());
             return Boolean.FALSE;
         }
 
         user.updateFromResponse(response);
         getAllUsers(true);
 
-        String subcategoryId = Utils.undoForeignId(subcategoryForeignId);
-        Subcategory subcategory = getSubcategoryById(subcategoryId);
+        String subcategoryId = subcategory.getId();
         if (Utils.isEmpty(subcategory)) {
             Utils.logDebug("Api.removeUserFromSubcategory()", "Zmniejszenie liczby użytkowników w podkategorii: " + subcategoryId + " zakończone niepowodzeniem");
         } else {

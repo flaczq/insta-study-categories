@@ -81,7 +81,11 @@ public class CategoryAdapter extends BaseAdapter {
 
         private void bind(Category model) {
             //Utils.setSubcategoryGridDesign(model.getUsersSize(), image);
-            users.setText(String.format(Locale.ENGLISH, "▣ %d", model.getUsersSize()));
+            if (model.isAsSubcategory()) {
+                users.setText(String.format(Locale.ENGLISH, "☻ %d", model.getUsersSize()));
+            } else {
+                users.setText(String.format(Locale.ENGLISH, "▣ %d", model.getSubcategoriesSize()));
+            }
             String categoryName = Utils.getStringByCategoryName(context, model.getName());
             name.setText(Utils.simplifyCharacters(categoryName));
 
