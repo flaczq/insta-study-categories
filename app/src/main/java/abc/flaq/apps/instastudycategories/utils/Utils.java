@@ -22,12 +22,14 @@ import android.widget.TextView;
 
 import java.text.Normalizer;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import abc.flaq.apps.instastudycategories.BuildConfig;
 import abc.flaq.apps.instastudycategories.R;
+import abc.flaq.apps.instastudycategories.pojo.User;
 
 import static abc.flaq.apps.instastudycategories.utils.Constants.DATE_FORMAT;
 import static abc.flaq.apps.instastudycategories.utils.Constants.GRID_HEIGHT_DIFF;
@@ -388,6 +390,55 @@ public class Utils {
         }
         string += "]";
         return string;
+    }
+
+    private static void swapNumbers(List<User> list, int i, int j) {
+        User temp;
+        temp = list.get(i);
+        list.set(i, list.get(j));
+        list.set(j, temp);
+    }
+    public static void sortByFollowers(List<User> users, Boolean rev) {
+        Collections.sort(users);
+        if (rev) {
+            Collections.reverse(users);
+        }
+    }
+    public static void sortByJoinedDate(List<User> users, Boolean rev) {
+        int length = users.size();
+        int k;
+        for (int i = length; i >= 0; i--) {
+            for (int j = 0; j < length - 1; j++) {
+                k = j + 1;
+                if (rev) {
+                    if (users.get(j).getCreated().compareTo(users.get(k).getCreated()) > 0) {
+                        swapNumbers(users, j, k);
+                    }
+                } else {
+                    if (users.get(j).getCreated().compareTo(users.get(k).getCreated()) < 0) {
+                        swapNumbers(users, j, k);
+                    }
+                }
+            }
+        }
+    }
+    public static void sortAlphabetically(List<User> users, Boolean rev) {
+        int length = users.size();
+        int k;
+        for (int i = length; i >= 0; i--) {
+            for (int j = 0; j < length - 1; j++) {
+                k = j + 1;
+                if (rev) {
+                    if (users.get(j).getUsername().compareTo(users.get(k).getUsername()) < 0) {
+                        swapNumbers(users, j, k);
+                    }
+                } else {
+                    if (users.get(j).getUsername().compareTo(users.get(k).getUsername()) > 0) {
+                        swapNumbers(users, j, k);
+                    }
+                }
+            }
+        }
     }
 
     public static String simplifyCharacters(String characters) {

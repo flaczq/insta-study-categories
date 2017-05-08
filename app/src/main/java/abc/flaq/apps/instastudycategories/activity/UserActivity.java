@@ -18,7 +18,6 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import abc.flaq.apps.instastudycategories.R;
@@ -30,12 +29,12 @@ import abc.flaq.apps.instastudycategories.utils.Api;
 import abc.flaq.apps.instastudycategories.utils.Session;
 import abc.flaq.apps.instastudycategories.utils.Utils;
 
+import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_PACKAGE;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_URL;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_FOREIGN_ID;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_NAME;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_FOREIGN_ID;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_NAME;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_PACKAGE;
 
 public class UserActivity extends SessionActivity {
 
@@ -111,6 +110,7 @@ public class UserActivity extends SessionActivity {
         super.onCreateOptionsMenu(menu);
         setMainMenuVisibility(menu);
         menu.findItem(R.id.menu_suggest).setVisible(false);
+        menu.findItem(R.id.menu_sort).setVisible(users.size() > 1);
         if (Utils.isEmpty(hasJoined) || Utils.isEmpty(Session.getInstance().getUser())) {
             menu.findItem(R.id.menu_join).setVisible(false);
             menu.findItem(R.id.menu_leave).setVisible(false);
@@ -122,9 +122,12 @@ public class UserActivity extends SessionActivity {
         return true;
     }
     private void setCategoryMenuVisibility(Boolean joined) {
-        if (!isCategory && Utils.isNotEmpty(mainMenu) && Utils.isNotEmpty(Session.getInstance().getUser())) {
-            mainMenu.findItem(R.id.menu_join).setVisible(!joined);
-            mainMenu.findItem(R.id.menu_leave).setVisible(joined);
+        if (Utils.isNotEmpty(mainMenu)) {
+            if (!isCategory && Utils.isNotEmpty(Session.getInstance().getUser())) {
+                mainMenu.findItem(R.id.menu_join).setVisible(!joined);
+                mainMenu.findItem(R.id.menu_leave).setVisible(joined);
+            }
+            mainMenu.findItem(R.id.menu_sort).setVisible(users.size() > 1);
         }
     }
     @Override
@@ -148,18 +151,23 @@ public class UserActivity extends SessionActivity {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
                         switch (menuItem.getItemId()) {
-                            // TODO: sortowanie
+                            case R.id.sort_menu_joined_date:
+                                Utils.sortByJoinedDate(users, false);
+                                break;
+                            case R.id.sort_menu_joined_date_rev:
+                                Utils.sortByJoinedDate(users, true);
+                                break;
+                            case R.id.sort_menu_followers:
+                                Utils.sortByFollowers(users, false);
+                                break;
+                            case R.id.sort_menu_followers_rev:
+                                Utils.sortByFollowers(users, true);
+                                break;
                             case R.id.sort_menu_alphabetically:
-                                Collections.reverse(users);
+                                Utils.sortAlphabetically(users, false);
                                 break;
                             case R.id.sort_menu_alphabetically_rev:
-                                Collections.reverse(users);
-                                break;
-                            case R.id.sort_menu_date:
-                                Collections.reverse(users);
-                                break;
-                            case R.id.sort_menu_date_rev:
-                                Collections.reverse(users);
+                                Utils.sortAlphabetically(users, true);
                                 break;
                             default:
                                 break;

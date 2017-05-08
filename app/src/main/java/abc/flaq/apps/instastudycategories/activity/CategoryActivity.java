@@ -31,9 +31,11 @@ import abc.flaq.apps.instastudycategories.utils.Utils;
 
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_ACTIVE;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_END;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_ACTIVE_END;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_ACTIVE_START;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_INACTIVE;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_START;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_INACTIVE_END;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_INACTIVE_START;
 import static abc.flaq.apps.instastudycategories.utils.Constants.TAB_ACTIVE;
 
 public class CategoryActivity extends SessionActivity {
@@ -75,6 +77,7 @@ public class CategoryActivity extends SessionActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        invalidateOptionsMenu();
         // Update categories when going back from User activity and user has joined or left the subcategory in category
         if (Session.getInstance().isCategoryChanged()) {
             new ProcessCategories().execute();
@@ -152,12 +155,8 @@ public class CategoryActivity extends SessionActivity {
 
     private void startCategoryFragment() {
         Intent intent = new Intent(INTENT_CATEGORY);
-        intent.putExtra(INTENT_CATEGORY_START, true);
-        LocalBroadcastManager.getInstance(clazz).sendBroadcast(intent);
-    }
-    private void endCategoryFragment() {
-        Intent intent = new Intent(INTENT_CATEGORY);
-        intent.putExtra(INTENT_CATEGORY_END, true);
+        intent.putExtra(INTENT_CATEGORY_ACTIVE_START, true);
+        intent.putExtra(INTENT_CATEGORY_INACTIVE_START, true);
         LocalBroadcastManager.getInstance(clazz).sendBroadcast(intent);
     }
     private void endProcessCategoryFragment() {
@@ -179,11 +178,11 @@ public class CategoryActivity extends SessionActivity {
 
         Intent activeIntent = new Intent(INTENT_CATEGORY);
         activeIntent.putParcelableArrayListExtra(INTENT_CATEGORY_ACTIVE, activeCategories);
-        activeIntent.putExtra(INTENT_CATEGORY_END, true);
+        activeIntent.putExtra(INTENT_CATEGORY_ACTIVE_END, true);
         LocalBroadcastManager.getInstance(clazz).sendBroadcast(activeIntent);
         Intent inactiveIntent = new Intent(INTENT_CATEGORY);
         inactiveIntent.putParcelableArrayListExtra(INTENT_CATEGORY_INACTIVE, inactiveCategories);
-        inactiveIntent.putExtra(INTENT_CATEGORY_END, true);
+        inactiveIntent.putExtra(INTENT_CATEGORY_INACTIVE_END, true);
         LocalBroadcastManager.getInstance(clazz).sendBroadcast(inactiveIntent);
     }
 
@@ -225,8 +224,8 @@ public class CategoryActivity extends SessionActivity {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             isApiWorking = false;
-            Session.getInstance().setCategoryChanged(false);
 
+            Session.getInstance().setCategoryChanged(false);
             endProcessCategoryFragment();
         }
     }
@@ -237,6 +236,7 @@ public class CategoryActivity extends SessionActivity {
             super.onPreExecute();
             pager.setCurrentItem(TAB_ACTIVE, true);
             isApiWorking = true;
+
             startCategoryFragment();
         }
 
@@ -269,7 +269,8 @@ public class CategoryActivity extends SessionActivity {
                                 "Stanie się aktywna po dołączeniu do jej podkategorii 10 użytkowników."
                 );
 
-                endCategoryFragment();
+                // Don't show preloader, because categories are loaded just after
+                Session.getInstance().setCategoryChanged(true);
                 new ProcessCategories().execute();
             } else {
                 Utils.showError(rootView, "Dodanie nowej kategorii zakończone niepowodzeniem");

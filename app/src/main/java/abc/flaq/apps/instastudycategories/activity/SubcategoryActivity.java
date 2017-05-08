@@ -34,9 +34,11 @@ import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_NAME;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_ACTIVE;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_END;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_ACTIVE_END;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_INACTIVE;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_START;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_ACTIVE_START;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_INACTIVE_END;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_INACTIVE_START;
 import static abc.flaq.apps.instastudycategories.utils.Constants.TAB_ACTIVE;
 
 public class SubcategoryActivity extends SessionActivity {
@@ -89,6 +91,7 @@ public class SubcategoryActivity extends SessionActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        invalidateOptionsMenu();
         // Load subcategories when going back from User activity and user has joined or left the subcategory
         if (Session.getInstance().isSubcategoryChanged()) {
             new ProcessSubcategories().execute();
@@ -164,12 +167,8 @@ public class SubcategoryActivity extends SessionActivity {
 
     private void startSubcategoryFragment() {
         Intent intent = new Intent(INTENT_SUBCATEGORY);
-        intent.putExtra(INTENT_SUBCATEGORY_START, true);
-        LocalBroadcastManager.getInstance(clazz).sendBroadcast(intent);
-    }
-    private void endSubcategoryFragment() {
-        Intent intent = new Intent(INTENT_SUBCATEGORY);
-        intent.putExtra(INTENT_SUBCATEGORY_END, true);
+        intent.putExtra(INTENT_SUBCATEGORY_ACTIVE_START, true);
+        intent.putExtra(INTENT_SUBCATEGORY_INACTIVE_START, true);
         LocalBroadcastManager.getInstance(clazz).sendBroadcast(intent);
     }
     private void endProcessSubcategoryFragment() {
@@ -191,11 +190,11 @@ public class SubcategoryActivity extends SessionActivity {
 
         Intent activeIntent = new Intent(INTENT_SUBCATEGORY);
         activeIntent.putParcelableArrayListExtra(INTENT_SUBCATEGORY_ACTIVE, activeSubcategories);
-        activeIntent.putExtra(INTENT_SUBCATEGORY_END, true);
+        activeIntent.putExtra(INTENT_SUBCATEGORY_ACTIVE_END, true);
         LocalBroadcastManager.getInstance(clazz).sendBroadcast(activeIntent);
         Intent inactiveIntent = new Intent(INTENT_SUBCATEGORY);
         inactiveIntent.putParcelableArrayListExtra(INTENT_SUBCATEGORY_INACTIVE, inactiveSubcategories);
-        inactiveIntent.putExtra(INTENT_SUBCATEGORY_END, true);
+        inactiveIntent.putExtra(INTENT_SUBCATEGORY_INACTIVE_END, true);
         LocalBroadcastManager.getInstance(clazz).sendBroadcast(inactiveIntent);
     }
 
@@ -237,8 +236,8 @@ public class SubcategoryActivity extends SessionActivity {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             isApiWorking = false;
-            Session.getInstance().setSubcategoryChanged(false);
 
+            Session.getInstance().setSubcategoryChanged(false);
             endProcessSubcategoryFragment();
         }
     }
@@ -251,6 +250,7 @@ public class SubcategoryActivity extends SessionActivity {
             super.onPreExecute();
             pager.setCurrentItem(TAB_ACTIVE, true);
             isApiWorking = true;
+
             startSubcategoryFragment();
         }
 
@@ -284,9 +284,9 @@ public class SubcategoryActivity extends SessionActivity {
                                 "Stanie się aktywna po dołączeniu do niej 10 użytkowników."
                 );
 
-                endSubcategoryFragment();
+                // Don't show preloader, because subcategories are loaded just after
+                Session.getInstance().setSubcategoryChanged(true);
                 Session.getInstance().setCategoryChanged(true);
-
                 new ProcessSubcategories().execute();
             } else {
                 Utils.showError(rootView, "Dodanie nowej podkategorii zakończone niepowodzeniem");

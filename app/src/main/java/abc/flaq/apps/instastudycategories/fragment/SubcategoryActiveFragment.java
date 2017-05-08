@@ -25,10 +25,10 @@ import abc.flaq.apps.instastudycategories.utils.Utils;
 
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_ACTIVE;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_END;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_ACTIVE_END;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_FOREIGN_ID;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_NAME;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_START;
+import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_ACTIVE_START;
 
 public class SubcategoryActiveFragment extends Fragment {
 
@@ -98,11 +98,11 @@ public class SubcategoryActiveFragment extends Fragment {
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.hasExtra(INTENT_SUBCATEGORY_START)) {
+            if (intent.hasExtra(INTENT_SUBCATEGORY_ACTIVE_START)) {
                 gridView.setVisibility(View.INVISIBLE);
                 preloader.setVisibility(View.VISIBLE);
             }
-            if (intent.hasExtra(INTENT_SUBCATEGORY_END)) {
+            if (intent.hasExtra(INTENT_SUBCATEGORY_ACTIVE_END)) {
                 preloader.setVisibility(View.INVISIBLE);
                 gridView.setVisibility(View.VISIBLE);
             }
