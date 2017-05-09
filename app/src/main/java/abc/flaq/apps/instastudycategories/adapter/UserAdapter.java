@@ -16,6 +16,8 @@ import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.pojo.User;
 import abc.flaq.apps.instastudycategories.utils.Utils;
 
+import static abc.flaq.apps.instastudycategories.utils.Constants.DATE_FORMAT;
+
 public class UserAdapter extends BaseAdapter {
 
     private final Context context;
@@ -90,9 +92,9 @@ public class UserAdapter extends BaseAdapter {
                     UrlImageViewHelper.setUrlDrawable(profilePic, profilePicUrl, R.drawable.placeholder_profile_pic_72);
                 }
 
-                username.setText(model.getUsername());    // TODO: maksymalna szerokość
-                joined.setText(Utils.formatDate(model.getCreated()));
-                followers.setText("\uD83D\uDC68 " + (Utils.isEmpty(model.getFollowers()) ? "0" : model.getFollowers().toString()));
+                username.setText(model.getUsername());
+                joined.setText(Utils.formatDate(model.getCreated(), DATE_FORMAT));
+                followers.setText("\uD83D\uDE03 " + (Utils.isEmpty(model.getFollowers()) ? "0" : model.getFollowers().toString()));
                 media.setText("\uD83D\uDCF7 " + (Utils.isEmpty(model.getMedia()) ? "0" : model.getMedia().toString()));
             }
         }

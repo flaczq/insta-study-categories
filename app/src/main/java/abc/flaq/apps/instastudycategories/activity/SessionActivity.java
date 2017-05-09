@@ -58,10 +58,12 @@ public class SessionActivity extends AppCompatActivity {
     private Dialog instagramDialog;
     private Boolean isApiWorking = false;
 
+    // TODO: czat!
+    // TODO: menu z lewej
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Utils.removeBarShadow(clazz);
+        Utils.removeActionBarShadow(clazz);
 
         rootView = findViewById(android.R.id.content);
         accessToken = Session.getInstance().getSettings().getString(SETTINGS_ACCESS_TOKEN, null);
@@ -170,12 +172,7 @@ public class SessionActivity extends AppCompatActivity {
     private void showInfoDialog() {
         MaterialDialog.Builder infoDialogBuilder = new MaterialDialog.Builder(clazz)
                 .title(Session.getInstance().getUser().getUsername())
-                // TODO: zdania
-                .content(Session.getInstance().getUser().getBio() +
-                        "\nFollowersów: " + Session.getInstance().getUser().getFollowers() +
-                        "\nData dołączenia: " + Utils.formatDate(Session.getInstance().getUser().getCreated()) +
-                        "\nImię: " + Session.getInstance().getUser().getFullname() +
-                        "\nLiczba kategorii: " + (Session.getInstance().getUser().getCategoriesSize() + Session.getInstance().getUser().getSubcategoriesSize() - 1))
+                .content(Session.getInstance().getUser().getInfoContent())
                 .contentColorRes(android.R.color.primary_text_light)
                 .positiveText("Wróć")
                 .negativeText("Wyloguj")
@@ -352,7 +349,6 @@ public class SessionActivity extends AppCompatActivity {
                     } else {
                         Utils.logInfo(clazz, "User already exists: " + user);
                         user.updateFromInstagramUser(instagramUser.getData());
-                        // TODO: update all users
                         Api.updateUser(user);
                     }
                 }

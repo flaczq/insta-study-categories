@@ -10,7 +10,7 @@ import java.util.List;
 
 import abc.flaq.apps.instastudycategories.utils.Utils;
 
-import static abc.flaq.apps.instastudycategories.utils.Constants.DATE_FORMAT;
+import static abc.flaq.apps.instastudycategories.utils.Constants.FULL_DATE_FORMAT;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EveObject {
@@ -21,10 +21,10 @@ public class EveObject {
     @JsonProperty("_etag")
     private String etag;
     @JsonProperty("_created")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_FORMAT, timezone = "Poland")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = FULL_DATE_FORMAT, timezone = "Poland")
     private Date created;
     @JsonProperty("_updated")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_FORMAT, timezone = "Poland")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = FULL_DATE_FORMAT, timezone = "Poland")
     private Date updated;
 
     public String getForeignId() {

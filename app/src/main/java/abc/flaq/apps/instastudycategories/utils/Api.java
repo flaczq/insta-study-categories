@@ -589,6 +589,7 @@ public class Api {
         user.updateFromResponse(response);
         getAllUsers(true);
 
+        // FIXME: jeśli jestem >= 10 userem - przenieść podkategorię do aktywnych
         String subcategoryId = subcategory.getId();
         if (Utils.isEmpty(subcategory)) {
             Utils.logDebug("Api.addUserToSubcategory()", "Zwiększenie liczby użytkowników w podkategorii: " + subcategoryId + " zakończone niepowodzeniem");
@@ -603,6 +604,7 @@ public class Api {
         // Update sizes of subcategory
         ///getAllSubcategories(true);
 
+        // FIXME: jeśli jestem >= 10 userem - przenieść kategorię do aktywnych
         // Assuming one subcategory is only in one category
         String categoryId = Utils.undoForeignId(subcategory.getCategories().get(0));
         Category category = getCategoryById(categoryId);

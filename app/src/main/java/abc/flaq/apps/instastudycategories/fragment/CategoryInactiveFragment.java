@@ -120,10 +120,6 @@ public class CategoryInactiveFragment extends Fragment {
                     categoryAdapter.notifyDataSetChanged();
                 }
             }
-            // FIXME: NOT WORKING - Scroll to bottom to see new category
-            /*if (intent.hasExtra(INTENT_CATEGORY_INACTIVE_ADD_NEW)) {
-                gridView.setSelection(categoryAdapter.getCount() - 1);
-            }*/
         }
     };
 

@@ -80,6 +80,7 @@ public class CategoryAdapter extends BaseAdapter {
         }
 
         private void bind(Category model) {
+            // TODO: włączyć
             //Utils.setSubcategoryGridDesign(model.getUsersSize(), image);
             if (model.isAsSubcategory()) {
                 users.setText(String.format(Locale.ENGLISH, "☻ %d", model.getUsersSize()));

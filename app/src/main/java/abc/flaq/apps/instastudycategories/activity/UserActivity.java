@@ -69,19 +69,20 @@ public class UserActivity extends SessionActivity {
             isCategory = true;
             parentForeignId = categoryForeignId;
             parentName = Utils.getStringByCategoryName(clazz, intent.getStringExtra(INTENT_CATEGORY_NAME));
+            Utils.setActionBarTitle(clazz, parentName, null);
         } else {
             String subcategoryForeignId = intent.getStringExtra(INTENT_SUBCATEGORY_FOREIGN_ID);
             if (Utils.isNotEmpty(subcategoryForeignId)) {
                 parentForeignId = subcategoryForeignId;
                 parentName = Utils.getStringBySubcategoryName(clazz, intent.getStringExtra(INTENT_SUBCATEGORY_NAME));
+                // FIXME: weź nazwę parent kategory
+                Utils.setActionBarTitle(clazz, parentName, "Studia");
             }
         }
 
         if (Utils.isEmpty(parentForeignId)) {
             Utils.showError(rootView, "Brak id kategorii lub podkategorii");
         } else {
-            Utils.setActionBarTitle(clazz, parentName);
-
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {

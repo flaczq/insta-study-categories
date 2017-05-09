@@ -21,6 +21,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.adapter.CategoryTabAdapter;
@@ -37,6 +38,7 @@ import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_INACTIVE_END;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_INACTIVE_START;
 import static abc.flaq.apps.instastudycategories.utils.Constants.TAB_ACTIVE;
+import static abc.flaq.apps.instastudycategories.utils.Constants.TAB_INACTIVE;
 
 public class CategoryActivity extends SessionActivity {
 
@@ -122,6 +124,8 @@ public class CategoryActivity extends SessionActivity {
     }
 
     private void showSuggestCategoryDialog() {
+        final List<String> categoriesNames = Utils.getCategoriesNames(clazz);
+
         new MaterialDialog.Builder(clazz)
                 .title("Nowa kategoria")
                 .content("Zaproponuj nową kategorię")
@@ -133,10 +137,10 @@ public class CategoryActivity extends SessionActivity {
                 .input("Wpisz nazwę...", null, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
-                        // TODO: sprawdzać, czy różne od nazw wszystkich kategorii
-                        /*if (Utils.isNotEmpty(input) && API_ALL_CATEGORY_NAME.equals(input.toString())) {
+                        if (Utils.isNotEmpty(input) && Utils.isNotEmpty(input.toString()) &&
+                                categoriesNames.contains(input.toString().trim().toLowerCase())) {
                             dialog.getActionButton(DialogAction.POSITIVE).setEnabled(false);
-                        }*/
+                        }
                     }
                 })
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
@@ -174,6 +178,10 @@ public class CategoryActivity extends SessionActivity {
             } else {
                 inactiveCategories.add(category);
             }
+        }
+
+        if (activeCategories.size() == 0 && inactiveCategories.size() > 0) {
+            pager.setCurrentItem(TAB_INACTIVE, true);
         }
 
         Intent activeIntent = new Intent(INTENT_CATEGORY);

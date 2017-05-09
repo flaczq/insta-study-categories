@@ -61,11 +61,11 @@ public class Session {
         this.categories = categories;
     }
 
-    public List<Subcategory> getSubcategories(String id) {
-        return subcategoriesMap.get(id);
+    public List<Subcategory> getSubcategories(String categoryForeignId) {
+        return subcategoriesMap.get(categoryForeignId);
     }
-    public void setSubcategories(String id, List<Subcategory> subcategories) {
-        this.subcategoriesMap.put(id, subcategories);
+    public void setSubcategories(String categoryForeignId, List<Subcategory> subcategories) {
+        this.subcategoriesMap.put(categoryForeignId, subcategories);
     }
 
     public Boolean isCategoryChanged() {

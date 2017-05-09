@@ -40,6 +40,7 @@ import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEG
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_INACTIVE_END;
 import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_INACTIVE_START;
 import static abc.flaq.apps.instastudycategories.utils.Constants.TAB_ACTIVE;
+import static abc.flaq.apps.instastudycategories.utils.Constants.TAB_INACTIVE;
 
 public class SubcategoryActivity extends SessionActivity {
 
@@ -71,7 +72,7 @@ public class SubcategoryActivity extends SessionActivity {
             Utils.showError(rootView, "Puste categoryForeignId");
         } else {
             String categoryName = intent.getStringExtra(INTENT_CATEGORY_NAME);
-            Utils.setActionBarTitle(clazz, Utils.getStringByCategoryName(clazz, categoryName));
+            Utils.setActionBarTitle(clazz, Utils.getStringByCategoryName(clazz, categoryName), null);
 
             if (Utils.isEmpty(Session.getInstance().getSubcategories(categoryForeignId))) {
                 new ProcessSubcategories().execute();
@@ -136,6 +137,8 @@ public class SubcategoryActivity extends SessionActivity {
     }
 
     private void showSuggestSubcategoryDialog() {
+        final List<String> subcategoriesNames = Utils.getSubcategoriesNames(clazz, categoryForeignId);
+
         new MaterialDialog.Builder(clazz)
                 .title("Nowa podkategoria")
                 .content("Zaproponuj nową podkategorię")
@@ -147,10 +150,11 @@ public class SubcategoryActivity extends SessionActivity {
                 .input("Wpisz nazwę...", null, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
-                        // TODO: sprawdzać, czy różne od nazw wszystkich podkategorii
-                        /*if (Utils.isNotEmpty(input) && API_ALL_CATEGORY_NAME.equals(input.toString())) {
+                        // FIXME: dlaczego tu nie wchodzi?
+                        if (Utils.isNotEmpty(input) && Utils.isNotEmpty(input.toString()) &&
+                                subcategoriesNames.contains(input.toString().trim().toLowerCase())) {
                             dialog.getActionButton(DialogAction.POSITIVE).setEnabled(false);
-                        }*/
+                        }
                     }
                 })
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
@@ -186,6 +190,10 @@ public class SubcategoryActivity extends SessionActivity {
             } else {
                 inactiveSubcategories.add(subcategory);
             }
+        }
+
+        if (activeSubcategories.size() == 0 && inactiveSubcategories.size() > 0) {
+            pager.setCurrentItem(TAB_INACTIVE, true);
         }
 
         Intent activeIntent = new Intent(INTENT_SUBCATEGORY);

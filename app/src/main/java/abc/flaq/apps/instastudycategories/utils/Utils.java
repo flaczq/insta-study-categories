@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.text.Normalizer;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -29,9 +30,10 @@ import java.util.Locale;
 
 import abc.flaq.apps.instastudycategories.BuildConfig;
 import abc.flaq.apps.instastudycategories.R;
+import abc.flaq.apps.instastudycategories.pojo.Category;
+import abc.flaq.apps.instastudycategories.pojo.Subcategory;
 import abc.flaq.apps.instastudycategories.pojo.User;
 
-import static abc.flaq.apps.instastudycategories.utils.Constants.DATE_FORMAT;
 import static abc.flaq.apps.instastudycategories.utils.Constants.GRID_HEIGHT_DIFF;
 import static abc.flaq.apps.instastudycategories.utils.Constants.GRID_MAX_HEIGHT;
 import static abc.flaq.apps.instastudycategories.utils.Constants.STRINGS_CATEGORY_PREFIX;
@@ -214,10 +216,10 @@ public class Utils {
         return isAvailable;
     }
 
-    public static String formatDate(Date date) {
+    public static String formatDate(Date date, String format) {
         calendar.setTime(date);
         calendar.add(Calendar.HOUR_OF_DAY, 2);
-        String formattedDate = DateFormat.format(DATE_FORMAT, calendar.getTime()).toString();
+        String formattedDate = DateFormat.format(format, calendar.getTime()).toString();
         return formattedDate;
     }
 
@@ -263,6 +265,25 @@ public class Utils {
             name = name.substring(index + 1);
         }
         return getDrawableByName(context, name);
+    }
+
+    public static List<String> getCategoriesNames(Context context) {
+        List<String> names = new ArrayList<>();
+        if (isNotEmpty(Session.getInstance().getCategories())) {
+            for (Category category : Session.getInstance().getCategories()) {
+                names.add(getStringByCategoryName(context, category.getName()).toLowerCase());
+            }
+        }
+        return names;
+    }
+    public static List<String> getSubcategoriesNames(Context context, String foreignCategoryId) {
+        List<String> names = new ArrayList<>();
+        if (isNotEmpty(Session.getInstance().getSubcategories(foreignCategoryId))) {
+            for (Subcategory subcategory : Session.getInstance().getSubcategories(foreignCategoryId)) {
+                names.add(getStringBySubcategoryName(context, subcategory.getName()).toLowerCase());
+            }
+        }
+        return names;
     }
 
     public static DisplayMetrics getScreenMetrics(Activity activity) {
@@ -349,25 +370,20 @@ public class Utils {
         }
     }
 
-    public static void setActionBarTitle(AppCompatActivity activity, String title) {
+    public static void setActionBarTitle(AppCompatActivity activity, String title, String subtitle) {
         ActionBar actionBar = activity.getActionBar();
         String formattedTitle = (title.substring(0, 1).toUpperCase() + title.substring(1));
         if (isNotEmpty(actionBar)) {
             actionBar.setTitle(formattedTitle);
+            actionBar.setSubtitle(subtitle);
         }
         android.support.v7.app.ActionBar supportActionBar = activity.getSupportActionBar();
         if (isNotEmpty(supportActionBar)) {
             supportActionBar.setTitle(formattedTitle);
+            supportActionBar.setSubtitle(subtitle);
         }
     }
-    public static void setLocale(Context context, String language) {
-        final Locale locale = new Locale(language);
-        Locale.setDefault(locale);
-        final Configuration config = new Configuration();
-        config.locale = locale;
-        context.getResources().updateConfiguration(config, context.getResources().getDisplayMetrics());
-    }
-    public static void removeBarShadow(AppCompatActivity activity) {
+    public static void removeActionBarShadow(AppCompatActivity activity) {
         ActionBar actionBar = activity.getActionBar();
         if (isNotEmpty(actionBar) && Build.VERSION.SDK_INT >= 21) {
             actionBar.setElevation(0);
@@ -376,6 +392,13 @@ public class Utils {
         if (isNotEmpty(supportActionBar)) {
             supportActionBar.setElevation(0);
         }
+    }
+    public static void setLocale(Context context, String language) {
+    final Locale locale = new Locale(language);
+    Locale.setDefault(locale);
+    final Configuration config = new Configuration();
+    config.locale = locale;
+    context.getResources().updateConfiguration(config, context.getResources().getDisplayMetrics());
     }
 
     public static String listToString(List<String> list) {

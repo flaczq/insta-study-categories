@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryDark">
 
+    <!-- FIXME: ładniej -->
     <ImageView android:id="@+id/user_item_profile_pic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -18,6 +19,9 @@
         android:text="Testowy 123"
         android:textSize="16sp"
         android:textColor="@color/textColorPrimary"
+        android:maxWidth="@dimen/username_max_width"
+        android:maxLines="1"
+        android:ellipsize="end"
         android:layout_toRightOf="@+id/user_item_profile_pic"
         android:layout_toEndOf="@+id/user_item_profile_pic"
         android:layout_marginLeft="10dp"

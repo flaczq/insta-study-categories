@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramUser;
 import abc.flaq.apps.instastudycategories.utils.Utils;
 
+import static abc.flaq.apps.instastudycategories.utils.Constants.DATE_FORMAT;
+import static abc.flaq.apps.instastudycategories.utils.Constants.HOUR_FORMAT;
+
 public class User extends EveObject implements Comparable<User> {
 
     private String instagramId = "";
@@ -164,5 +167,44 @@ public class User extends EveObject implements Comparable<User> {
         }
         active = Boolean.TRUE;
     }
+
+    public String getInfoContent() {
+        String infoContent = "";
+        if (Utils.isNotEmpty(fullname)) {
+            infoContent += "Nazywam się " + fullname + ". ";
+        }
+        if (media > 0 && media < 5) {
+            infoContent += "Mam " + media + " posty na profilu instagramowym, ";
+        } else {
+            infoContent += "Mam " + media + " postów na profilu instagramowym, ";
+        }
+        if (followers == 1) {
+            infoContent += "który obserwuje " + followers + " osoba. ";
+        } else if (followers > 0 && followers < 5) {
+            infoContent += "który obserwuje " + followers + " osoby. ";
+        } else {
+            infoContent += "który obserwuje " + followers + " osób. ";
+        }
+        String date = Utils.formatDate(getCreated(), DATE_FORMAT);
+        String hour = Utils.formatDate(getCreated(), HOUR_FORMAT);
+        if (subcategoriesSize == 0) {
+            infoContent += "Nie ma mnie jeszcze w żadnej podkategorii, a dołączyłam/em tu dnia " + date + " o " + hour + ". ";
+        } else if (subcategoriesSize == 1) {
+            infoContent += "Jestem dopiero w jednej podkategorii, ale dołączyłam/em tu dopiero dnia " + date + " o " + hour + ". ";
+        } else {
+            infoContent += "Jestem już w " + subcategoriesSize + " podkategoriach, a dołączyłam/em tu dopiero dnia " + date + " o " + hour + ". ";
+        }
+        if (Utils.isNotEmpty(bio)) {
+            infoContent += "Najlepiej opisuje mnie zdanie: " + bio;
+        }
+        return infoContent;
+    }
+
+    /*
+    "Followersów: " + Session.getInstance().getUser().getFollowers() +
+                        "\nData dołączenia: " + Utils.formatDate(Session.getInstance().getUser().getCreated()) +
+                        "\nImię: " + Session.getInstance().getUser().getFullname() +
+                        "\nLiczba kategorii: " + (Session.getInstance().getUser().getCategoriesSize() + Session.getInstance().getUser().getSubcategoriesSize() - 1))
+     */
 
 }
