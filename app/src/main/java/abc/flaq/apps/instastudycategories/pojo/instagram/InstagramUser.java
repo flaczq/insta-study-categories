@@ -2,7 +2,7 @@ package abc.flaq.apps.instastudycategories.pojo.instagram;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import abc.flaq.apps.instastudycategories.utils.Utils;
+import abc.flaq.apps.instastudycategories.helper.Utils;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InstagramUser {

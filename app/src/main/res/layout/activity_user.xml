@@ -11,8 +11,7 @@
     <ListView android:id="@+id/user_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/categories_margin_between_grids"
-        app:layout_behavior="abc.flaq.apps.instastudycategories.utils.MoveUpBehavior" />
+        android:layout_margin="@dimen/categories_margin_between_grids" />
 
     <com.crystal.crystalpreloaders.widgets.CrystalPreloader android:id="@+id/user_preloader"
         android:layout_width="match_parent"
@@ -24,5 +23,15 @@
         app:crs_pl_size="medium"
         app:crs_pl_fg_color="@color/colorPrimaryDark"
         app:crs_pl_style="tornado_circle_1" />
+
+    <android.support.design.widget.FloatingActionButton android:id="@+id/user_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@android:drawable/ic_menu_edit"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        app:backgroundTint="@color/colorAccent"
+        app:fabSize="normal"
+        app:layout_behavior="abc.flaq.apps.instastudycategories.design.MoveUpBehavior"/>
 
 </android.support.design.widget.CoordinatorLayout>

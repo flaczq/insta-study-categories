@@ -16,7 +16,7 @@ import java.util.Locale;
 
 import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.pojo.Subcategory;
-import abc.flaq.apps.instastudycategories.utils.Utils;
+import abc.flaq.apps.instastudycategories.helper.Utils;
 
 public class SubcategoryAdapter extends BaseAdapter {
 

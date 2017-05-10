@@ -1,4 +1,4 @@
-package abc.flaq.apps.instastudycategories.utils;
+package abc.flaq.apps.instastudycategories.helper;
 
 import org.json.JSONException;
 
@@ -7,12 +7,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import abc.flaq.apps.instastudycategories.api.Api;
 import abc.flaq.apps.instastudycategories.pojo.Category;
 import abc.flaq.apps.instastudycategories.pojo.Subcategory;
 import abc.flaq.apps.instastudycategories.pojo.User;
 import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramUser;
 
-import static abc.flaq.apps.instastudycategories.utils.Constants.API_ALL_CATEGORY_NAME;
+import static abc.flaq.apps.instastudycategories.helper.Constants.API_ALL_CATEGORY_NAME;
 
 public class Factory {
 

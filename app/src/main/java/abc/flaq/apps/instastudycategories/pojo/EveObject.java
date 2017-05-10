@@ -8,9 +8,9 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import abc.flaq.apps.instastudycategories.utils.Utils;
+import abc.flaq.apps.instastudycategories.helper.Utils;
 
-import static abc.flaq.apps.instastudycategories.utils.Constants.FULL_DATE_FORMAT;
+import static abc.flaq.apps.instastudycategories.helper.Constants.FULL_DATE_FORMAT;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EveObject {

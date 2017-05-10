@@ -12,7 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -25,28 +24,28 @@ import java.util.List;
 
 import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.adapter.SubcategoryTabAdapter;
+import abc.flaq.apps.instastudycategories.api.Api;
+import abc.flaq.apps.instastudycategories.general.Session;
+import abc.flaq.apps.instastudycategories.helper.Utils;
 import abc.flaq.apps.instastudycategories.pojo.Subcategory;
-import abc.flaq.apps.instastudycategories.utils.Api;
-import abc.flaq.apps.instastudycategories.utils.Session;
-import abc.flaq.apps.instastudycategories.utils.Utils;
 
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_FOREIGN_ID;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_NAME;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_ACTIVE;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_ACTIVE_END;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_INACTIVE;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_ACTIVE_START;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_INACTIVE_END;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_INACTIVE_START;
-import static abc.flaq.apps.instastudycategories.utils.Constants.TAB_ACTIVE;
-import static abc.flaq.apps.instastudycategories.utils.Constants.TAB_INACTIVE;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_FOREIGN_ID;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_NAME;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_ACTIVE;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_ACTIVE_END;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_ACTIVE_START;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_INACTIVE;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_INACTIVE_END;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_INACTIVE_START;
+import static abc.flaq.apps.instastudycategories.helper.Constants.TAB_ACTIVE;
+import static abc.flaq.apps.instastudycategories.helper.Constants.TAB_INACTIVE;
 
 public class SubcategoryActivity extends SessionActivity {
 
     private final AppCompatActivity clazz = this;
-    private View rootView;
     private ViewPager pager;
+    private TabLayout tabs;
 
     private List<Subcategory> subcategories = new ArrayList<>();
     private String categoryForeignId;
@@ -57,19 +56,17 @@ public class SubcategoryActivity extends SessionActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_subcategory_container);
 
-        rootView = findViewById(android.R.id.content);
-
         pager = (ViewPager) findViewById(R.id.subcategory_pager);
         pager.setAdapter(new SubcategoryTabAdapter(getSupportFragmentManager()));
 
-        TabLayout tabs = (TabLayout) findViewById(R.id.subcategory_tabs);
+        tabs = (TabLayout) findViewById(R.id.subcategory_tabs);
         tabs.setupWithViewPager(pager);
 
         Intent intent = getIntent();
         categoryForeignId = intent.getStringExtra(INTENT_CATEGORY_FOREIGN_ID);
 
         if (Utils.isEmpty(categoryForeignId)) {
-            Utils.showError(rootView, "Puste categoryForeignId");
+            Utils.showError(tabs, "Puste categoryForeignId");
         } else {
             String categoryName = intent.getStringExtra(INTENT_CATEGORY_NAME);
             Utils.setActionBarTitle(clazz, Utils.getStringByCategoryName(clazz, categoryName), null);
@@ -161,7 +158,7 @@ public class SubcategoryActivity extends SessionActivity {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         if (Utils.isNotEmpty(dialog.getInputEditText()) && Utils.isNotEmpty(dialog.getInputEditText().getText())) {
-                            //Utils.showInfo(rootView, "Zaproponowano nową podkategorię: " + dialog.getInputEditText().getText());
+                            //Utils.showInfo(tabs, "Zaproponowano nową podkategorię: " + dialog.getInputEditText().getText());
                             new ProcessAddSubcategory().execute(dialog.getInputEditText().getText().toString());
                         }
                         dialog.dismiss();
@@ -177,7 +174,7 @@ public class SubcategoryActivity extends SessionActivity {
     }
     private void endProcessSubcategoryFragment() {
         if (subcategories.size() == 0) {
-            Utils.showQuickInfo(rootView, "Brak podkategorii");
+            Utils.showQuickInfo(tabs, "Brak podkategorii");
         } else {
             Session.getInstance().setSubcategories(categoryForeignId, subcategories);
         }
@@ -235,7 +232,7 @@ public class SubcategoryActivity extends SessionActivity {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
             } catch (IOException e) {
                 Utils.logError(clazz, "IOException: " + e.getMessage());
-                Utils.showConnectionError(rootView, "Błąd pobierania podkategorii");
+                Utils.showConnectionError(tabs, "Błąd pobierania podkategorii");
             }
             return null;
         }
@@ -276,7 +273,7 @@ public class SubcategoryActivity extends SessionActivity {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
             } catch (IOException e) {
                 Utils.logError(clazz, "IOException: " + e.getMessage());
-                Utils.showConnectionError(rootView, "Błąd dodawania podkategorii");
+                Utils.showConnectionError(tabs, "Błąd dodawania podkategorii");
             }
             return result;
         }
@@ -287,7 +284,7 @@ public class SubcategoryActivity extends SessionActivity {
             isApiWorking = false;
 
             if (result) {
-                Utils.showInfoDismiss(rootView,
+                Utils.showInfoDismiss(tabs,
                         "Nowa podkategoria znajduje się w zakładce NIEAKTYWNE.\n" +
                                 "Stanie się aktywna po dołączeniu do niej 10 użytkowników."
                 );
@@ -297,7 +294,7 @@ public class SubcategoryActivity extends SessionActivity {
                 Session.getInstance().setCategoryChanged(true);
                 new ProcessSubcategories().execute();
             } else {
-                Utils.showError(rootView, "Dodanie nowej podkategorii zakończone niepowodzeniem");
+                Utils.showError(tabs, "Dodanie nowej podkategorii zakończone niepowodzeniem");
             }
         }
     }

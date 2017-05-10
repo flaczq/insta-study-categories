@@ -14,9 +14,9 @@ import java.util.List;
 
 import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.pojo.User;
-import abc.flaq.apps.instastudycategories.utils.Utils;
+import abc.flaq.apps.instastudycategories.helper.Utils;
 
-import static abc.flaq.apps.instastudycategories.utils.Constants.DATE_FORMAT;
+import static abc.flaq.apps.instastudycategories.helper.Constants.DATE_FORMAT;
 
 public class UserAdapter extends BaseAdapter {
 

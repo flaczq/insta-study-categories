@@ -1,4 +1,4 @@
-package abc.flaq.apps.instastudycategories.utils;
+package abc.flaq.apps.instastudycategories.helper;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -30,14 +30,15 @@ import java.util.Locale;
 
 import abc.flaq.apps.instastudycategories.BuildConfig;
 import abc.flaq.apps.instastudycategories.R;
+import abc.flaq.apps.instastudycategories.general.Session;
 import abc.flaq.apps.instastudycategories.pojo.Category;
 import abc.flaq.apps.instastudycategories.pojo.Subcategory;
 import abc.flaq.apps.instastudycategories.pojo.User;
 
-import static abc.flaq.apps.instastudycategories.utils.Constants.GRID_HEIGHT_DIFF;
-import static abc.flaq.apps.instastudycategories.utils.Constants.GRID_MAX_HEIGHT;
-import static abc.flaq.apps.instastudycategories.utils.Constants.STRINGS_CATEGORY_PREFIX;
-import static abc.flaq.apps.instastudycategories.utils.Constants.STRINGS_SUBCATEGORY_PREFIX;
+import static abc.flaq.apps.instastudycategories.helper.Constants.GRID_HEIGHT_DIFF;
+import static abc.flaq.apps.instastudycategories.helper.Constants.GRID_MAX_HEIGHT;
+import static abc.flaq.apps.instastudycategories.helper.Constants.STRINGS_CATEGORY_PREFIX;
+import static abc.flaq.apps.instastudycategories.helper.Constants.STRINGS_SUBCATEGORY_PREFIX;
 
 public class Utils {
 
@@ -83,11 +84,11 @@ public class Utils {
 
     public static View findSnackbarView(View view) {
         // Get current view - from farthest
-        View snackbarView = view.findViewById(R.id.user_list);
+        View snackbarView = view.findViewById(R.id.user_layout);
         if (isEmpty(snackbarView)) {
-            snackbarView = view.findViewById(R.id.subcategory_grid);
+            snackbarView = view.findViewById(R.id.subcategory_tabs);
             if (isEmpty(snackbarView)) {
-                snackbarView = view.findViewById(R.id.category_grid);
+                snackbarView = view.findViewById(R.id.category_tabs);
                 if (isEmpty(snackbarView)) {
                     snackbarView = view;
                 }

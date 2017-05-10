@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 
-import abc.flaq.apps.instastudycategories.utils.Utils;
+import abc.flaq.apps.instastudycategories.helper.Utils;
 
 public class Category extends EveObject implements Comparable<Category>, Parcelable {
 

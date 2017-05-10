@@ -1,4 +1,4 @@
-package abc.flaq.apps.instastudycategories.utils;
+package abc.flaq.apps.instastudycategories.general;
 
 import android.content.SharedPreferences;
 import android.widget.ImageView;
@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import abc.flaq.apps.instastudycategories.helper.Utils;
 import abc.flaq.apps.instastudycategories.pojo.Category;
 import abc.flaq.apps.instastudycategories.pojo.Subcategory;
 import abc.flaq.apps.instastudycategories.pojo.User;

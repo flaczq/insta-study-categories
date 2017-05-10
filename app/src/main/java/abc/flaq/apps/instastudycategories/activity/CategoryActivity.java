@@ -12,7 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -25,26 +24,26 @@ import java.util.List;
 
 import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.adapter.CategoryTabAdapter;
+import abc.flaq.apps.instastudycategories.api.Api;
+import abc.flaq.apps.instastudycategories.general.Session;
+import abc.flaq.apps.instastudycategories.helper.Utils;
 import abc.flaq.apps.instastudycategories.pojo.Category;
-import abc.flaq.apps.instastudycategories.utils.Api;
-import abc.flaq.apps.instastudycategories.utils.Session;
-import abc.flaq.apps.instastudycategories.utils.Utils;
 
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_ACTIVE;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_ACTIVE_END;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_ACTIVE_START;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_INACTIVE;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_INACTIVE_END;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_INACTIVE_START;
-import static abc.flaq.apps.instastudycategories.utils.Constants.TAB_ACTIVE;
-import static abc.flaq.apps.instastudycategories.utils.Constants.TAB_INACTIVE;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_ACTIVE;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_ACTIVE_END;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_ACTIVE_START;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_INACTIVE;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_INACTIVE_END;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_INACTIVE_START;
+import static abc.flaq.apps.instastudycategories.helper.Constants.TAB_ACTIVE;
+import static abc.flaq.apps.instastudycategories.helper.Constants.TAB_INACTIVE;
 
 public class CategoryActivity extends SessionActivity {
 
     private AppCompatActivity clazz = this;
-    private View rootView;
     private ViewPager pager;
+    private TabLayout tabs;
 
     private ArrayList<Category> categories = new ArrayList<>();
     private Boolean isApiWorking = false;
@@ -54,12 +53,10 @@ public class CategoryActivity extends SessionActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category_container);
 
-        rootView = findViewById(android.R.id.content);
-
         pager = (ViewPager) findViewById(R.id.category_pager);
         pager.setAdapter(new CategoryTabAdapter(getSupportFragmentManager()));
 
-        TabLayout tabs = (TabLayout) findViewById(R.id.category_tabs);
+        tabs = (TabLayout) findViewById(R.id.category_tabs);
         tabs.setupWithViewPager(pager);
 
         if (Utils.isEmpty(Session.getInstance().getCategories())) {
@@ -147,7 +144,7 @@ public class CategoryActivity extends SessionActivity {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         if (Utils.isNotEmpty(dialog.getInputEditText()) && Utils.isNotEmpty(dialog.getInputEditText().getText())) {
-                            //Utils.showInfo(rootView, "Zaproponowano nową kategorię: " + dialog.getInputEditText().getText());
+                            //Utils.showInfo(tabs, "Zaproponowano nową kategorię: " + dialog.getInputEditText().getText());
                             new ProcessAddCategory().execute(dialog.getInputEditText().getText().toString());
                         }
                         dialog.dismiss();
@@ -165,7 +162,7 @@ public class CategoryActivity extends SessionActivity {
     }
     private void endProcessCategoryFragment() {
         if (categories.size() == 0) {
-            Utils.showConnectionError(rootView, "Nie znaleziono kategorii");
+            Utils.showConnectionError(tabs, "Nie znaleziono kategorii");
         } else {
             Session.getInstance().setCategories(categories);
         }
@@ -223,7 +220,7 @@ public class CategoryActivity extends SessionActivity {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
             } catch (IOException e) {
                 Utils.logError(clazz, "IOException: " + e.getMessage());
-                Utils.showConnectionError(rootView, "Błąd pobierania kategorii");
+                Utils.showConnectionError(tabs, "Błąd pobierania kategorii");
             }
             return null;
         }
@@ -261,7 +258,7 @@ public class CategoryActivity extends SessionActivity {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
             } catch (IOException e) {
                 Utils.logError(clazz, "IOException: " + e.getMessage());
-                Utils.showConnectionError(rootView, "Błąd dodawania kategorii");
+                Utils.showConnectionError(tabs, "Błąd dodawania kategorii");
             }
             return result;
         }
@@ -272,7 +269,7 @@ public class CategoryActivity extends SessionActivity {
             isApiWorking = false;
 
             if (result) {
-                Utils.showInfoDismiss(rootView,
+                Utils.showInfoDismiss(tabs,
                         "Nowa kategoria znajduje się w zakładce NIEAKTYWNE.\n" +
                                 "Stanie się aktywna po dołączeniu do jej podkategorii 10 użytkowników."
                 );
@@ -281,7 +278,7 @@ public class CategoryActivity extends SessionActivity {
                 Session.getInstance().setCategoryChanged(true);
                 new ProcessCategories().execute();
             } else {
-                Utils.showError(rootView, "Dodanie nowej kategorii zakończone niepowodzeniem");
+                Utils.showError(tabs, "Dodanie nowej kategorii zakończone niepowodzeniem");
             }
         }
     }

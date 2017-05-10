@@ -34,18 +34,18 @@ import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.pojo.User;
 import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramAccessToken;
 import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramUser;
-import abc.flaq.apps.instastudycategories.utils.Api;
-import abc.flaq.apps.instastudycategories.utils.Constants;
-import abc.flaq.apps.instastudycategories.utils.Factory;
-import abc.flaq.apps.instastudycategories.utils.InstagramApi;
-import abc.flaq.apps.instastudycategories.utils.Session;
-import abc.flaq.apps.instastudycategories.utils.Utils;
+import abc.flaq.apps.instastudycategories.api.Api;
+import abc.flaq.apps.instastudycategories.helper.Constants;
+import abc.flaq.apps.instastudycategories.helper.Factory;
+import abc.flaq.apps.instastudycategories.api.InstagramApi;
+import abc.flaq.apps.instastudycategories.general.Session;
+import abc.flaq.apps.instastudycategories.helper.Utils;
 
-import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_ENDPOINT_USER_SELF;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_PACKAGE;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_REDIRECT_URL;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_URL;
-import static abc.flaq.apps.instastudycategories.utils.Constants.SETTINGS_ACCESS_TOKEN;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_ENDPOINT_USER_SELF;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_PACKAGE;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_REDIRECT_URL;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_URL;
+import static abc.flaq.apps.instastudycategories.helper.Constants.SETTINGS_ACCESS_TOKEN;
 
 public class SessionActivity extends AppCompatActivity {
 
@@ -147,7 +147,7 @@ public class SessionActivity extends AppCompatActivity {
                 if (url.startsWith(INSTAGRAM_REDIRECT_URL)) {
                     String code = InstagramApi.getCodeFromUrl(rootView, url);
                     if (Utils.isEmpty(code)) {
-                        Utils.showError(rootView, "Pustyk kod z Instagrama");
+                        Utils.showError(rootView, "Pusty kod z Instagrama");
                         instagramDialog.dismiss();
                     } else {
                         Utils.logInfo(clazz, "Collected instagram code: " + code);
@@ -191,7 +191,7 @@ public class SessionActivity extends AppCompatActivity {
                 .onNeutral(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        Snackbar.make(rootView, "Czy na pewno usunąć konto?", Snackbar.LENGTH_LONG)
+                        Snackbar.make(Utils.findSnackbarView(rootView), "Czy na pewno usunąć konto?", Snackbar.LENGTH_LONG)
                                 .setActionTextColor(ContextCompat.getColor(clazz, R.color.colorAccent))
                                 .setAction("USUŃ", new View.OnClickListener() {
                                     @Override

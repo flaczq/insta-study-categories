@@ -1,4 +1,4 @@
-package abc.flaq.apps.instastudycategories.utils;
+package abc.flaq.apps.instastudycategories.api;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,12 +27,15 @@ import abc.flaq.apps.instastudycategories.pojo.EveObject;
 import abc.flaq.apps.instastudycategories.pojo.Response;
 import abc.flaq.apps.instastudycategories.pojo.Subcategory;
 import abc.flaq.apps.instastudycategories.pojo.User;
+import abc.flaq.apps.instastudycategories.helper.Factory;
+import abc.flaq.apps.instastudycategories.general.Session;
+import abc.flaq.apps.instastudycategories.helper.Utils;
 
-import static abc.flaq.apps.instastudycategories.utils.Constants.API_ALL_CATEGORY_NAME;
-import static abc.flaq.apps.instastudycategories.utils.Constants.API_CATEGORIES_URL;
-import static abc.flaq.apps.instastudycategories.utils.Constants.API_CREDENTIALS;
-import static abc.flaq.apps.instastudycategories.utils.Constants.API_SUBCATEGORIES_URL;
-import static abc.flaq.apps.instastudycategories.utils.Constants.API_USERS_URL;
+import static abc.flaq.apps.instastudycategories.helper.Constants.API_ALL_CATEGORY_NAME;
+import static abc.flaq.apps.instastudycategories.helper.Constants.API_CATEGORIES_URL;
+import static abc.flaq.apps.instastudycategories.helper.Constants.API_CREDENTIALS;
+import static abc.flaq.apps.instastudycategories.helper.Constants.API_SUBCATEGORIES_URL;
+import static abc.flaq.apps.instastudycategories.helper.Constants.API_USERS_URL;
 
 public class Api {
 

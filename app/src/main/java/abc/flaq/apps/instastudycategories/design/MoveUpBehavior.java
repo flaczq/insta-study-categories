@@ -1,15 +1,14 @@
-package abc.flaq.apps.instastudycategories.utils;
+package abc.flaq.apps.instastudycategories.design;
 
 import android.content.Context;
-import android.support.annotation.Keep;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v13.view.ViewCompat;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
-@Keep
-public class MoveUpBehavior extends CoordinatorLayout.Behavior<View> {
+public class MoveUpBehavior extends CoordinatorLayout.Behavior<FloatingActionButton> {
 
     public MoveUpBehavior() {
         super();
@@ -20,20 +19,14 @@ public class MoveUpBehavior extends CoordinatorLayout.Behavior<View> {
     }
 
     @Override
-    public boolean layoutDependsOn(CoordinatorLayout parent, View child, View dependency) {
+    public boolean layoutDependsOn(CoordinatorLayout parent, FloatingActionButton child, View dependency) {
         return (dependency instanceof Snackbar.SnackbarLayout);
     }
-
     @Override
-    public boolean onDependentViewChanged(CoordinatorLayout parent, View child, View dependency) {
+    public boolean onDependentViewChanged(CoordinatorLayout parent, FloatingActionButton child, View dependency) {
         float translationY = Math.min(0, ViewCompat.getTranslationY(dependency) - dependency.getHeight());
         ViewCompat.setTranslationY(child, translationY);
         return true;
-    }
-
-    // For swiping Snackbar
-    public void onDependentViewRemoved(CoordinatorLayout parent, View child, View dependency) {
-        ViewCompat.animate(child).translationY(0).start();
     }
 
 }

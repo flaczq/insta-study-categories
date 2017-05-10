@@ -12,8 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:item_margin="@dimen/categories_margin_between_grids"
-        app:column_count="2"
-        app:layout_behavior="abc.flaq.apps.instastudycategories.utils.MoveUpBehavior" />
+        app:column_count="2" />
 
     <com.crystal.crystalpreloaders.widgets.CrystalPreloader android:id="@+id/subcategory_preloader"
         android:layout_width="match_parent"

@@ -3,7 +3,10 @@ package abc.flaq.apps.instastudycategories.activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,35 +17,42 @@ import android.widget.PopupMenu;
 
 import com.crystal.crystalpreloaders.widgets.CrystalPreloader;
 
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.drafts.Draft_17;
+import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
 import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.adapter.UserAdapter;
+import abc.flaq.apps.instastudycategories.api.Api;
+import abc.flaq.apps.instastudycategories.general.Session;
+import abc.flaq.apps.instastudycategories.helper.Utils;
 import abc.flaq.apps.instastudycategories.pojo.Category;
 import abc.flaq.apps.instastudycategories.pojo.Subcategory;
 import abc.flaq.apps.instastudycategories.pojo.User;
-import abc.flaq.apps.instastudycategories.utils.Api;
-import abc.flaq.apps.instastudycategories.utils.Session;
-import abc.flaq.apps.instastudycategories.utils.Utils;
 
-import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_PACKAGE;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_URL;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_FOREIGN_ID;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_NAME;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_FOREIGN_ID;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_SUBCATEGORY_NAME;
+import static abc.flaq.apps.instastudycategories.helper.Constants.API_WEB_SOCKET_URL;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_PACKAGE;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_URL;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_FOREIGN_ID;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_NAME;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_FOREIGN_ID;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_NAME;
 
 public class UserActivity extends SessionActivity {
 
     private final AppCompatActivity clazz = this;
-    private View rootView;
+    private CoordinatorLayout layout;
     private ListView listView;
     private UserAdapter userAdapter;
     private CrystalPreloader preloader;
+    private FloatingActionButton fab;
 
     private List<User> users = new ArrayList<>();
     private Menu mainMenu;
@@ -52,15 +62,18 @@ public class UserActivity extends SessionActivity {
     private Boolean hasJoined;
     private Boolean isApiWorking = false;
 
+    private WebSocketClient webSocketClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
 
-        rootView = findViewById(android.R.id.content);
+        layout = (CoordinatorLayout) findViewById(R.id.user_layout);
         listView = (ListView) findViewById(R.id.user_list);
         preloader = (CrystalPreloader) findViewById(R.id.user_preloader);
-
+        fab = (FloatingActionButton) findViewById(R.id.user_fab);
+        connect();
         Intent intent = getIntent();
         // Check if parentForeignId is from newCategory or subcategory
         String categoryForeignId = intent.getStringExtra(INTENT_CATEGORY_FOREIGN_ID);
@@ -81,13 +94,13 @@ public class UserActivity extends SessionActivity {
         }
 
         if (Utils.isEmpty(parentForeignId)) {
-            Utils.showError(rootView, "Brak id kategorii lub podkategorii");
+            Utils.showError(layout, "Brak id kategorii lub podkategorii");
         } else {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
                     User selected = userAdapter.getItem(position);
-                    Utils.showQuickInfo(rootView, "Otwieranie profilu " + selected.getUsername() + "...");
+                    Utils.showQuickInfo(layout, "Otwieranie profilu " + selected.getUsername() + "...");
                     Uri instagramUri = Uri.parse(INSTAGRAM_URL + "_u/" + selected.getUsername());
                     Intent nextIntent = new Intent(Intent.ACTION_VIEW, instagramUri);
                     nextIntent.setPackage(INSTAGRAM_PACKAGE);
@@ -102,8 +115,59 @@ public class UserActivity extends SessionActivity {
                 }
             });
 
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Utils.showInfo(layout, "CHAT!");
+                }
+            });
+
             new ProcessUsers().execute();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        webSocketClient.close();
+        super.onDestroy();
+    }
+
+    private void connect() {
+        URI uri;
+        try {
+            uri = new URI(API_WEB_SOCKET_URL);
+
+            webSocketClient = new WebSocketClient(uri, new Draft_17()) {
+                @Override
+                public void onOpen(ServerHandshake serverHandshake) {
+                    Utils.logInfo(clazz, "Opened WebSocket");
+                    webSocketClient.send("Hello from " + Build.MANUFACTURER + " " + Build.MODEL);
+                }
+
+                @Override
+                public void onMessage(String s) {
+                    Utils.showInfo(layout, s);
+                }
+
+                @Override
+                public void onClose(int i, String s, boolean b) {
+                    Utils.logInfo(clazz, "Closed Websocket: " + s);
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    Utils.logInfo(clazz, "Error Websocket: " + e.getMessage());
+                }
+            };
+
+            webSocketClient.connect();
+        } catch (URISyntaxException e) {
+            Utils.logError(clazz, "IOException: " + e.getMessage());
+        }
+    }
+
+    public void sendMessage() {
+        webSocketClient.send("messsssssssage");
     }
 
     @Override
@@ -133,6 +197,7 @@ public class UserActivity extends SessionActivity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        sendMessage();
         if (isApiWorking) {
             return true;
         }
@@ -222,7 +287,7 @@ public class UserActivity extends SessionActivity {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
             } catch (IOException e) {
                 Utils.logError(clazz, "IOException: " + e.getMessage());
-                Utils.showConnectionError(rootView, "Błąd pobierania listy użytkowników");
+                Utils.showConnectionError(layout, "Błąd pobierania listy użytkowników");
             }
             return null;
         }
@@ -233,7 +298,19 @@ public class UserActivity extends SessionActivity {
             isApiWorking = false;
             preloader.setVisibility(View.INVISIBLE);
 
-            userAdapter = new UserAdapter(clazz, users);
+            List<User> userss = new ArrayList<>();
+            userss.addAll(users);
+            userss.addAll(users);
+            userss.addAll(users);
+            userss.addAll(users);
+            userss.addAll(users);
+            userss.addAll(users);
+            userss.addAll(users);
+            userss.addAll(users);
+            userss.addAll(users);
+            userss.addAll(users);
+            userss.addAll(users);
+            userAdapter = new UserAdapter(clazz, userss);
             listView.setAdapter(userAdapter);
             setCategoryMenuVisibility(hasJoined);
         }
@@ -263,7 +340,7 @@ public class UserActivity extends SessionActivity {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
             } catch (IOException e) {
                 Utils.logError(clazz, "IOException: " + e.getMessage());
-                Utils.showConnectionError(rootView, "Błąd dodawania użytkownika do podkategorii");
+                Utils.showConnectionError(layout, "Błąd dodawania użytkownika do podkategorii");
             }
             return result;
         }
@@ -276,7 +353,7 @@ public class UserActivity extends SessionActivity {
             listView.setVisibility(View.VISIBLE);
 
             if (result) {
-                Utils.showInfo(rootView,
+                Utils.showInfo(layout,
                         "Dodano użytkownika do podkategorii"
                 );
 
@@ -287,7 +364,7 @@ public class UserActivity extends SessionActivity {
 
                 Session.getInstance().setSubcategoryChanged(true);
             } else {
-                Utils.showError(rootView, "Dodanie użytkownika do podkategorii zakończone niepowodzeniem");
+                Utils.showError(layout, "Dodanie użytkownika do podkategorii zakończone niepowodzeniem");
             }
         }
     }
@@ -316,7 +393,7 @@ public class UserActivity extends SessionActivity {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
             } catch (IOException e) {
                 Utils.logError(clazz, "IOException: " + e.getMessage());
-                Utils.showConnectionError(rootView, "Błąd dodawania użytkownika do kategorii");
+                Utils.showConnectionError(layout, "Błąd dodawania użytkownika do kategorii");
             }
             return result;
         }
@@ -329,7 +406,7 @@ public class UserActivity extends SessionActivity {
             listView.setVisibility(View.VISIBLE);
 
             if (result) {
-                Utils.showInfo(rootView,
+                Utils.showInfo(layout,
                         "Usunięto użytkownika z podkategorii"
                 );
 
@@ -340,7 +417,7 @@ public class UserActivity extends SessionActivity {
 
                 Session.getInstance().setSubcategoryChanged(true);
             } else {
-                Utils.showError(rootView, "Usunięcie użytkownika z podkategorii zakończone niepowodzeniem");
+                Utils.showError(layout, "Usunięcie użytkownika z podkategorii zakończone niepowodzeniem");
             }
         }
     }

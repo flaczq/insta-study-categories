@@ -5,10 +5,10 @@ import android.support.annotation.NonNull;
 import java.util.ArrayList;
 
 import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramUser;
-import abc.flaq.apps.instastudycategories.utils.Utils;
+import abc.flaq.apps.instastudycategories.helper.Utils;
 
-import static abc.flaq.apps.instastudycategories.utils.Constants.DATE_FORMAT;
-import static abc.flaq.apps.instastudycategories.utils.Constants.HOUR_FORMAT;
+import static abc.flaq.apps.instastudycategories.helper.Constants.DATE_FORMAT;
+import static abc.flaq.apps.instastudycategories.helper.Constants.HOUR_FORMAT;
 
 public class User extends EveObject implements Comparable<User> {
 

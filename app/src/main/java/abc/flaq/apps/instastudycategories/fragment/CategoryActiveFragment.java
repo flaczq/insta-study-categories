@@ -22,14 +22,14 @@ import abc.flaq.apps.instastudycategories.activity.SubcategoryActivity;
 import abc.flaq.apps.instastudycategories.activity.UserActivity;
 import abc.flaq.apps.instastudycategories.adapter.CategoryAdapter;
 import abc.flaq.apps.instastudycategories.pojo.Category;
-import abc.flaq.apps.instastudycategories.utils.Utils;
+import abc.flaq.apps.instastudycategories.helper.Utils;
 
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_ACTIVE;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_ACTIVE_END;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_ACTIVE_START;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_FOREIGN_ID;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INTENT_CATEGORY_NAME;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_ACTIVE;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_ACTIVE_END;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_ACTIVE_START;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_FOREIGN_ID;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_NAME;
 
 public class CategoryActiveFragment extends Fragment {
 
@@ -56,14 +56,14 @@ public class CategoryActiveFragment extends Fragment {
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.activity_category, container, false);
+        View parentView = inflater.inflate(R.layout.activity_category, container, false);
 
-        preloader = (CrystalPreloader) rootView.findViewById(R.id.category_preloader);
+        preloader = (CrystalPreloader) parentView.findViewById(R.id.category_preloader);
         //preloader.setVisibility(View.VISIBLE);
 
         categoryAdapter = new CategoryAdapter(getActivity(), activeCategories);
 
-        gridView = (StaggeredGridView) rootView.findViewById(R.id.category_grid);
+        gridView = (StaggeredGridView) parentView.findViewById(R.id.category_grid);
         gridView.setAdapter(categoryAdapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -81,7 +81,7 @@ public class CategoryActiveFragment extends Fragment {
             }
         });
 
-        return rootView;
+        return parentView;
     }
 
     @Override

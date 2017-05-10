@@ -6,10 +6,10 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import abc.flaq.apps.instastudycategories.BuildConfig;
-import abc.flaq.apps.instastudycategories.utils.Session;
-import abc.flaq.apps.instastudycategories.utils.Utils;
+import abc.flaq.apps.instastudycategories.general.Session;
+import abc.flaq.apps.instastudycategories.helper.Utils;
 
-import static abc.flaq.apps.instastudycategories.utils.Constants.SETTINGS_NAME;
+import static abc.flaq.apps.instastudycategories.helper.Constants.SETTINGS_NAME;
 
 public class MainActivity extends AppCompatActivity {
 

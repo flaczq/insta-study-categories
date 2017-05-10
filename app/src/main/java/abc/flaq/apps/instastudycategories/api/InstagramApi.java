@@ -1,4 +1,4 @@
-package abc.flaq.apps.instastudycategories.utils;
+package abc.flaq.apps.instastudycategories.api;
 
 import android.view.View;
 
@@ -20,11 +20,13 @@ import java.util.Map;
 
 import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramAccessToken;
 import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramMeta;
+import abc.flaq.apps.instastudycategories.helper.Constants;
+import abc.flaq.apps.instastudycategories.helper.Utils;
 
-import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_AUTH_URL;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_CODE_URL;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_REDIRECT_URL;
-import static abc.flaq.apps.instastudycategories.utils.Constants.INSTAGRAM_REQUEST_ACCESS_TOKEN_URL;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_AUTH_URL;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_CODE_URL;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_REDIRECT_URL;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_REQUEST_ACCESS_TOKEN_URL;
 
 public class InstagramApi {
 
