@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/user_chat_item_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark">
+
+    <TextView android:id="@+id/user_chat_item_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="01.02.2017 12:05:12"
+        android:textSize="15sp"
+        android:textColor="@color/textColorLessImportant" />
+    <TextView android:id="@+id/user_chat_item_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="username"
+        android:textSize="15sp"
+        android:textColor="@color/textColorPrimary"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_toRightOf="@+id/user_chat_item_date"
+        android:layout_toEndOf="@+id/user_chat_item_date" />
+    <TextView android:id="@+id/user_chat_item_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="hello"
+        android:textSize="16sp"
+        android:textColor="@color/textColorPrimary"
+        android:layout_below="@+id/user_chat_item_date" />
+
+</RelativeLayout>

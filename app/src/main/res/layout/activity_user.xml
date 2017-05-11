@@ -11,7 +11,7 @@
     <ListView android:id="@+id/user_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/categories_margin_between_grids" />
+        android:layout_margin="@dimen/margin_between_lists" />
 
     <com.crystal.crystalpreloaders.widgets.CrystalPreloader android:id="@+id/user_preloader"
         android:layout_width="match_parent"

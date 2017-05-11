@@ -5,6 +5,7 @@
     <color name="textColorPrimary">#FFFFFF</color>
     <color name="textColorSecondary">#000000</color>
     <color name="textColorDisabled">#214f78</color>
+    <color name="textColorLessImportant">#808080</color>
     <color name="windowBackground">#FFFFFF</color>
     <color name="navigationBarColor">#000000</color>
     <color name="colorAccent">#5CB85C</color>

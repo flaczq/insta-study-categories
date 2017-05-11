@@ -147,7 +147,6 @@ public class SubcategoryActivity extends SessionActivity {
                 .input("Wpisz nazwę...", null, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
-                        // FIXME: dlaczego tu nie wchodzi?
                         if (Utils.isNotEmpty(input) && Utils.isNotEmpty(input.toString()) &&
                                 subcategoriesNames.contains(input.toString().trim().toLowerCase())) {
                             dialog.getActionButton(DialogAction.POSITIVE).setEnabled(false);
@@ -163,7 +162,9 @@ public class SubcategoryActivity extends SessionActivity {
                         }
                         dialog.dismiss();
                     }
-                }).show();
+                })
+                .alwaysCallInputCallback()
+                .show();
     }
 
     private void startSubcategoryFragment() {

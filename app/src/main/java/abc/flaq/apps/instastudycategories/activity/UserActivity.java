@@ -3,7 +3,6 @@ package abc.flaq.apps.instastudycategories.activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -15,29 +14,27 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.crystal.crystalpreloaders.widgets.CrystalPreloader;
 
-import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.drafts.Draft_17;
-import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
 import abc.flaq.apps.instastudycategories.R;
+import abc.flaq.apps.instastudycategories.adapter.ChatAdapter;
 import abc.flaq.apps.instastudycategories.adapter.UserAdapter;
 import abc.flaq.apps.instastudycategories.api.Api;
 import abc.flaq.apps.instastudycategories.general.Session;
+import abc.flaq.apps.instastudycategories.general.WebSocketClientSide;
 import abc.flaq.apps.instastudycategories.helper.Utils;
 import abc.flaq.apps.instastudycategories.pojo.Category;
 import abc.flaq.apps.instastudycategories.pojo.Subcategory;
 import abc.flaq.apps.instastudycategories.pojo.User;
+import abc.flaq.apps.instastudycategories.pojo.WebSocketMessage;
 
-import static abc.flaq.apps.instastudycategories.helper.Constants.API_WEB_SOCKET_URL;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_PACKAGE;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_URL;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_FOREIGN_ID;
@@ -61,8 +58,7 @@ public class UserActivity extends SessionActivity {
     private Boolean isCategory = false;
     private Boolean hasJoined;
     private Boolean isApiWorking = false;
-
-    private WebSocketClient webSocketClient;
+    private WebSocketClientSide webSocket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,11 +69,14 @@ public class UserActivity extends SessionActivity {
         listView = (ListView) findViewById(R.id.user_list);
         preloader = (CrystalPreloader) findViewById(R.id.user_preloader);
         fab = (FloatingActionButton) findViewById(R.id.user_fab);
-        connect();
+
+        webSocket = WebSocketClientSide.createWebSocketClientSide(clazz, layout);
+
         Intent intent = getIntent();
-        // Check if parentForeignId is from newCategory or subcategory
         String categoryForeignId = intent.getStringExtra(INTENT_CATEGORY_FOREIGN_ID);
         parentForeignId = null;
+
+        // Check if parentForeignId is from newCategory or subcategory
         if (Utils.isNotEmpty(categoryForeignId)) {
             isCategory = true;
             parentForeignId = categoryForeignId;
@@ -118,7 +117,7 @@ public class UserActivity extends SessionActivity {
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Utils.showInfo(layout, "CHAT!");
+                    showChatDialog();
                 }
             });
 
@@ -128,46 +127,8 @@ public class UserActivity extends SessionActivity {
 
     @Override
     protected void onDestroy() {
-        webSocketClient.close();
+        webSocket.close();
         super.onDestroy();
-    }
-
-    private void connect() {
-        URI uri;
-        try {
-            uri = new URI(API_WEB_SOCKET_URL);
-
-            webSocketClient = new WebSocketClient(uri, new Draft_17()) {
-                @Override
-                public void onOpen(ServerHandshake serverHandshake) {
-                    Utils.logInfo(clazz, "Opened WebSocket");
-                    webSocketClient.send("Hello from " + Build.MANUFACTURER + " " + Build.MODEL);
-                }
-
-                @Override
-                public void onMessage(String s) {
-                    Utils.showInfo(layout, s);
-                }
-
-                @Override
-                public void onClose(int i, String s, boolean b) {
-                    Utils.logInfo(clazz, "Closed Websocket: " + s);
-                }
-
-                @Override
-                public void onError(Exception e) {
-                    Utils.logInfo(clazz, "Error Websocket: " + e.getMessage());
-                }
-            };
-
-            webSocketClient.connect();
-        } catch (URISyntaxException e) {
-            Utils.logError(clazz, "IOException: " + e.getMessage());
-        }
-    }
-
-    public void sendMessage() {
-        webSocketClient.send("messsssssssage");
     }
 
     @Override
@@ -197,7 +158,6 @@ public class UserActivity extends SessionActivity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        sendMessage();
         if (isApiWorking) {
             return true;
         }
@@ -255,6 +215,21 @@ public class UserActivity extends SessionActivity {
         return true;
     }
 
+    private void showChatDialog() {
+        List<WebSocketMessage> messages = new ArrayList<>();
+        ListView chatList = (ListView) findViewById(R.id.user_chat_list);
+        ChatAdapter chatAdapter = new ChatAdapter(messages, R.layout.activity_user_chat_item);
+        // FIXME
+        MaterialDialog dialog = new MaterialDialog.Builder(clazz)
+                .customView(chatList, false)
+                .show();
+        /*
+        if (Utils.isNotEmpty(dialog.getInputEditText()) && Utils.isNotEmpty(dialog.getInputEditText().getText())) {
+                            webSocket.sendMessage(dialog.getInputEditText().getText().toString());
+                        }
+         */
+    }
+
     private class ProcessUsers extends AsyncTask<Void, Void, Void> {
         @Override
         protected void onPreExecute() {
@@ -298,19 +273,7 @@ public class UserActivity extends SessionActivity {
             isApiWorking = false;
             preloader.setVisibility(View.INVISIBLE);
 
-            List<User> userss = new ArrayList<>();
-            userss.addAll(users);
-            userss.addAll(users);
-            userss.addAll(users);
-            userss.addAll(users);
-            userss.addAll(users);
-            userss.addAll(users);
-            userss.addAll(users);
-            userss.addAll(users);
-            userss.addAll(users);
-            userss.addAll(users);
-            userss.addAll(users);
-            userAdapter = new UserAdapter(clazz, userss);
+            userAdapter = new UserAdapter(clazz, users);
             listView.setAdapter(userAdapter);
             setCategoryMenuVisibility(hasJoined);
         }
