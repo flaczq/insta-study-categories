@@ -1,5 +1,7 @@
 package abc.flaq.apps.instastudycategories.activity;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -7,14 +9,18 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.crystal.crystalpreloaders.widgets.CrystalPreloader;
 
 import org.json.JSONException;
@@ -35,7 +41,6 @@ import abc.flaq.apps.instastudycategories.pojo.Subcategory;
 import abc.flaq.apps.instastudycategories.pojo.User;
 import abc.flaq.apps.instastudycategories.pojo.WebSocketMessage;
 
-import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_PACKAGE;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_URL;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_FOREIGN_ID;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_NAME;
@@ -50,6 +55,12 @@ public class UserActivity extends SessionActivity {
     private UserAdapter userAdapter;
     private CrystalPreloader preloader;
     private FloatingActionButton fab;
+    private LayoutInflater inflater;
+    private View chatView;
+    private ListView chatList;
+    private TextView chatInput;
+    private ImageButton sendButton;
+    private ChatAdapter chatAdapter;
 
     private List<User> users = new ArrayList<>();
     private Menu mainMenu;
@@ -59,6 +70,7 @@ public class UserActivity extends SessionActivity {
     private Boolean hasJoined;
     private Boolean isApiWorking = false;
     private WebSocketClientSide webSocket;
+    private Dialog chatDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +82,23 @@ public class UserActivity extends SessionActivity {
         preloader = (CrystalPreloader) findViewById(R.id.user_preloader);
         fab = (FloatingActionButton) findViewById(R.id.user_fab);
 
-        webSocket = WebSocketClientSide.createWebSocketClientSide(clazz, layout);
+        inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        chatView = inflater.inflate(R.layout.activity_user_chat, null);
+        chatList = (ListView) chatView.findViewById(R.id.user_chat_list);
+        chatInput = (TextView) chatView.findViewById(R.id.user_chat_input);
+        sendButton = (ImageButton) chatView.findViewById(R.id.user_chat_input_send);
+
+        // Disable "enter" button
+        chatInput.setImeOptions(1);
+        chatAdapter = new ChatAdapter(clazz, new ArrayList<WebSocketMessage>());
+        chatList.setAdapter(chatAdapter);
+        chatDialog = new Dialog(clazz, R.style.DialogTheme);
+        chatDialog.setContentView(chatView);
+        Window chatWindow = chatDialog.getWindow();
+        if (Utils.isNotEmpty(chatWindow)) {
+            // Scroll list when keyboard is shown
+            chatWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        }
 
         Intent intent = getIntent();
         String categoryForeignId = intent.getStringExtra(INTENT_CATEGORY_FOREIGN_ID);
@@ -100,9 +128,7 @@ public class UserActivity extends SessionActivity {
                 public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
                     User selected = userAdapter.getItem(position);
                     Utils.showQuickInfo(layout, "Otwieranie profilu " + selected.getUsername() + "...");
-                    Uri instagramUri = Uri.parse(INSTAGRAM_URL + "_u/" + selected.getUsername());
-                    Intent nextIntent = new Intent(Intent.ACTION_VIEW, instagramUri);
-                    nextIntent.setPackage(INSTAGRAM_PACKAGE);
+                    Intent nextIntent = Utils.getInstagramIntent(selected.getUsername());
 
                     if (Utils.isIntentAvailable(clazz, nextIntent)) {
                         Utils.logDebug(clazz, "Instagram intent is available");
@@ -121,6 +147,17 @@ public class UserActivity extends SessionActivity {
                 }
             });
 
+            sendButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (Utils.isNotEmpty(chatInput.getText())) {
+                        webSocket.sendMessage(chatInput.getText().toString());
+                        chatInput.setText(null);
+                    }
+                }
+            });
+
+            webSocket = WebSocketClientSide.createWebSocketClientSide(clazz, layout, chatAdapter);
             new ProcessUsers().execute();
         }
     }
@@ -216,18 +253,10 @@ public class UserActivity extends SessionActivity {
     }
 
     private void showChatDialog() {
-        List<WebSocketMessage> messages = new ArrayList<>();
-        ListView chatList = (ListView) findViewById(R.id.user_chat_list);
-        ChatAdapter chatAdapter = new ChatAdapter(messages, R.layout.activity_user_chat_item);
-        // FIXME
-        MaterialDialog dialog = new MaterialDialog.Builder(clazz)
-                .customView(chatList, false)
-                .show();
-        /*
-        if (Utils.isNotEmpty(dialog.getInputEditText()) && Utils.isNotEmpty(dialog.getInputEditText().getText())) {
-                            webSocket.sendMessage(dialog.getInputEditText().getText().toString());
-                        }
-         */
+        chatDialog.show();
+        /*new MaterialDialog.Builder(clazz)
+                .customView(chatView, false)
+                .show();*/
     }
 
     private class ProcessUsers extends AsyncTask<Void, Void, Void> {
@@ -248,7 +277,7 @@ public class UserActivity extends SessionActivity {
                 }
                 hasJoined = false;
                 for (User user : users) {
-                    Utils.logInfo(clazz, user.toString());
+                    Utils.logDebug(clazz, user.toString());
                     if (Utils.isNotEmpty(Session.getInstance().getUser()) &&
                             user.getId().equals(Session.getInstance().getUser().getId())) {
                         if (isCategory) {

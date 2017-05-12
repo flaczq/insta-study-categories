@@ -1,32 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/user_chat_item_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark">
+    android:paddingTop="@dimen/default_small_margin"
+    android:paddingBottom="@dimen/default_small_margin"
+    android:paddingLeft="@dimen/default_small_margin"
+    android:paddingRight="@dimen/default_small_margin">
 
-    <TextView android:id="@+id/user_chat_item_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="01.02.2017 12:05:12"
-        android:textSize="15sp"
-        android:textColor="@color/textColorLessImportant" />
+    <de.hdodenhof.circleimageview.CircleImageView android:id="@+id/user_chat_item_profile_pic"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:src="@drawable/placeholder_profile_pic_72"
+        app:civ_border_width="1px"
+        app:civ_border_color="@color/colorDivider" />
+
     <TextView android:id="@+id/user_chat_item_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="username"
-        android:textSize="15sp"
-        android:textColor="@color/textColorPrimary"
-        android:layout_marginLeft="10dp"
-        android:layout_marginStart="10dp"
-        android:layout_toRightOf="@+id/user_chat_item_date"
-        android:layout_toEndOf="@+id/user_chat_item_date" />
+        android:textSize="13sp"
+        android:textColor="@color/textColorMaybeImportant"
+        android:maxWidth="@dimen/username_max_width"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:layout_marginLeft="@dimen/default_small_margin"
+        android:layout_marginStart="@dimen/default_small_margin"
+        android:layout_toRightOf="@+id/user_chat_item_profile_pic"
+        android:layout_toEndOf="@+id/user_chat_item_profile_pic"
+        android:layout_alignTop="@id/user_chat_item_profile_pic" />
+    <TextView android:id="@+id/user_chat_item_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="monday, 12:05:12"
+        android:textSize="13sp"
+        android:textColor="@color/textColorLessImportant"
+        android:layout_marginRight="@dimen/default_small_margin"
+        android:layout_marginEnd="@dimen/default_small_margin"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@id/user_chat_item_profile_pic" />
+
     <TextView android:id="@+id/user_chat_item_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="hello"
-        android:textSize="16sp"
-        android:textColor="@color/textColorPrimary"
+        android:textSize="15sp"
+        android:textColor="@color/textColorSecondary"
+        android:layout_marginRight="@dimen/default_small_margin"
+        android:layout_marginEnd="@dimen/default_small_margin"
+        android:layout_marginLeft="@dimen/default_small_margin"
+        android:layout_marginStart="@dimen/default_small_margin"
+        android:layout_toRightOf="@+id/user_chat_item_profile_pic"
+        android:layout_toEndOf="@+id/user_chat_item_profile_pic"
         android:layout_below="@+id/user_chat_item_date" />
 
 </RelativeLayout>

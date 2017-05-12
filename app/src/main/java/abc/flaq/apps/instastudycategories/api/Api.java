@@ -22,14 +22,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import abc.flaq.apps.instastudycategories.general.Session;
+import abc.flaq.apps.instastudycategories.helper.Factory;
+import abc.flaq.apps.instastudycategories.helper.Utils;
 import abc.flaq.apps.instastudycategories.pojo.Category;
 import abc.flaq.apps.instastudycategories.pojo.EveObject;
 import abc.flaq.apps.instastudycategories.pojo.Response;
 import abc.flaq.apps.instastudycategories.pojo.Subcategory;
 import abc.flaq.apps.instastudycategories.pojo.User;
-import abc.flaq.apps.instastudycategories.helper.Factory;
-import abc.flaq.apps.instastudycategories.general.Session;
-import abc.flaq.apps.instastudycategories.helper.Utils;
 
 import static abc.flaq.apps.instastudycategories.helper.Constants.API_ALL_CATEGORY_NAME;
 import static abc.flaq.apps.instastudycategories.helper.Constants.API_CATEGORIES_URL;
@@ -442,6 +442,17 @@ public class Api {
             if (instagramId.equals(user.getInstagramId())) {
                 //correctDate(user);
                 return user;
+            }
+        }
+
+        return null;
+    }
+    public static User getUserByUsername(String username) {
+        if (allUsers.size() > 0) {
+            for (User user : allUsers) {
+                if (username.equals(user.getUsername())) {
+                    return user;
+                }
             }
         }
 

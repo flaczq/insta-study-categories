@@ -2,31 +2,44 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/user_chat_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/colorBackgroundLight">
 
     <LinearLayout android:id="@+id/user_chat_input_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/default_small_margin"
+        android:layout_marginBottom="@dimen/default_small_margin"
+        android:layout_marginLeft="@dimen/default_small_margin"
+        android:layout_marginRight="@dimen/default_small_margin"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:gravity="center_vertical">
 
         <EditText android:id="@+id/user_chat_input"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.72"
-            android:hint="Wpisz wiadomość..." />
+            android:hint="Wpisz wiadomość..."
+            android:maxLines="1"
+            android:inputType="text"
+            android:focusableInTouchMode="false" />
         <ImageButton android:id="@+id/user_chat_input_send"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/sym_call_missed"
+            android:src="@android:drawable/ic_menu_send"
             android:contentDescription="@string/imageview.description" />
 
     </LinearLayout>
 
     <ListView android:id="@+id/user_chat_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:dividerHeight="1px"
+        android:divider="@color/colorDivider"
+        android:stackFromBottom="true"
+        android:transcriptMode="alwaysScroll"
         android:layout_above="@id/user_chat_input_layout" />
 
 </RelativeLayout>

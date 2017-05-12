@@ -214,7 +214,7 @@ public class CategoryActivity extends SessionActivity {
             try {
                 categories = Api.getAllCategories(true);
                 for (Category category : categories) {
-                    Utils.logInfo(clazz, category.toString());
+                    Utils.logDebug(clazz, category.toString());
                 }
             } catch (JSONException e) {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());

@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import abc.flaq.apps.instastudycategories.adapter.ChatAdapter;
 import abc.flaq.apps.instastudycategories.helper.Utils;
 import abc.flaq.apps.instastudycategories.pojo.WebSocketMessage;
 
@@ -30,9 +31,10 @@ public class WebSocketClientSide extends WebSocketClient {
 
     private AppCompatActivity clazz;
     private CoordinatorLayout layout;
+    private ChatAdapter adapter;
     private ObjectMapper mapper = new ObjectMapper();
 
-    public static WebSocketClientSide createWebSocketClientSide(AppCompatActivity clazz, CoordinatorLayout layout) {
+    public static WebSocketClientSide createWebSocketClientSide(AppCompatActivity clazz, CoordinatorLayout layout, ChatAdapter adapter) {
         URI uri = null;
         try {
             uri = new URI(API_WEB_SOCKET_URL);
@@ -43,26 +45,32 @@ public class WebSocketClientSide extends WebSocketClient {
         Map<String, String> headers = new HashMap<>();
         headers.put("Origin", API_WEB_SOCKET_ORIGIN);
         int timeout = 0;
-        return new WebSocketClientSide(uri, draft, headers, timeout, clazz, layout);
+        return new WebSocketClientSide(uri, draft, headers, timeout, clazz, layout, adapter);
     }
-    private WebSocketClientSide(URI uri, Draft draft, Map<String, String> headers, int timeout, AppCompatActivity clazz, CoordinatorLayout layout) {
+    private WebSocketClientSide(URI uri, Draft draft, Map<String, String> headers, int timeout, AppCompatActivity clazz, CoordinatorLayout layout, ChatAdapter adapter) {
         super(uri, draft, headers, timeout);
         this.clazz = clazz;
         this.layout = layout;
+        this.adapter = adapter;
         connect();
     }
 
     @Override
     public void onOpen(ServerHandshake serverHandshake) {
-        Utils.logInfo(clazz, "Opened WebSocket");
+        Utils.logDebug(clazz, "Opened WebSocket");
     }
 
     @Override
     public void onMessage(String s) {
-        Utils.showInfo(layout, s);
         try {
-            WebSocketMessage message = mapper.readValue(s, WebSocketMessage.class);
-            Utils.logInfo(clazz, message.toString());
+            final WebSocketMessage message = mapper.readValue(s, WebSocketMessage.class);
+            Utils.logDebug(clazz, message.toString());
+            clazz.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.addItem(message);
+                }
+            });
         } catch (JsonParseException e) {
             Utils.logError(clazz, "JsonParseException: " + e.getMessage());
         } catch (JsonMappingException e) {
@@ -75,12 +83,12 @@ public class WebSocketClientSide extends WebSocketClient {
 
     @Override
     public void onClose(int i, String s, boolean b) {
-        Utils.logInfo(clazz, "Closed WebSocket: " + s);
+        Utils.logDebug(clazz, "Closed WebSocket: " + s);
     }
 
     @Override
     public void onError(Exception e) {
-        Utils.logInfo(clazz, "Error WebSocket: " + e.getMessage());
+        Utils.logDebug(clazz, "Error WebSocket: " + e.getMessage());
     }
 
     public void sendMessage(String message) {

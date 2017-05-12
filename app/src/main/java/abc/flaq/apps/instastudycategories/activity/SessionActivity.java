@@ -31,18 +31,17 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import abc.flaq.apps.instastudycategories.R;
+import abc.flaq.apps.instastudycategories.api.Api;
+import abc.flaq.apps.instastudycategories.api.InstagramApi;
+import abc.flaq.apps.instastudycategories.general.Session;
+import abc.flaq.apps.instastudycategories.helper.Constants;
+import abc.flaq.apps.instastudycategories.helper.Factory;
+import abc.flaq.apps.instastudycategories.helper.Utils;
 import abc.flaq.apps.instastudycategories.pojo.User;
 import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramAccessToken;
 import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramUser;
-import abc.flaq.apps.instastudycategories.api.Api;
-import abc.flaq.apps.instastudycategories.helper.Constants;
-import abc.flaq.apps.instastudycategories.helper.Factory;
-import abc.flaq.apps.instastudycategories.api.InstagramApi;
-import abc.flaq.apps.instastudycategories.general.Session;
-import abc.flaq.apps.instastudycategories.helper.Utils;
 
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_ENDPOINT_USER_SELF;
-import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_PACKAGE;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_REDIRECT_URL;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_URL;
 import static abc.flaq.apps.instastudycategories.helper.Constants.SETTINGS_ACCESS_TOKEN;
@@ -67,7 +66,7 @@ public class SessionActivity extends AppCompatActivity {
 
         rootView = findViewById(android.R.id.content);
         accessToken = Session.getInstance().getSettings().getString(SETTINGS_ACCESS_TOKEN, null);
-        Utils.logInfo(clazz, "Session access token: " + accessToken);
+        Utils.logDebug(clazz, "Session access token: " + accessToken);
         if (Utils.isEmpty(Session.getInstance().getUser())) {
             if (Utils.isNotEmpty(accessToken)) {
                 new ProcessGetUser().execute();
@@ -150,7 +149,7 @@ public class SessionActivity extends AppCompatActivity {
                         Utils.showError(rootView, "Pusty kod z Instagrama");
                         instagramDialog.dismiss();
                     } else {
-                        Utils.logInfo(clazz, "Collected instagram code: " + code);
+                        Utils.logDebug(clazz, "Collected instagram code: " + code);
                         new ProcessGetAccessToken().execute(code);
                     }
                 } else {
@@ -214,9 +213,7 @@ public class SessionActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Utils.showQuickInfo(rootView, "Otwieranie profilu " + Session.getInstance().getUser().getUsername() + "...");
-                Uri instagramUri = Uri.parse(INSTAGRAM_URL + "_u/" + Session.getInstance().getUser().getUsername());
-                Intent nextIntent = new Intent(Intent.ACTION_VIEW, instagramUri);
-                nextIntent.setPackage(INSTAGRAM_PACKAGE);
+                Intent nextIntent = Utils.getInstagramIntent(Session.getInstance().getUser().getUsername());
 
                 if (Utils.isIntentAvailable(clazz, nextIntent)) {
                     Utils.logDebug(clazz, "Instagram intent is available");
@@ -233,9 +230,7 @@ public class SessionActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Utils.showQuickInfo(rootView, "Otwieranie profilu " + Session.getInstance().getUser().getUsername() + "...");
-                Uri instagramUri = Uri.parse(INSTAGRAM_URL + "_u/" + Session.getInstance().getUser().getUsername());
-                Intent nextIntent = new Intent(Intent.ACTION_VIEW, instagramUri);
-                nextIntent.setPackage(INSTAGRAM_PACKAGE);
+                Intent nextIntent = Utils.getInstagramIntent(Session.getInstance().getUser().getUsername());
 
                 if (Utils.isIntentAvailable(clazz, nextIntent)) {
                     Utils.logDebug(clazz, "Instagram intent is available");
@@ -315,7 +310,7 @@ public class SessionActivity extends AppCompatActivity {
                     setMainMenuVisibility(mainMenu);
                     invalidateOptionsMenu();
                 } else {
-                    Utils.logInfo(clazz, "Collected instagram access token: " + result.getAccessToken());
+                    Utils.logDebug(clazz, "Collected instagram access token: " + result.getAccessToken());
                     accessToken = result.getAccessToken();
                     new ProcessGetUser().execute();
                 }
@@ -347,7 +342,7 @@ public class SessionActivity extends AppCompatActivity {
                         isNewUser = true;
                         user = Factory.userFromInstagramUser(instagramUser.getData());
                     } else {
-                        Utils.logInfo(clazz, "User already exists: " + user);
+                        Utils.logDebug(clazz, "User already exists: " + user);
                         user.updateFromInstagramUser(instagramUser.getData());
                         Api.updateUser(user);
                     }
@@ -371,7 +366,7 @@ public class SessionActivity extends AppCompatActivity {
                 if (result.getMeta().isError()) {
                     Utils.showError(rootView, result.toString());
                 } else {
-                    Utils.logInfo(clazz, "Collected instagram user data: " + result.toString());
+                    Utils.logDebug(clazz, "Collected instagram user data: " + result.toString());
                     if (isNewUser) {
                         new ProcessAddUser().execute();
                     } else {

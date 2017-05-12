@@ -75,7 +75,7 @@ public class UserAdapter extends BaseAdapter {
         private final TextView followers;
         private final TextView media;
 
-        public UserViewHolder(View view) {
+        private UserViewHolder(View view) {
             profilePic = (ImageView) view.findViewById(R.id.user_item_profile_pic);
             username = (TextView) view.findViewById(R.id.user_item_username);
             joined = (TextView) view.findViewById(R.id.user_item_joined);

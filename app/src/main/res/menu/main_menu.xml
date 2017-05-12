@@ -5,18 +5,22 @@
     <!-- TODO: ikonki -->
     <item android:id="@+id/menu_suggest"
         android:title="Zaproponuj"
+        android:icon="@android:drawable/ic_menu_edit"
         app:showAsAction="ifRoom" />
     <item android:id="@+id/menu_join"
         android:title="Dołącz"
+        android:icon="@android:drawable/ic_menu_add"
         app:showAsAction="ifRoom" />
     <item android:id="@+id/menu_leave"
         android:title="Usuń"
         app:showAsAction="ifRoom" />
     <item android:id="@+id/menu_sort"
         android:title="Sortuj"
+        android:icon="@android:drawable/ic_menu_sort_by_size"
         app:showAsAction="ifRoom" />
     <item android:id="@+id/menu_info"
         android:title="Info"
+        android:icon="@android:drawable/ic_menu_info_details"
         app:showAsAction="ifRoom" />
     <item android:id="@+id/menu_login"
         android:title="Login"

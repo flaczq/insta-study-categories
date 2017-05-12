@@ -227,7 +227,7 @@ public class SubcategoryActivity extends SessionActivity {
             try {
                 subcategories = Api.getSubcategoriesByCategoryForeignId(true, categoryForeignId);
                 for (Subcategory subcategory : subcategories) {
-                    Utils.logInfo(clazz, subcategory.toString());
+                    Utils.logDebug(clazz, subcategory.toString());
                 }
             } catch (JSONException e) {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());

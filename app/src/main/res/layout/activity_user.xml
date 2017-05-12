@@ -6,12 +6,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackgroundLight"
-    tools:context="abc.flaq.apps.instastudycategories.activity.UserActivity">
+    tools:context=".activity.UserActivity">
 
     <ListView android:id="@+id/user_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/margin_between_lists" />
+        android:dividerHeight="1px"
+        android:divider="@color/colorDivider"/>
 
     <com.crystal.crystalpreloaders.widgets.CrystalPreloader android:id="@+id/user_preloader"
         android:layout_width="match_parent"
@@ -27,9 +28,9 @@
     <android.support.design.widget.FloatingActionButton android:id="@+id/user_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_menu_edit"
+        android:src="@android:drawable/stat_notify_chat"
         android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
+        android:layout_margin="@dimen/default_margin"
         app:backgroundTint="@color/colorAccent"
         app:fabSize="normal"
         app:layout_behavior="abc.flaq.apps.instastudycategories.design.MoveUpBehavior"/>

@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -37,6 +38,8 @@ import abc.flaq.apps.instastudycategories.pojo.User;
 
 import static abc.flaq.apps.instastudycategories.helper.Constants.GRID_HEIGHT_DIFF;
 import static abc.flaq.apps.instastudycategories.helper.Constants.GRID_MAX_HEIGHT;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_PACKAGE;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_URL;
 import static abc.flaq.apps.instastudycategories.helper.Constants.STRINGS_CATEGORY_PREFIX;
 import static abc.flaq.apps.instastudycategories.helper.Constants.STRINGS_SUBCATEGORY_PREFIX;
 
@@ -49,17 +52,13 @@ public class Utils {
     private static final int LOG_INFO = 2;
 
     public static void logDebug(Object activity, String message) {
-        // TODO: save to database
-        log(LOG_DEBUG, activity, message);
+        if (BuildConfig.IS_DEBUG) {
+            log(LOG_DEBUG, activity, message);
+        }
     }
     public static void logError(Object activity, String message) {
         // TODO: save to database
         log(LOG_ERROR, activity, message);
-    }
-    public static void logInfo(Object activity, String message) {
-        if (BuildConfig.IS_DEBUG) {
-            log(LOG_INFO, activity, message);
-        }
     }
     private static void log(int type, Object activity, String message) {
         String className = (activity instanceof String ?
@@ -216,7 +215,18 @@ public class Utils {
         Boolean isAvailable = (list.size() > 0);
         return isAvailable;
     }
+    public static Intent getInstagramIntent(String username) {
+        Uri instagramUri = Uri.parse(INSTAGRAM_URL + "_u/" + username);
+        Intent nextIntent = new Intent(Intent.ACTION_VIEW, instagramUri);
+        nextIntent.setPackage(INSTAGRAM_PACKAGE);
+        return nextIntent;
+    }
 
+    public static Date moveDateByDays(Date date, int days) {
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_MONTH, days);
+        return calendar.getTime();
+    }
     public static String formatDate(Date date, String format) {
         calendar.setTime(date);
         calendar.add(Calendar.HOUR_OF_DAY, 2);
