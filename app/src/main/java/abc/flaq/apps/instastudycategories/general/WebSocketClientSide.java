@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.adapter.ChatAdapter;
 import abc.flaq.apps.instastudycategories.helper.Utils;
 import abc.flaq.apps.instastudycategories.pojo.WebSocketMessage;
@@ -73,11 +74,13 @@ public class WebSocketClientSide extends WebSocketClient {
             });
         } catch (JsonParseException e) {
             Utils.logError(clazz, "JsonParseException: " + e.getMessage());
+            Utils.showConnectionError(layout, clazz.getString(R.string.error_chat_connection));
         } catch (JsonMappingException e) {
             Utils.logError(clazz, "JsonMappingException: " + e.getMessage());
+            Utils.showConnectionError(layout, clazz.getString(R.string.error_chat_connection));
         } catch (IOException e) {
             Utils.logError(clazz, "IOException: " + e.getMessage());
-            Utils.showConnectionError(layout, "Błąd parsowania odpowiedzi WebSocket");
+            Utils.showConnectionError(layout, clazz.getString(R.string.error_chat_connection));
         }
     }
 
@@ -92,16 +95,17 @@ public class WebSocketClientSide extends WebSocketClient {
     }
 
     public void sendMessage(String message) {
-        if (getConnection().isOpen()) {
+        if (getConnection().isOpen() && Utils.isNotEmpty(Session.getInstance().getUser())) {
             try {
                 WebSocketMessage newMessage = new WebSocketMessage(message, Session.getInstance().getUser().getUsername(), new Date());
                 String json = mapper.writeValueAsString(newMessage);
                 send(json);
             } catch (JsonProcessingException e) {
                 Utils.logError(clazz, "JsonProcessingException: " + e.getMessage());
+                Utils.showConnectionError(layout, clazz.getString(R.string.error_chat_connection));
             }
         } else {
-            Utils.showConnectionError(layout, "Błąd połączenia z czatem");
+            Utils.showConnectionError(layout, clazz.getString(R.string.error_chat_connection));
         }
     }
 

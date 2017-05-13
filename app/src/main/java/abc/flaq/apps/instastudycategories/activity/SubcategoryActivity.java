@@ -66,7 +66,8 @@ public class SubcategoryActivity extends SessionActivity {
         categoryForeignId = intent.getStringExtra(INTENT_CATEGORY_FOREIGN_ID);
 
         if (Utils.isEmpty(categoryForeignId)) {
-            Utils.showError(tabs, "Puste categoryForeignId");
+            Utils.logError(clazz, "Empty 'categoryForeignId'");
+            Utils.showConnectionError(tabs, getString(R.string.error_subcategories_load));
         } else {
             String categoryName = intent.getStringExtra(INTENT_CATEGORY_NAME);
             Utils.setActionBarTitle(clazz, Utils.getStringByCategoryName(clazz, categoryName), null);
@@ -76,6 +77,7 @@ public class SubcategoryActivity extends SessionActivity {
             } else {
                 subcategories = Session.getInstance().getSubcategories(categoryForeignId);
 
+                // Hack to wait for fragments to init
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -137,14 +139,14 @@ public class SubcategoryActivity extends SessionActivity {
         final List<String> subcategoriesNames = Utils.getSubcategoriesNames(clazz, categoryForeignId);
 
         new MaterialDialog.Builder(clazz)
-                .title("Nowa podkategoria")
-                .content("Zaproponuj nową podkategorię")
-                .positiveText("Zaproponuj")
-                .negativeText("Anuluj")
+                .title(R.string.new_subcategory)
+                .content(R.string.suggest_new_subcategory)
+                .positiveText(R.string.suggest)
+                .negativeText(R.string.cancel)
                 .titleColorRes(R.color.colorPrimaryDark)
                 .inputType(InputType.TYPE_CLASS_TEXT)
                 .inputRangeRes(1, 20, R.color.colorError)
-                .input("Wpisz nazwę...", null, new MaterialDialog.InputCallback() {
+                .input(getString(R.string.type_name), null, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                         if (Utils.isNotEmpty(input) && Utils.isNotEmpty(input.toString()) &&
@@ -157,7 +159,6 @@ public class SubcategoryActivity extends SessionActivity {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         if (Utils.isNotEmpty(dialog.getInputEditText()) && Utils.isNotEmpty(dialog.getInputEditText().getText())) {
-                            //Utils.showInfo(tabs, "Zaproponowano nową podkategorię: " + dialog.getInputEditText().getText());
                             new ProcessAddSubcategory().execute(dialog.getInputEditText().getText().toString());
                         }
                         dialog.dismiss();
@@ -175,7 +176,7 @@ public class SubcategoryActivity extends SessionActivity {
     }
     private void endProcessSubcategoryFragment() {
         if (subcategories.size() == 0) {
-            Utils.showQuickInfo(tabs, "Brak podkategorii");
+            Utils.showQuickInfo(tabs, getString(R.string.error_subcategories_not_found));
         } else {
             Session.getInstance().setSubcategories(categoryForeignId, subcategories);
         }
@@ -231,9 +232,10 @@ public class SubcategoryActivity extends SessionActivity {
                 }
             } catch (JSONException e) {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
+                Utils.showConnectionError(tabs, getString(R.string.error_subcategories_load));
             } catch (IOException e) {
                 Utils.logError(clazz, "IOException: " + e.getMessage());
-                Utils.showConnectionError(tabs, "Błąd pobierania podkategorii");
+                Utils.showConnectionError(tabs, getString(R.string.error_subcategories_load));
             }
             return null;
         }
@@ -272,9 +274,10 @@ public class SubcategoryActivity extends SessionActivity {
                 }
             } catch (JSONException e) {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
+                Utils.showConnectionError(tabs, getString(R.string.error_subcategory_add));
             } catch (IOException e) {
                 Utils.logError(clazz, "IOException: " + e.getMessage());
-                Utils.showConnectionError(tabs, "Błąd dodawania podkategorii");
+                Utils.showConnectionError(tabs, getString(R.string.error_subcategory_add));
             }
             return result;
         }
@@ -286,8 +289,8 @@ public class SubcategoryActivity extends SessionActivity {
 
             if (result) {
                 Utils.showInfoDismiss(tabs,
-                        "Nowa podkategoria znajduje się w zakładce NIEAKTYWNE.\n" +
-                                "Stanie się aktywna po dołączeniu do niej 10 użytkowników."
+                        getString(R.string.subcategory_add_success_1) + "\n" +
+                                getString(R.string.subcategory_add_success_2)
                 );
 
                 // Don't show preloader, because subcategories are loaded just after
@@ -295,7 +298,7 @@ public class SubcategoryActivity extends SessionActivity {
                 Session.getInstance().setCategoryChanged(true);
                 new ProcessSubcategories().execute();
             } else {
-                Utils.showError(tabs, "Dodanie nowej podkategorii zakończone niepowodzeniem");
+                Utils.showConnectionError(tabs, getString(R.string.error_subcategory_add));
             }
         }
     }

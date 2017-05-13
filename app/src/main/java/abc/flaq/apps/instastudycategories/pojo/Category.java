@@ -95,7 +95,7 @@ public class Category extends EveObject implements Comparable<Category>, Parcela
 
     @Override
     public int compareTo(@NonNull Category category) {
-        return (category.getUsersSize() - this.usersSize);
+        return (category.getSubcategoriesSize() - this.subcategoriesSize);
     }
 
     public String toPostJson() {

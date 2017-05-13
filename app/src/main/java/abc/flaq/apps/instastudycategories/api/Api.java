@@ -480,6 +480,7 @@ public class Api {
                 users.add(user);
             }
         }
+        Collections.sort(users);
 
         return users;
     }
@@ -505,6 +506,7 @@ public class Api {
                 users.add(user);
             }
         }
+        Collections.sort(users);
 
         return users;
     }
@@ -566,12 +568,29 @@ public class Api {
         if (Utils.isEmpty(category)) {
             Utils.logDebug("Api.addUserToCategory()", "Zwiększenie liczby użytkowników w kategorii: " + categoryId + " zakończone niepowodzeniem");
         } else {
-            correctSize(
-                    API_CATEGORIES_URL + "/" + categoryId,
-                    category,
-                    "usersSize",
-                    category.getUsersSize() + 1
-            );
+            if (category.isActive() || category.getUsersSize() < 9) {
+                correctSize(
+                        API_CATEGORIES_URL + "/" + categoryId,
+                        category,
+                        "usersSize",
+                        category.getUsersSize() + 1
+                );
+            } else {
+                InputStreamReader categoryIs = patchRequest(
+                        API_CATEGORIES_URL + "/" + categoryId,
+                        category.getEtag(),
+                        "{\"usersSize\":" + (category.getUsersSize() + 1) + "," +
+                                "\"active\":true}"
+                );
+                String categoryStream = getStream(categoryIs);
+                Response categoryResponse = mapper.readValue(categoryStream, Response.class);
+                if (categoryResponse.isError()) {
+                    Utils.logDebug("Api.addUserToCategory()", categoryStream);
+                }
+
+                user.updateFromResponse(categoryResponse);
+                getAllCategories(true);
+            }
         }
         // Update sizes of category
         ///getAllCategories(true);
@@ -603,34 +622,66 @@ public class Api {
         user.updateFromResponse(response);
         getAllUsers(true);
 
-        // FIXME: jeśli jestem >= 10 userem - przenieść podkategorię do aktywnych
         String subcategoryId = subcategory.getId();
         if (Utils.isEmpty(subcategory)) {
             Utils.logDebug("Api.addUserToSubcategory()", "Zwiększenie liczby użytkowników w podkategorii: " + subcategoryId + " zakończone niepowodzeniem");
         } else {
-            correctSize(
-                    API_SUBCATEGORIES_URL + "/" + subcategoryId,
-                    subcategory,
-                    "usersSize",
-                    subcategory.getUsersSize() + 1
-            );
+            if (subcategory.isActive() || subcategory.getUsersSize() < 9) {
+                correctSize(
+                        API_SUBCATEGORIES_URL + "/" + subcategoryId,
+                        subcategory,
+                        "usersSize",
+                        subcategory.getUsersSize() + 1
+                );
+            } else {
+                InputStreamReader subcategoryIs = patchRequest(
+                        API_SUBCATEGORIES_URL + "/" + subcategoryId,
+                        subcategory.getEtag(),
+                        "{\"usersSize\":" + (subcategory.getUsersSize() + 1) + "," +
+                                "\"active\":true}"
+                );
+                String subcategoryStream = getStream(subcategoryIs);
+                Response subcategoryResponse = mapper.readValue(subcategoryStream, Response.class);
+                if (subcategoryResponse.isError()) {
+                    Utils.logDebug("Api.addUserToSubcategory()", subcategoryStream);
+                }
+
+                user.updateFromResponse(subcategoryResponse);
+                getAllSubcategories(true);
+            }
         }
         // Update sizes of subcategory
         ///getAllSubcategories(true);
 
-        // FIXME: jeśli jestem >= 10 userem - przenieść kategorię do aktywnych
         // Assuming one subcategory is only in one category
         String categoryId = Utils.undoForeignId(subcategory.getCategories().get(0));
         Category category = getCategoryById(categoryId);
         if (Utils.isEmpty(category)) {
             Utils.logDebug("Api.addUserToSubcategory()", "Zwiększenie liczby użytkowników w kategorii: " + categoryId + " zakończone niepowodzeniem");
         } else {
-            correctSize(
-                    API_CATEGORIES_URL + "/" + categoryId,
-                    category,
-                    "usersSize",
-                    category.getUsersSize() + 1
-            );
+            if (category.isActive() || category.getUsersSize() < 9) {
+                correctSize(
+                        API_CATEGORIES_URL + "/" + categoryId,
+                        category,
+                        "usersSize",
+                        category.getUsersSize() + 1
+                );
+            } else {
+                InputStreamReader categoryIs = patchRequest(
+                        API_CATEGORIES_URL + "/" + categoryId,
+                        category.getEtag(),
+                        "{\"usersSize\":" + (category.getUsersSize() + 1) + "," +
+                                "\"active\":true}"
+                );
+                String categoryStream = getStream(categoryIs);
+                Response categoryResponse = mapper.readValue(categoryStream, Response.class);
+                if (categoryResponse.isError()) {
+                    Utils.logDebug("Api.addUserToSubcategory()", categoryStream);
+                }
+
+                user.updateFromResponse(categoryResponse);
+                getAllCategories(true);
+            }
         }
         // Update sizes of category
         ///getAllCategories(true);

@@ -127,9 +127,9 @@ public class Utils {
         snackbar.show();
     }
     public static void showError(View view, String message) {
-        log(LOG_ERROR, view.getContext(), message);
+        logError(view.getContext(), message);
 
-        Snackbar snackbar = Snackbar.make(findSnackbarView(view), "General error", Snackbar.LENGTH_LONG);
+        Snackbar snackbar = Snackbar.make(findSnackbarView(view), R.string.error_general, Snackbar.LENGTH_LONG);
         TextView snackbarTextView = (TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
         if (isNotEmpty(snackbarTextView)) {
             snackbarTextView.setMaxLines(6);
@@ -137,9 +137,9 @@ public class Utils {
         snackbar.show();
     }
     public static void showQuickError(View view, String message) {
-        log(LOG_ERROR, view.getContext(), message);
+        logError(view.getContext(), message);
 
-        Snackbar snackbar = Snackbar.make(findSnackbarView(view), "General error", Snackbar.LENGTH_SHORT);
+        Snackbar snackbar = Snackbar.make(findSnackbarView(view), R.string.error_general, Snackbar.LENGTH_SHORT);
         TextView snackbarTextView = (TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
         if (isNotEmpty(snackbarTextView)) {
             snackbarTextView.setMaxLines(6);
@@ -162,12 +162,29 @@ public class Utils {
         snackbar.show();
     }
     public static void showConnectionError(final View view, String message) {
+        logError(view.getContext(), message);
+
         Snackbar snackbar = Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_INDEFINITE)
                 .setActionTextColor(ContextCompat.getColor(view.getContext(), R.color.colorError))
-                .setAction("DALEJ", new View.OnClickListener() {
+                .setAction(R.string.next, new View.OnClickListener() {
                     @Override
                     public void onClick(View snackbarView) {
-                        showErrorDismiss(view, "Sprawdź połączenie z Internetem i spróbuj ponownie");
+                        showErrorDismiss(view, view.getResources().getString(R.string.error_connection));
+                    }
+                });
+        TextView snackbarTextView = (TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
+        if (isNotEmpty(snackbarTextView)) {
+            snackbarTextView.setMaxLines(6);
+        }
+        snackbar.show();
+    }
+    public static void showLoginError(final View view, String message) {
+        Snackbar snackbar = Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_INDEFINITE)
+                .setActionTextColor(ContextCompat.getColor(view.getContext(), R.color.colorError))
+                .setAction(R.string.next, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View snackbarView) {
+                        showErrorDismiss(view, view.getResources().getString(R.string.error_login_try_again));
                     }
                 });
         TextView snackbarTextView = (TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
@@ -238,7 +255,7 @@ public class Utils {
         int stringId = context.getResources().getIdentifier(name, "string", context.getPackageName());
         if (stringId == 0 ||
                 (isNumeric(name) && stringId == Integer.parseInt(name))) {
-            logDebug(context, "Nie znaleziono tłumaczenia dla nazwy: " + name);
+            logDebug(context, "No string found for: " + name);
             return "";
         }
         return context.getString(stringId);
@@ -261,7 +278,7 @@ public class Utils {
         int drawableId = context.getResources().getIdentifier(name, "drawable", context.getPackageName());
         if (drawableId == 0 ||
                 (isNumeric(name) && drawableId == Integer.parseInt(name))) {
-            logDebug(context, "Nie znaleziono obrazu dla nazwy: " + name);
+            logDebug(context, "No drawable found for: " + name);
             return null;
         }
         return ResourcesCompat.getDrawable(context.getResources(), drawableId, null);
@@ -369,10 +386,10 @@ public class Utils {
         setColorByPosition(position, textView);
     }
     public static void setSubcategoryGridDesign(int size, ImageView imageView) {
-        if (size >= 20) {
+        if (size >= 2) {
             imageView.setMinimumHeight(GRID_MAX_HEIGHT);
             imageView.setMaxHeight(GRID_MAX_HEIGHT);
-        } else if (size > 10) {
+        } else if (size > 1) {
             imageView.setMinimumHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
             imageView.setMaxHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
         } else {

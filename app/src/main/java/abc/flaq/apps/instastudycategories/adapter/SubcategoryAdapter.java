@@ -80,7 +80,7 @@ public class SubcategoryAdapter extends BaseAdapter {
         }
 
         private void bind(Subcategory model) {
-            // TODO: włączyć
+            // TODO: turn this on maybe?
             //Utils.setSubcategoryGridDesign(model.getUsersSize(), subcategoryViewHolder.image);
             users.setText(String.format(Locale.ENGLISH, "☻ %d", model.getUsersSize()));
             String subcategoryName = Utils.getStringBySubcategoryName(context, model.getName());

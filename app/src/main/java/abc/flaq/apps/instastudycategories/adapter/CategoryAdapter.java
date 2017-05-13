@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import abc.flaq.apps.instastudycategories.R;
-import abc.flaq.apps.instastudycategories.pojo.Category;
 import abc.flaq.apps.instastudycategories.helper.Utils;
+import abc.flaq.apps.instastudycategories.pojo.Category;
 
 public class CategoryAdapter extends BaseAdapter {
 
@@ -80,8 +80,10 @@ public class CategoryAdapter extends BaseAdapter {
         }
 
         private void bind(Category model) {
-            // TODO: włączyć
-            //Utils.setSubcategoryGridDesign(model.getUsersSize(), image);
+            // TODO: turn this on maybe?
+            /*if (!API_ALL_CATEGORY_NAME.equals(model.getName())) {
+                Utils.setSubcategoryGridDesign(model.getSubcategoriesSize(), image);
+            }*/
             if (model.isAsSubcategory()) {
                 users.setText(String.format(Locale.ENGLISH, "☻ %d", model.getUsersSize()));
             } else {

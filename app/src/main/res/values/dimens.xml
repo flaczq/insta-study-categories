@@ -10,5 +10,6 @@
     <dimen name="default_small_margin">6dp</dimen>
     <dimen name="margin_between_grids">3dp</dimen>
     <dimen name="margin_between_lists">1dp</dimen>
+    <dimen name="round_corners">6dp</dimen>
     <dimen name="username_max_width">180dp</dimen>
 </resources>

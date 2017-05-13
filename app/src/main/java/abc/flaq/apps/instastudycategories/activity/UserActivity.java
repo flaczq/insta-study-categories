@@ -2,6 +2,7 @@ package abc.flaq.apps.instastudycategories.activity;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -54,18 +55,10 @@ public class UserActivity extends SessionActivity {
     private ListView listView;
     private UserAdapter userAdapter;
     private CrystalPreloader preloader;
-    private FloatingActionButton fab;
-    private LayoutInflater inflater;
-    private View chatView;
-    private ListView chatList;
-    private TextView chatInput;
-    private ImageButton sendButton;
-    private ChatAdapter chatAdapter;
 
     private List<User> users = new ArrayList<>();
     private Menu mainMenu;
     private String parentForeignId;
-    private String parentName;
     private Boolean isCategory = false;
     private Boolean hasJoined;
     private Boolean isApiWorking = false;
@@ -80,18 +73,17 @@ public class UserActivity extends SessionActivity {
         layout = (CoordinatorLayout) findViewById(R.id.user_layout);
         listView = (ListView) findViewById(R.id.user_list);
         preloader = (CrystalPreloader) findViewById(R.id.user_preloader);
-        fab = (FloatingActionButton) findViewById(R.id.user_fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.user_fab);
 
-        inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        chatView = inflater.inflate(R.layout.activity_user_chat, null);
-        chatList = (ListView) chatView.findViewById(R.id.user_chat_list);
-        chatInput = (TextView) chatView.findViewById(R.id.user_chat_input);
-        sendButton = (ImageButton) chatView.findViewById(R.id.user_chat_input_send);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View chatView = inflater.inflate(R.layout.activity_user_chat, null);
+        ListView chatList = (ListView) chatView.findViewById(R.id.user_chat_list);
+        final TextView chatInput = (TextView) chatView.findViewById(R.id.user_chat_input);
+        ImageButton sendButton = (ImageButton) chatView.findViewById(R.id.user_chat_input_send);
 
-        // Disable "enter" button
-        chatInput.setImeOptions(1);
-        chatAdapter = new ChatAdapter(clazz, new ArrayList<WebSocketMessage>());
+        ChatAdapter chatAdapter = new ChatAdapter(clazz, new ArrayList<WebSocketMessage>());
         chatList.setAdapter(chatAdapter);
+
         chatDialog = new Dialog(clazz, R.style.DialogTheme);
         chatDialog.setContentView(chatView);
         Window chatWindow = chatDialog.getWindow();
@@ -102,62 +94,72 @@ public class UserActivity extends SessionActivity {
 
         Intent intent = getIntent();
         String categoryForeignId = intent.getStringExtra(INTENT_CATEGORY_FOREIGN_ID);
-        parentForeignId = null;
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
+                User selected = userAdapter.getItem(position);
+                Utils.showQuickInfo(layout, getString(R.string.ig_profile_open) + selected.getUsername() + "&#8230;");
+                Intent nextIntent = Utils.getInstagramIntent(selected.getUsername());
+
+                if (Utils.isIntentAvailable(clazz, nextIntent)) {
+                    Utils.logDebug(clazz, "Instagram intent is available");
+                    clazz.startActivity(nextIntent);
+                } else {
+                    Utils.logDebug(clazz, "Instagram intent is NOT available");
+                    clazz.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + selected.getUsername())));
+                }
+            }
+        });
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (Utils.isEmpty(Session.getInstance().getUser())) {
+                    Utils.showLoginError(layout, getString(R.string.error_chat_login));
+                } else {
+                    showChatDialog();
+                }
+            }
+        });
+        chatDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                if (chatInput.hasFocus()) {
+                    chatInput.clearFocus();
+                }
+            }
+        });
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (Utils.isNotEmpty(chatInput.getText())) {
+                    webSocket.sendMessage(chatInput.getText().toString());
+                    chatInput.setText(null);
+                }
+            }
+        });
+
+        webSocket = WebSocketClientSide.createWebSocketClientSide(clazz, layout, chatAdapter);
 
         // Check if parentForeignId is from newCategory or subcategory
         if (Utils.isNotEmpty(categoryForeignId)) {
             isCategory = true;
             parentForeignId = categoryForeignId;
-            parentName = Utils.getStringByCategoryName(clazz, intent.getStringExtra(INTENT_CATEGORY_NAME));
-            Utils.setActionBarTitle(clazz, parentName, null);
+            String categoryParentName = Utils.getStringByCategoryName(clazz, intent.getStringExtra(INTENT_CATEGORY_NAME));
+            Utils.setActionBarTitle(clazz, categoryParentName, null);
         } else {
             String subcategoryForeignId = intent.getStringExtra(INTENT_SUBCATEGORY_FOREIGN_ID);
             if (Utils.isNotEmpty(subcategoryForeignId)) {
                 parentForeignId = subcategoryForeignId;
-                parentName = Utils.getStringBySubcategoryName(clazz, intent.getStringExtra(INTENT_SUBCATEGORY_NAME));
-                // FIXME: weź nazwę parent kategory
-                Utils.setActionBarTitle(clazz, parentName, "Studia");
+                String categoryParentName = Utils.getStringByCategoryName(clazz, intent.getStringExtra(INTENT_CATEGORY_NAME));
+                String subcategoryParentName = Utils.getStringBySubcategoryName(clazz, intent.getStringExtra(INTENT_SUBCATEGORY_NAME));
+                Utils.setActionBarTitle(clazz, subcategoryParentName, categoryParentName);
             }
         }
 
         if (Utils.isEmpty(parentForeignId)) {
-            Utils.showError(layout, "Brak id kategorii lub podkategorii");
+            Utils.showConnectionError(layout, "Empty 'categoryId' and 'subcategoryId'");
         } else {
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
-                    User selected = userAdapter.getItem(position);
-                    Utils.showQuickInfo(layout, "Otwieranie profilu " + selected.getUsername() + "...");
-                    Intent nextIntent = Utils.getInstagramIntent(selected.getUsername());
-
-                    if (Utils.isIntentAvailable(clazz, nextIntent)) {
-                        Utils.logDebug(clazz, "Instagram intent is available");
-                        clazz.startActivity(nextIntent);
-                    } else {
-                        Utils.logDebug(clazz, "Instagram intent is NOT available");
-                        clazz.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + selected.getUsername())));
-                    }
-                }
-            });
-
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    showChatDialog();
-                }
-            });
-
-            sendButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (Utils.isNotEmpty(chatInput.getText())) {
-                        webSocket.sendMessage(chatInput.getText().toString());
-                        chatInput.setText(null);
-                    }
-                }
-            });
-
-            webSocket = WebSocketClientSide.createWebSocketClientSide(clazz, layout, chatAdapter);
             new ProcessUsers().execute();
         }
     }
@@ -254,9 +256,6 @@ public class UserActivity extends SessionActivity {
 
     private void showChatDialog() {
         chatDialog.show();
-        /*new MaterialDialog.Builder(clazz)
-                .customView(chatView, false)
-                .show();*/
     }
 
     private class ProcessUsers extends AsyncTask<Void, Void, Void> {
@@ -289,9 +288,10 @@ public class UserActivity extends SessionActivity {
                 }
             } catch (JSONException e) {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
+                Utils.showConnectionError(layout, getString(R.string.error_users_load));
             } catch (IOException e) {
                 Utils.logError(clazz, "IOException: " + e.getMessage());
-                Utils.showConnectionError(layout, "Błąd pobierania listy użytkowników");
+                Utils.showConnectionError(layout, getString(R.string.error_users_load));
             }
             return null;
         }
@@ -330,9 +330,10 @@ public class UserActivity extends SessionActivity {
                 }
             } catch (JSONException e) {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
+                Utils.showConnectionError(layout, getString(R.string.error_user_subcategory_add));
             } catch (IOException e) {
                 Utils.logError(clazz, "IOException: " + e.getMessage());
-                Utils.showConnectionError(layout, "Błąd dodawania użytkownika do podkategorii");
+                Utils.showConnectionError(layout, getString(R.string.error_user_subcategory_add));
             }
             return result;
         }
@@ -346,7 +347,7 @@ public class UserActivity extends SessionActivity {
 
             if (result) {
                 Utils.showInfo(layout,
-                        "Dodano użytkownika do podkategorii"
+                        getString(R.string.user_subcategory_add_success)
                 );
 
                 users.add(0, Session.getInstance().getUser());
@@ -356,7 +357,7 @@ public class UserActivity extends SessionActivity {
 
                 Session.getInstance().setSubcategoryChanged(true);
             } else {
-                Utils.showError(layout, "Dodanie użytkownika do podkategorii zakończone niepowodzeniem");
+                Utils.showConnectionError(layout, getString(R.string.error_user_subcategory_add));
             }
         }
     }
@@ -383,9 +384,10 @@ public class UserActivity extends SessionActivity {
                 }
             } catch (JSONException e) {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
+                Utils.showConnectionError(layout, getString(R.string.error_user_subcategory_remove));
             } catch (IOException e) {
                 Utils.logError(clazz, "IOException: " + e.getMessage());
-                Utils.showConnectionError(layout, "Błąd dodawania użytkownika do kategorii");
+                Utils.showConnectionError(layout, getString(R.string.error_user_subcategory_remove));
             }
             return result;
         }
@@ -399,7 +401,7 @@ public class UserActivity extends SessionActivity {
 
             if (result) {
                 Utils.showInfo(layout,
-                        "Usunięto użytkownika z podkategorii"
+                        getString(R.string.user_subcategory_remove_success)
                 );
 
                 Session.getInstance().getUser().removeFromList(users);
@@ -409,7 +411,7 @@ public class UserActivity extends SessionActivity {
 
                 Session.getInstance().setSubcategoryChanged(true);
             } else {
-                Utils.showError(layout, "Usunięcie użytkownika z podkategorii zakończone niepowodzeniem");
+                Utils.showConnectionError(layout, getString(R.string.error_user_subcategory_remove));
             }
         }
     }

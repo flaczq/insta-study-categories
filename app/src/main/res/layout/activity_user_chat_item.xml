@@ -36,9 +36,8 @@
         android:text="monday, 12:05:12"
         android:textSize="13sp"
         android:textColor="@color/textColorLessImportant"
-        android:layout_marginRight="@dimen/default_small_margin"
-        android:layout_marginEnd="@dimen/default_small_margin"
         android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignTop="@id/user_chat_item_profile_pic" />
 
     <TextView android:id="@+id/user_chat_item_text"
@@ -47,8 +46,6 @@
         android:text="hello"
         android:textSize="15sp"
         android:textColor="@color/textColorSecondary"
-        android:layout_marginRight="@dimen/default_small_margin"
-        android:layout_marginEnd="@dimen/default_small_margin"
         android:layout_marginLeft="@dimen/default_small_margin"
         android:layout_marginStart="@dimen/default_small_margin"
         android:layout_toRightOf="@+id/user_chat_item_profile_pic"

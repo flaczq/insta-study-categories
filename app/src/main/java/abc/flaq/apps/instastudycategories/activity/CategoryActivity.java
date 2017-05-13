@@ -64,6 +64,7 @@ public class CategoryActivity extends SessionActivity {
         } else {
             categories = Session.getInstance().getCategories();
 
+            // Hack to wait for fragments to init
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
@@ -124,14 +125,14 @@ public class CategoryActivity extends SessionActivity {
         final List<String> categoriesNames = Utils.getCategoriesNames(clazz);
 
         new MaterialDialog.Builder(clazz)
-                .title("Nowa kategoria")
-                .content("Zaproponuj nową kategorię")
-                .positiveText("Zaproponuj")
-                .negativeText("Anuluj")
+                .title(R.string.new_category)
+                .content(R.string.suggest_new_category)
+                .positiveText(R.string.suggest)
+                .negativeText(R.string.cancel)
                 .titleColorRes(R.color.colorPrimaryDark)
                 .inputType(InputType.TYPE_CLASS_TEXT)
                 .inputRangeRes(1, 20, R.color.colorError)
-                .input("Wpisz nazwę...", null, new MaterialDialog.InputCallback() {
+                .input(getString(R.string.type_name), null, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                         if (Utils.isNotEmpty(input) && Utils.isNotEmpty(input.toString()) &&
@@ -144,7 +145,6 @@ public class CategoryActivity extends SessionActivity {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         if (Utils.isNotEmpty(dialog.getInputEditText()) && Utils.isNotEmpty(dialog.getInputEditText().getText())) {
-                            //Utils.showInfo(tabs, "Zaproponowano nową kategorię: " + dialog.getInputEditText().getText());
                             new ProcessAddCategory().execute(dialog.getInputEditText().getText().toString());
                         }
                         dialog.dismiss();
@@ -162,7 +162,7 @@ public class CategoryActivity extends SessionActivity {
     }
     private void endProcessCategoryFragment() {
         if (categories.size() == 0) {
-            Utils.showConnectionError(tabs, "Nie znaleziono kategorii");
+            Utils.showConnectionError(tabs, getString(R.string.error_categories_not_found));
         } else {
             Session.getInstance().setCategories(categories);
         }
@@ -213,14 +213,12 @@ public class CategoryActivity extends SessionActivity {
         protected Void doInBackground(Void... params) {
             try {
                 categories = Api.getAllCategories(true);
-                for (Category category : categories) {
-                    Utils.logDebug(clazz, category.toString());
-                }
             } catch (JSONException e) {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
+                Utils.showConnectionError(tabs, getString(R.string.error_categories_load));
             } catch (IOException e) {
                 Utils.logError(clazz, "IOException: " + e.getMessage());
-                Utils.showConnectionError(tabs, "Błąd pobierania kategorii");
+                Utils.showConnectionError(tabs, getString(R.string.error_categories_load));
             }
             return null;
         }
@@ -256,9 +254,10 @@ public class CategoryActivity extends SessionActivity {
                 }
             } catch (JSONException e) {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
+                Utils.showConnectionError(tabs, getString(R.string.error_category_add));
             } catch (IOException e) {
                 Utils.logError(clazz, "IOException: " + e.getMessage());
-                Utils.showConnectionError(tabs, "Błąd dodawania kategorii");
+                Utils.showConnectionError(tabs, getString(R.string.error_category_add));
             }
             return result;
         }
@@ -270,15 +269,15 @@ public class CategoryActivity extends SessionActivity {
 
             if (result) {
                 Utils.showInfoDismiss(tabs,
-                        "Nowa kategoria znajduje się w zakładce NIEAKTYWNE.\n" +
-                                "Stanie się aktywna po dołączeniu do jej podkategorii 10 użytkowników."
+                        getString(R.string.category_add_success_1) + "\n" +
+                                getString(R.string.category_add_success_2)
                 );
 
                 // Don't show preloader, because categories are loaded just after
                 Session.getInstance().setCategoryChanged(true);
                 new ProcessCategories().execute();
             } else {
-                Utils.showError(tabs, "Dodanie nowej kategorii zakończone niepowodzeniem");
+                Utils.showConnectionError(tabs, getString(R.string.error_category_add));
             }
         }
     }

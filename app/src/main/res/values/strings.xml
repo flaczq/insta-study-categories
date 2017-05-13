@@ -1,5 +1,4 @@
 <resources>
-    <!-- FIXME: tłumaczenia -->
     <!--<string name="app_name">InstaStudyCategories</string>-->
     <string name="imageview.description">Image description</string>
 
@@ -7,6 +6,14 @@
     <string name="category_name.college">College</string>
     <string name="category_name.high_school">Highschool</string>
     <string name="category_name.work">Work</string>
+
+    <string name="new_category">New category</string>
+    <string name="suggest_new_category">Suggest new category</string>
+    <string name="category_add_success_1">New category is in INACTIVE tab.</string>
+    <string name="category_add_success_2">It will be active after reaching 10 users in its subcategories.</string>
+    <string name="error_categories_not_found">No categories were found</string>
+    <string name="error_categories_load">Couldn\'t load categories</string>
+    <string name="error_category_add">Couldn\'t add category</string>
 
     <string name="subcategory_name.hs_biology">Biology</string>
     <string name="subcategory_name.hs_chemistry">Chemistry</string>
@@ -16,4 +23,44 @@
     <string name="subcategory_name.c_chemistry">Chemistry</string>
     <string name="subcategory_name.w_doctor">Doctor</string>
     <string name="subcategory_name.w_it">It</string>
+
+    <string name="new_subcategory">New subcategory</string>
+    <string name="suggest_new_subcategory">Suggest new subcategory</string>
+    <string name="subcategory_add_success_1">New subcategory is in INACTIVE tab.</string>
+    <string name="subcategory_add_success_2">It will be active after reaching 10 users.</string>
+    <string name="error_subcategories_not_found">No subcategories were found</string>
+    <string name="error_subcategories_load">Couldn\'t load subcategories</string>
+    <string name="error_subcategory_add">Couldn\'t add subcategory</string>
+
+    <string name="user_category_add_success">User added to category</string>
+    <string name="user_subcategory_add_success">User added to subcategory</string>
+    <string name="user_category_remove_success">User removed from category</string>
+    <string name="user_subcategory_remove_success">User removed from subcategory</string>
+    <string name="error_users_load">Couldn\'t load users</string>
+    <string name="error_user_login">Couldn\'t log in</string>
+    <string name="error_user_category_add">Couldn\'t add user to category</string>
+    <string name="error_user_subcategory_add">Couldn\'t add user to subcategory</string>
+    <string name="error_user_category_remove">Couldn\'t remove user from category</string>
+    <string name="error_user_subcategory_remove">Couldn\'t remove user from subcategory</string>
+
+    <string name="suggest">suggest</string>
+    <string name="cancel">Cancel</string>
+    <string name="type_name">Type name&#8230;</string>
+    <string name="ig_profile_open">Opening profile:</string>
+    <string name="error_chat_login">Only logged in users can use chat</string>
+    <string name="error_general">Application error, try again later</string>
+    <string name="error_ig_login">Couldn\'t log into Instagram</string>
+    <string name="error_chat_connection">Couldn\'t connect to chat</string>
+    <string name="next">NEXT</string>
+    <string name="error_connection">Check your Internet connection and try again later</string>
+    <string name="error_login_try_again">Log in and try again</string>
+    <string name="back">Back</string>
+    <string name="logout">Log out</string>
+    <string name="delete_account">Delete account</string>
+    <string name="logged_out">Logged out</string>
+    <string name="remove_account_info">All your informations will be removed</string>
+    <string name="remove">REMOVE</string>
+    <string name="logged_in">Logged in</string>
+    <string name="error_account_remove">Couldn\'t remove user account</string>
+    <string name="remove_account_success">User account removed</string>
 </resources>

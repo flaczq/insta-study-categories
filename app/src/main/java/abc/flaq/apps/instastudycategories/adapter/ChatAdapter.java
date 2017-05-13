@@ -76,7 +76,8 @@ public class ChatAdapter extends BaseAdapter {
             chatViewHolder = (ChatViewHolder) view.getTag();
         }
 
-        chatViewHolder.bind(message);
+        Boolean sameAsBefore = (position > 0 && message.getName().equals(messages.get(position - 1).getName()));
+        chatViewHolder.bind(message, sameAsBefore);
 
         return view;
     }
@@ -94,11 +95,12 @@ public class ChatAdapter extends BaseAdapter {
             text = (TextView) view.findViewById(R.id.user_chat_item_text);
         }
 
-        private void bind(final WebSocketMessage model) {
+        private void bind(final WebSocketMessage model, Boolean sameAsBefore) {
+            // TODO: prezentacja u góry liczby aktywnych użytkowników
             if (Utils.isNotEmpty(model)) {
                 User user = Api.getUserByUsername(model.getName());
-                if (Utils.isEmpty(user)) {
-                    profilePic.setVisibility(View.GONE);
+                if (Utils.isEmpty(user) || sameAsBefore) {
+                    profilePic.setVisibility(View.INVISIBLE);
                 } else {
                     String profilePicUrl = user.getProfilePicUrl();
                     if (Utils.isEmpty(profilePicUrl)) {
@@ -106,6 +108,7 @@ public class ChatAdapter extends BaseAdapter {
                     } else {
                         UrlImageViewHelper.setUrlDrawable(profilePic, profilePicUrl, R.drawable.placeholder_profile_pic_72);
                     }
+                    profilePic.setVisibility(View.VISIBLE);
                     profilePic.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -122,7 +125,7 @@ public class ChatAdapter extends BaseAdapter {
                     });
                 }
 
-                Date dateWeekAgo = Utils.moveDateByDays(new Date(), -7);
+                Date dateWeekAgo = Utils.moveDateByDays(new Date(), -6);
                 if (model.getDate().after(dateWeekAgo)) {
                     date.setText(DateFormat.format(CHAT_DATE_FORMAT, model.getDate()));
                 } else {

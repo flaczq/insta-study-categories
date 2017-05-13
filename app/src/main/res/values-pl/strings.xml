@@ -8,6 +8,14 @@
     <string name="category_name.high_school">Liceum</string>
     <string name="category_name.work">Praca</string>
 
+    <string name="new_category">Nowa kategoria</string>
+    <string name="suggest_new_category">Zaproponuj nową kategorię</string>
+    <string name="category_add_success_1">Nowa kategoria znajduje się w zakładce NIEAKTYWNE.</string>
+    <string name="category_add_success_2">Stanie się aktywna po dołączeniu do jej podkategorii 10 użytkowników.</string>
+    <string name="error_categories_not_found">Nie znaleziono kategorii</string>
+    <string name="error_categories_load">Nie udało się pobrać kategorii</string>
+    <string name="error_category_add">Nie udało się dodać kategorii</string>
+
     <string name="subcategory_name.hs_biology">Biologia</string>
     <string name="subcategory_name.hs_chemistry">Chemia</string>
     <string name="subcategory_name.hs_maths">Matma</string>
@@ -16,4 +24,44 @@
     <string name="subcategory_name.c_chemistry">Chemia</string>
     <string name="subcategory_name.w_doctor">Lekarz</string>
     <string name="subcategory_name.w_it">Informatyk</string>
+
+    <string name="new_subcategory">Nowa podkategoria</string>
+    <string name="suggest_new_subcategory">Zaproponuj nową podkategorię</string>
+    <string name="subcategory_add_success_1">Nowa podkategoria znajduje się w zakładce NIEAKTYWNE.</string>
+    <string name="subcategory_add_success_2">Stanie się aktywna po dołączeniu do niej 10 użytkowników.</string>
+    <string name="error_subcategories_not_found">Nie znaleziono podkategorii</string>
+    <string name="error_subcategories_load">Nie udało się pobrać podkategorii</string>
+    <string name="error_subcategory_add">Nie udało się dodać podkategorii</string>
+
+    <string name="user_category_add_success">Dodano użytkownika do kategorii</string>
+    <string name="user_subcategory_add_success">Dodano użytkownika do podkategorii</string>
+    <string name="user_category_remove_success">Usunięto użytkownika z kategorii</string>
+    <string name="user_subcategory_remove_success">Usunięto użytkownika z podkategorii</string>
+    <string name="error_users_load">Nie udało się pobrać listy użytkowników</string>
+    <string name="error_user_login">Nie udało się zalogować</string>
+    <string name="error_user_category_add">Nie udało się dodać użytkownika do kategorii</string>
+    <string name="error_user_subcategory_add">Nie udało się dodać użytkownika do podkategorii</string>
+    <string name="error_user_category_remove">Nie udało się usunąć użytkownika z kategorii</string>
+    <string name="error_user_subcategory_remove">Nie udało się usunąć użytkownika z podkategorii</string>
+
+    <string name="suggest">Zaproponuj</string>
+    <string name="cancel">Anuluj</string>
+    <string name="type_name">Wpisz nazwę&#8230;</string>
+    <string name="ig_profile_open">Otwieranie profilu </string>
+    <string name="error_chat_login">Tylko zalogowani użytkownicy mogą korzystać z czatu</string>
+    <string name="error_general">Błąd aplikacji, spróbuj ponownie później</string>
+    <string name="error_ig_login">Błąd logowania do Instagrama</string>
+    <string name="error_chat_connection">Błąd połączenia z czatem</string>
+    <string name="next">DALEJ</string>
+    <string name="error_connection">Sprawdź połączenie z Internetem i spróbuj ponownie później</string>
+    <string name="error_login_try_again">Zaloguj się i spróbuj ponownie</string>
+    <string name="back">Wróć</string>
+    <string name="logout">Wyloguj</string>
+    <string name="delete_account">Usuń konto</string>
+    <string name="logged_out">Wylowano</string>
+    <string name="remove_account_info">Wszystkie informacje o Tobie zostaną usunięte</string>
+    <string name="remove">USUŃ</string>
+    <string name="logged_in">Zalogowano</string>
+    <string name="error_account_remove">Nie udało się usunąć konta użytkownika</string>
+    <string name="remove_account_success">Usunięto konto użytkownika</string>
 </resources>

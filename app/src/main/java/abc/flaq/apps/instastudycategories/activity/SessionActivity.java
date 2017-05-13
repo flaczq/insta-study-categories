@@ -57,7 +57,6 @@ public class SessionActivity extends AppCompatActivity {
     private Dialog instagramDialog;
     private Boolean isApiWorking = false;
 
-    // TODO: czat!
     // TODO: menu z lewej
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +65,6 @@ public class SessionActivity extends AppCompatActivity {
 
         rootView = findViewById(android.R.id.content);
         accessToken = Session.getInstance().getSettings().getString(SETTINGS_ACCESS_TOKEN, null);
-        Utils.logDebug(clazz, "Session access token: " + accessToken);
         if (Utils.isEmpty(Session.getInstance().getUser())) {
             if (Utils.isNotEmpty(accessToken)) {
                 new ProcessGetUser().execute();
@@ -105,7 +103,7 @@ public class SessionActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
             case R.id.menu_info:
                 if (Utils.isEmpty(Session.getInstance().getUser())) {
-                    Utils.logDebug(clazz, "Instagram user data is empty");
+                    Utils.logDebug(clazz, "User is empty, but info icon is available");
                     new ProcessGetUser().execute();
                 } else {
                     showInfoDialog();
@@ -113,7 +111,7 @@ public class SessionActivity extends AppCompatActivity {
                 break;
             case R.id.menu_login:
                 if (Utils.isNotEmpty(Session.getInstance().getUser())) {
-                    Utils.logDebug(clazz, "User is not empty, but login icon is available - that shouldn't happen");
+                    Utils.logDebug(clazz, "User is not empty, but login icon is available");
                     setMainMenuVisibility(mainMenu);
                     invalidateOptionsMenu();
                 } else {
@@ -122,6 +120,7 @@ public class SessionActivity extends AppCompatActivity {
                         showInstagramDialog(instagramAuthUrl);
                     } catch (URISyntaxException e) {
                         e.printStackTrace();
+                        Utils.showConnectionError(rootView, getString(R.string.error_user_login));
                     }
                 }
                 break;
@@ -146,10 +145,10 @@ public class SessionActivity extends AppCompatActivity {
                 if (url.startsWith(INSTAGRAM_REDIRECT_URL)) {
                     String code = InstagramApi.getCodeFromUrl(rootView, url);
                     if (Utils.isEmpty(code)) {
-                        Utils.showError(rootView, "Pusty kod z Instagrama");
+                        Utils.logError(clazz, "Empty Instagram code");
+                        Utils.showConnectionError(rootView, getString(R.string.error_ig_login));
                         instagramDialog.dismiss();
                     } else {
-                        Utils.logDebug(clazz, "Collected instagram code: " + code);
                         new ProcessGetAccessToken().execute(code);
                     }
                 } else {
@@ -160,7 +159,7 @@ public class SessionActivity extends AppCompatActivity {
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 super.onReceivedError(view, request, error);
-                Utils.showError(rootView, "Błąd logowania do Instagrama");
+                Utils.showConnectionError(rootView, getString(R.string.error_ig_login));
                 instagramDialog.dismiss();
             }
         });
@@ -173,16 +172,16 @@ public class SessionActivity extends AppCompatActivity {
                 .title(Session.getInstance().getUser().getUsername())
                 .content(Session.getInstance().getUser().getInfoContent())
                 .contentColorRes(android.R.color.primary_text_light)
-                .positiveText("Wróć")
-                .negativeText("Wyloguj")
-                .neutralText("Usuń konto")
+                .positiveText(R.string.back)
+                .negativeText(R.string.logout)
+                .neutralText(R.string.delete_account)
                 .neutralColorRes(R.color.colorAdditionalAction)
                 .titleColorRes(R.color.colorPrimaryDark)
                 .backgroundColorRes(R.color.colorBackgroundLight)
                 .onNegative(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        Utils.showQuickInfo(rootView, "Wylogowano");
+                        Utils.showQuickInfo(rootView, getString(R.string.logged_out));
                         logOut();
                         dialog.dismiss();
                     }
@@ -190,9 +189,9 @@ public class SessionActivity extends AppCompatActivity {
                 .onNeutral(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        Snackbar.make(Utils.findSnackbarView(rootView), "Czy na pewno usunąć konto?", Snackbar.LENGTH_LONG)
+                        Snackbar.make(Utils.findSnackbarView(rootView), R.string.remove_account_info, Snackbar.LENGTH_LONG)
                                 .setActionTextColor(ContextCompat.getColor(clazz, R.color.colorAccent))
-                                .setAction("USUŃ", new View.OnClickListener() {
+                                .setAction(R.string.remove, new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
                                         new ProcessDeleteUser().execute();
@@ -212,7 +211,7 @@ public class SessionActivity extends AppCompatActivity {
         infoDialog.getIconView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Utils.showQuickInfo(rootView, "Otwieranie profilu " + Session.getInstance().getUser().getUsername() + "...");
+                Utils.showQuickInfo(rootView, getString(R.string.ig_profile_open) + Session.getInstance().getUser().getUsername() + "&#8230;");
                 Intent nextIntent = Utils.getInstagramIntent(Session.getInstance().getUser().getUsername());
 
                 if (Utils.isIntentAvailable(clazz, nextIntent)) {
@@ -229,7 +228,7 @@ public class SessionActivity extends AppCompatActivity {
         infoDialog.getTitleView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Utils.showQuickInfo(rootView, "Otwieranie profilu " + Session.getInstance().getUser().getUsername() + "...");
+                Utils.showQuickInfo(rootView, getString(R.string.ig_profile_open) + Session.getInstance().getUser().getUsername() + "&#8230;");
                 Intent nextIntent = Utils.getInstagramIntent(Session.getInstance().getUser().getUsername());
 
                 if (Utils.isIntentAvailable(clazz, nextIntent)) {
@@ -293,6 +292,7 @@ public class SessionActivity extends AppCompatActivity {
                 instagramToken = InstagramApi.getAccessTokenByCode(code);
             } catch (IOException e) {
                 Utils.logError(clazz, "IOException: " + e.getMessage());
+                Utils.showConnectionError(rootView, getString(R.string.error_user_login));
             }
             return instagramToken;
         }
@@ -304,7 +304,8 @@ public class SessionActivity extends AppCompatActivity {
 
             if (Utils.isNotEmpty(result)) {
                 if (result.isError() || Utils.isEmpty(result.getAccessToken())) {
-                    Utils.showError(rootView, result.toString());
+                    Utils.logError(rootView.getContext(), result.toString());
+                    Utils.showConnectionError(rootView, getString(R.string.error_user_login));
                     Session.getInstance().setUser(null);
                     accessToken = null;
                     setMainMenuVisibility(mainMenu);
@@ -314,6 +315,8 @@ public class SessionActivity extends AppCompatActivity {
                     accessToken = result.getAccessToken();
                     new ProcessGetUser().execute();
                 }
+            } else {
+                Utils.showConnectionError(rootView, getString(R.string.error_user_login));
             }
             if (Utils.isNotEmpty(instagramDialog)) {
                 instagramDialog.dismiss();
@@ -349,8 +352,10 @@ public class SessionActivity extends AppCompatActivity {
                 }
             } catch (IOException e) {
                 Utils.logError(clazz, "IOException: " + e.getMessage());
+                Utils.showConnectionError(rootView, getString(R.string.error_user_login));
             } catch (JSONException e) {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
+                Utils.showConnectionError(rootView, getString(R.string.error_user_login));
             }
             return instagramUser;
         }
@@ -364,7 +369,8 @@ public class SessionActivity extends AppCompatActivity {
                     Utils.isNotEmpty(result.getMeta()) &&
                     Utils.isNotEmpty(result.getData())) {
                 if (result.getMeta().isError()) {
-                    Utils.showError(rootView, result.toString());
+                    Utils.logError(rootView.getContext(), result.toString());
+                    Utils.showConnectionError(rootView, getString(R.string.error_user_login));
                 } else {
                     Utils.logDebug(clazz, "Collected instagram user data: " + result.toString());
                     if (isNewUser) {
@@ -382,6 +388,8 @@ public class SessionActivity extends AppCompatActivity {
                         invalidateOptionsMenu();
                     }
                 }
+            } else {
+                Utils.showConnectionError(rootView, getString(R.string.error_user_login));
             }
         }
     }
@@ -400,8 +408,10 @@ public class SessionActivity extends AppCompatActivity {
                 result = Api.addUser(user);
             } catch (JSONException e) {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
+                Utils.showConnectionError(rootView, getString(R.string.error_user_login));
             } catch (IOException e) {
                 Utils.logError(clazz, "IOException: " + e.getMessage());
+                Utils.showConnectionError(rootView, getString(R.string.error_user_login));
             }
             return result;
         }
@@ -412,7 +422,7 @@ public class SessionActivity extends AppCompatActivity {
             isApiWorking = false;
 
             if (result) {
-                Utils.showQuickInfo(rootView, "Zalogowano");
+                Utils.showQuickInfo(rootView, getString(R.string.logged_in));
                 Session.getInstance().setUser(user);
                 saveAccessToken(accessToken);
 
@@ -422,6 +432,8 @@ public class SessionActivity extends AppCompatActivity {
 
                 setMainMenuVisibility(mainMenu);
                 invalidateOptionsMenu();
+            } else {
+                Utils.showConnectionError(rootView, getString(R.string.error_user_login));
             }
         }
     }
@@ -440,8 +452,10 @@ public class SessionActivity extends AppCompatActivity {
                 result = Api.removeUser(Session.getInstance().getUser());
             } catch (IOException e) {
                 Utils.logError(clazz, "IOException: " + e.getMessage());
+                Utils.showConnectionError(rootView, getString(R.string.error_account_remove));
             } catch (JSONException e) {
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
+                Utils.showConnectionError(rootView, getString(R.string.error_account_remove));
             }
             return result;
         }
@@ -452,7 +466,7 @@ public class SessionActivity extends AppCompatActivity {
             isApiWorking = false;
 
             if (result) {
-                Utils.showQuickInfo(rootView, "Usunięto konto użytkownika");
+                Utils.showQuickInfo(rootView, getString(R.string.remove_account_success));
                 logOut();
             }
         }

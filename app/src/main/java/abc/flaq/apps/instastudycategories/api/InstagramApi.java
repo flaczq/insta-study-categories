@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramAccessToken;
 import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramMeta;
 import abc.flaq.apps.instastudycategories.helper.Constants;
@@ -117,7 +118,8 @@ public class InstagramApi {
     public static String getAccessTokenFromUrl(View view, String url) {
         int errorIndex = url.indexOf("?error=");
         if (errorIndex >= 0) {
-            Utils.showError(view, url.substring(errorIndex + "?error=".length()));
+            Utils.logError(view.getContext(), url.substring(errorIndex + "?error=".length()));
+            Utils.showConnectionError(view, view.getResources().getString(R.string.error_ig_login));
             return null;
         }
 
@@ -132,7 +134,8 @@ public class InstagramApi {
     public static String getCodeFromUrl(View view, String url) {
         int errorIndex = url.indexOf("?error=");
         if (errorIndex >= 0) {
-            Utils.showError(view, url.substring(errorIndex + "?error=".length()));
+            Utils.logError(view.getContext(), url.substring(errorIndex + "?error=".length()));
+            Utils.showConnectionError(view, view.getResources().getString(R.string.error_ig_login));
             return null;
         }
 
