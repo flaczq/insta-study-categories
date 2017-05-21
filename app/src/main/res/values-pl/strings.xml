@@ -58,7 +58,7 @@
     <string name="back">Wróć</string>
     <string name="logout">Wyloguj</string>
     <string name="delete_account">Usuń\nkonto</string>
-    <string name="logged_out">Wylowano</string>
+    <string name="logged_out">Wylogowano</string>
     <string name="remove_account_info">Wszystkie informacje o Tobie zostaną usunięte</string>
     <string name="remove">USUŃ</string>
     <string name="logged_in">Zalogowano</string>

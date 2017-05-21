@@ -16,7 +16,7 @@
         <item name="md_neutral_color">@color/colorAccent</item>
         <item name="md_negative_color">@color/colorAdditionalAction</item>
         <item name="md_medium_font">Roboto-Regular.ttf</item>
-        <item name="md_regular_font">RobotoCondensed-Light.ttf</item>
+        <item name="md_regular_font">Roboto-Light.ttf</item>
     </style>
 
     <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">

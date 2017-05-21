@@ -1,6 +1,8 @@
 package abc.flaq.apps.instastudycategories.api;
 
 
+import android.os.Build;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.json.JSONArray;
@@ -106,7 +108,7 @@ public class Api {
 
         return handleResponse(connection);
     }
-    private static InputStreamReader sendAuthorizedRequest(String method, String url, String etag, String data) throws IOException {
+    private static InputStreamReader sendAuthorizedRequest(String method, boolean patchAsPost, String url, String etag, String data) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         connection.setRequestMethod(method);
         connection.setRequestProperty("Accept", "application/json");
@@ -115,9 +117,9 @@ public class Api {
         if (Utils.isNotEmpty(etag)) {
             connection.setRequestProperty("If-Match", etag);
         }
-        /*if (isPatch) {
+        if (patchAsPost) {
             connection.setRequestProperty("X-HTTP-Method-Override", "PATCH");
-        }*/
+        }
         connection.setRequestProperty("Authorization", API_CREDENTIALS);
         connection.setDoInput(true);
         connection.setUseCaches(false);
@@ -131,11 +133,13 @@ public class Api {
         return handleResponse(connection);
     }
     private static InputStreamReader postRequest(String url, String data) throws IOException {
-        return sendAuthorizedRequest("POST", url, null, data);
+        return sendAuthorizedRequest("POST", false, url, null, data);
     }
-    // FIXME: nie działa na sdk < 21?
     private static InputStreamReader patchRequest(String url, String etag, String data) throws IOException {
-        return sendAuthorizedRequest("PATCH", url, etag, data);
+        if (Build.VERSION.SDK_INT >= 21) {
+            return sendAuthorizedRequest("PATCH", false, url, etag, data);
+        }
+        return sendAuthorizedRequest("POST", true, url, etag, data);
     }
     private static InputStreamReader deleteRequest(String url, String etag) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();

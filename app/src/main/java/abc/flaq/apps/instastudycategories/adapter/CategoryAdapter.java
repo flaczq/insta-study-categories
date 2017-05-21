@@ -20,6 +20,8 @@ import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.helper.Utils;
 import abc.flaq.apps.instastudycategories.pojo.Category;
 
+import static android.util.TypedValue.COMPLEX_UNIT_SP;
+
 public class CategoryAdapter extends BaseAdapter {
 
     private final Context context;
@@ -84,8 +86,8 @@ public class CategoryAdapter extends BaseAdapter {
                 subcategories.setPadding(0, 3, 0, 0);
                 name.setPadding(0, 5, 0, 0);
             } else {
-                subcategories.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
-                name.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
+                subcategories.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+                name.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
             }
         }
 
@@ -105,6 +107,9 @@ public class CategoryAdapter extends BaseAdapter {
             }
             String categoryName = Utils.getStringByCategoryName(context, model.getName());
             name.setText(Utils.simplifyCharacters(categoryName));
+            if (name.getText().length() >= 10) {
+                name.setTextSize(COMPLEX_UNIT_SP, 22);
+            }
 
             if (Utils.isEmpty(model.getImageUrl())) {
                 Drawable drawable = Utils.getCategoryDrawable(context, model.getName());
