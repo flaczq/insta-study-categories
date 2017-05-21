@@ -19,10 +19,9 @@
         android:fontFamily="casual"
         android:textSize="16sp"
         android:textColor="@color/textColorPrimary"
-        android:paddingTop="3dp"
-        android:gravity="center_horizontal|top"
+        android:gravity="center_horizontal"
         android:layout_centerHorizontal="true"
-        android:layout_alignParentTop="true" />
+        android:layout_alignTop="@+id/subcategory_item_image" />
     <TextView android:id="@+id/subcategory_item_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -32,9 +31,8 @@
         android:textAllCaps="true"
         android:textSize="26sp"
         android:textColor="@color/textColorPrimary"
-        android:paddingTop="5dp"
-        android:gravity="center_horizontal|bottom"
+        android:gravity="center_horizontal"
         android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignBottom="@+id/subcategory_item_image" />
 
 </RelativeLayout>

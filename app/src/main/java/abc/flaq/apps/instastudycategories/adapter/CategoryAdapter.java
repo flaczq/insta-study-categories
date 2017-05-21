@@ -1,7 +1,9 @@
 package abc.flaq.apps.instastudycategories.adapter;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,14 +71,22 @@ public class CategoryAdapter extends BaseAdapter {
     }
 
     private class CategoryViewHolder {
-        private final TextView users;
+        private final TextView subcategories;
         private final ImageView image;
         private final TextView name;
 
         private CategoryViewHolder(View view) {
-            users = (TextView) view.findViewById(R.id.category_item_subcategories);
+            subcategories = (TextView) view.findViewById(R.id.category_item_subcategories);
             image = (ImageView) view.findViewById(R.id.category_item_image);
             name = (TextView) view.findViewById(R.id.category_item_name);
+
+            if (Build.VERSION.SDK_INT >= 21) {
+                subcategories.setPadding(0, 3, 0, 0);
+                name.setPadding(0, 5, 0, 0);
+            } else {
+                subcategories.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
+                name.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
+            }
         }
 
         private void bind(Category model) {
@@ -85,9 +95,13 @@ public class CategoryAdapter extends BaseAdapter {
                 Utils.setSubcategoryGridDesign(model.getSubcategoriesSize(), image);
             }*/
             if (model.isAsSubcategory()) {
-                users.setText(String.format(Locale.ENGLISH, "☻ %d", model.getUsersSize()));
+                if (Build.VERSION.SDK_INT >= 21) {
+                    subcategories.setText(String.format(Locale.ENGLISH, "☻ %d", model.getUsersSize()));
+                } else {
+                    subcategories.setText(String.format(Locale.ENGLISH, "☺ %d", model.getUsersSize()));
+                }
             } else {
-                users.setText(String.format(Locale.ENGLISH, "▣ %d", model.getSubcategoriesSize()));
+                subcategories.setText(String.format(Locale.ENGLISH, "▣ %d", model.getSubcategoriesSize()));
             }
             String categoryName = Utils.getStringByCategoryName(context, model.getName());
             name.setText(Utils.simplifyCharacters(categoryName));
@@ -100,7 +114,7 @@ public class CategoryAdapter extends BaseAdapter {
                     image.setImageDrawable(drawable);
                 }
             } else {
-                // FIXME: images on server
+                // FIXME!!: images on server
                 UrlImageViewHelper.setUrlDrawable(image, model.getImageUrl(), R.drawable.placeholder_category);
             }
         }

@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- TODO: ikonki -->
+    <!-- TODO!!: ikonki -->
     <item android:id="@+id/menu_suggest"
         android:title="Zaproponuj"
         android:icon="@android:drawable/ic_menu_edit"

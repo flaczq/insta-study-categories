@@ -129,6 +129,8 @@ public class CategoryActivity extends SessionActivity {
                 .content(R.string.suggest_new_category)
                 .positiveText(R.string.suggest)
                 .negativeText(R.string.cancel)
+                .positiveColorRes(R.color.colorAccent)
+                .negativeColorRes(R.color.colorAccent)
                 .titleColorRes(R.color.colorPrimaryDark)
                 .inputType(InputType.TYPE_CLASS_TEXT)
                 .inputRangeRes(1, 20, R.color.colorError)
@@ -233,7 +235,7 @@ public class CategoryActivity extends SessionActivity {
         }
     }
     private class ProcessAddCategory extends AsyncTask<String, Void, Boolean> {
-        //TODO: ogranicz mozliwosc do x-razy
+        //TODO!!: ogranicz mozliwosc do x-razy
         @Override
         protected void onPreExecute() {
             super.onPreExecute();

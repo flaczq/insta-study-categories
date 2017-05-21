@@ -1,7 +1,9 @@
 package abc.flaq.apps.instastudycategories.adapter;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,12 +79,24 @@ public class SubcategoryAdapter extends BaseAdapter {
             users = (TextView) view.findViewById(R.id.subcategory_item_users);
             image = (ImageView) view.findViewById(R.id.subcategory_item_image);
             name = (TextView) view.findViewById(R.id.subcategory_item_name);
+
+            if (Build.VERSION.SDK_INT >= 21) {
+                users.setPadding(0, 3, 0, 0);
+                name.setPadding(0, 5, 0, 0);
+            } else {
+                users.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
+                name.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
+            }
         }
 
         private void bind(Subcategory model) {
             // TODO: turn this on maybe?
             //Utils.setSubcategoryGridDesign(model.getUsersSize(), subcategoryViewHolder.image);
-            users.setText(String.format(Locale.ENGLISH, "☻ %d", model.getUsersSize()));
+            if (Build.VERSION.SDK_INT >= 21) {
+                users.setText(String.format(Locale.ENGLISH, "☻ %d", model.getUsersSize()));
+            } else {
+                users.setText(String.format(Locale.ENGLISH, "☺ %d", model.getUsersSize()));
+            }
             String subcategoryName = Utils.getStringBySubcategoryName(context, model.getName());
             name.setText(Utils.simplifyCharacters(subcategoryName));
 
@@ -94,7 +108,7 @@ public class SubcategoryAdapter extends BaseAdapter {
                     image.setImageDrawable(drawable);
                 }
             } else {
-                // FIXME: images on server
+                // FIXME!!: images on server
                 UrlImageViewHelper.setUrlDrawable(image, model.getImageUrl(), R.drawable.placeholder_category);
             }
         }

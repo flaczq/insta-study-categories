@@ -250,6 +250,12 @@ public class Utils {
         String formattedDate = DateFormat.format(format, calendar.getTime()).toString();
         return formattedDate;
     }
+    public static String formatNumber(String number) {
+        if (number.length() >= 4) {
+            return (number.substring(0, number.length() - 3) + "k");
+        }
+        return number;
+    }
 
     private static String getStringByName(Context context, String name) {
         int stringId = context.getResources().getIdentifier(name, "string", context.getPackageName());

@@ -5,7 +5,7 @@ android {
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "abc.flaq.apps.instastudycategories"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
         versionName "0.1"
@@ -29,7 +29,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -39,14 +39,14 @@ android {
             versionNameSuffix ""
             buildConfigField 'String', 'FLAVOR_FULLNAME', '"production"'
             buildConfigField 'boolean', 'IS_DEBUG', 'false'
-            resValue 'string', 'app_name', '"InstaStudyCategories"'
+            resValue 'string', 'app_name', 'InStudyGroup'
         }
         dev {
             applicationIdSuffix ".dev"
             versionNameSuffix "-dev"
             buildConfigField 'String', 'FLAVOR_FULLNAME', '"develop"'
             buildConfigField 'boolean', 'IS_DEBUG', 'true'
-            resValue 'string', 'app_name', '"InstaStudyCategories-dev"'
+            resValue 'string', 'app_name', 'InStudyGroup-dev'
         }
     }
     /*android.variantFilter { variant ->

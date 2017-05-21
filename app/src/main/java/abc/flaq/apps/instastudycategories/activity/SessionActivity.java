@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.webkit.CookieManager;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -54,10 +55,11 @@ public class SessionActivity extends AppCompatActivity {
     private Menu mainMenu;
     private User user;
     private String accessToken;
-    private Dialog instagramDialog;
+    private MaterialDialog infoDialog;
+    private Dialog loginDialog;
     private Boolean isApiWorking = false;
 
-    // TODO: menu z lewej
+    // TODO!!: menu z lewej
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,18 +112,12 @@ public class SessionActivity extends AppCompatActivity {
                 }
                 break;
             case R.id.menu_login:
-                if (Utils.isNotEmpty(Session.getInstance().getUser())) {
+                if (Utils.isEmpty(Session.getInstance().getUser())) {
+                    showLoginDialog();
+                } else {
                     Utils.logDebug(clazz, "User is not empty, but login icon is available");
                     setMainMenuVisibility(mainMenu);
                     invalidateOptionsMenu();
-                } else {
-                    try {
-                        String instagramAuthUrl = InstagramApi.getAuthUrl(Constants.INSTAGRAM_SCOPES.public_content);
-                        showInstagramDialog(instagramAuthUrl);
-                    } catch (URISyntaxException e) {
-                        e.printStackTrace();
-                        Utils.showConnectionError(rootView, getString(R.string.error_user_login));
-                    }
                 }
                 break;
             default:
@@ -130,16 +126,17 @@ public class SessionActivity extends AppCompatActivity {
         return true;
     }
 
-    private void showInstagramDialog(String url) {
-        instagramDialog = new Dialog(clazz);
-        if (Build.VERSION.SDK_INT >= 21) {
-            CookieManager.getInstance().removeAllCookies(null);
-        } else {
-            CookieManager.getInstance().removeAllCookie();
+    private void initLoginDialog() {
+        String instagramAuthUrl = "";
+        try {
+            instagramAuthUrl = InstagramApi.getAuthUrl(Constants.INSTAGRAM_SCOPES.public_content);
+        } catch (URISyntaxException e) {
+            Utils.logError(clazz, "URISyntaxException: " + e.getMessage());
+            Utils.showConnectionError(rootView, getString(R.string.error_user_login));
         }
-        WebView webView = new WebView(clazz);
-        webView.loadUrl(url);
-        webView.setWebViewClient(new WebViewClient() {
+        WebView loginWebView = new WebView(clazz);
+        loginWebView.loadUrl(instagramAuthUrl);
+        loginWebView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if (url.startsWith(INSTAGRAM_REDIRECT_URL)) {
@@ -147,7 +144,7 @@ public class SessionActivity extends AppCompatActivity {
                     if (Utils.isEmpty(code)) {
                         Utils.logError(clazz, "Empty Instagram code");
                         Utils.showConnectionError(rootView, getString(R.string.error_ig_login));
-                        instagramDialog.dismiss();
+                        loginDialog.dismiss();
                     } else {
                         new ProcessGetAccessToken().execute(code);
                     }
@@ -156,18 +153,30 @@ public class SessionActivity extends AppCompatActivity {
                 }
                 return true;
             }
+
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 super.onReceivedError(view, request, error);
                 Utils.showConnectionError(rootView, getString(R.string.error_ig_login));
-                instagramDialog.dismiss();
+                loginDialog.dismiss();
             }
         });
-        instagramDialog.setContentView(webView);
-        instagramDialog.show();
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            CookieManager.getInstance().removeAllCookies(null);
+        } else {
+            CookieManager.getInstance().removeAllCookie();
+        }
+        loginDialog = new Dialog(clazz);
+        loginDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        loginDialog.setContentView(loginWebView);
+    }
+    private void showLoginDialog() {
+        initLoginDialog();
+        loginDialog.show();
     }
 
-    private void showInfoDialog() {
+    private void initInfoDialog() {
         MaterialDialog.Builder infoDialogBuilder = new MaterialDialog.Builder(clazz)
                 .title(Session.getInstance().getUser().getUsername())
                 .content(Session.getInstance().getUser().getInfoContent())
@@ -175,6 +184,8 @@ public class SessionActivity extends AppCompatActivity {
                 .positiveText(R.string.back)
                 .negativeText(R.string.logout)
                 .neutralText(R.string.delete_account)
+                .positiveColorRes(R.color.colorAccent)
+                .negativeColorRes(R.color.colorAccent)
                 .neutralColorRes(R.color.colorAdditionalAction)
                 .titleColorRes(R.color.colorPrimaryDark)
                 .backgroundColorRes(R.color.colorBackgroundLight)
@@ -207,11 +218,11 @@ public class SessionActivity extends AppCompatActivity {
             infoDialogBuilder.icon(Session.getInstance().getUserProfilePic().getDrawable());
         }
 
-        final MaterialDialog infoDialog = infoDialogBuilder.build();
+        infoDialog = infoDialogBuilder.build();
         infoDialog.getIconView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Utils.showQuickInfo(rootView, getString(R.string.ig_profile_open) + Session.getInstance().getUser().getUsername() + "&#8230;");
+                //Utils.showQuickInfo(rootView, getString(R.string.ig_profile_open) + Session.getInstance().getUser().getUsername() + "...");
                 Intent nextIntent = Utils.getInstagramIntent(Session.getInstance().getUser().getUsername());
 
                 if (Utils.isIntentAvailable(clazz, nextIntent)) {
@@ -228,7 +239,7 @@ public class SessionActivity extends AppCompatActivity {
         infoDialog.getTitleView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Utils.showQuickInfo(rootView, getString(R.string.ig_profile_open) + Session.getInstance().getUser().getUsername() + "&#8230;");
+                //Utils.showQuickInfo(rootView, getString(R.string.ig_profile_open) + Session.getInstance().getUser().getUsername() + "...");
                 Intent nextIntent = Utils.getInstagramIntent(Session.getInstance().getUser().getUsername());
 
                 if (Utils.isIntentAvailable(clazz, nextIntent)) {
@@ -242,6 +253,9 @@ public class SessionActivity extends AppCompatActivity {
                 infoDialog.dismiss();
             }
         });
+    }
+    private void showInfoDialog() {
+        initInfoDialog();
         infoDialog.show();
     }
 
@@ -306,10 +320,7 @@ public class SessionActivity extends AppCompatActivity {
                 if (result.isError() || Utils.isEmpty(result.getAccessToken())) {
                     Utils.logError(rootView.getContext(), result.toString());
                     Utils.showConnectionError(rootView, getString(R.string.error_user_login));
-                    Session.getInstance().setUser(null);
-                    accessToken = null;
-                    setMainMenuVisibility(mainMenu);
-                    invalidateOptionsMenu();
+                    logOut();
                 } else {
                     Utils.logDebug(clazz, "Collected instagram access token: " + result.getAccessToken());
                     accessToken = result.getAccessToken();
@@ -317,9 +328,10 @@ public class SessionActivity extends AppCompatActivity {
                 }
             } else {
                 Utils.showConnectionError(rootView, getString(R.string.error_user_login));
+                logOut();
             }
-            if (Utils.isNotEmpty(instagramDialog)) {
-                instagramDialog.dismiss();
+            if (Utils.isNotEmpty(loginDialog)) {
+                loginDialog.dismiss();
             }
         }
     }
@@ -371,6 +383,7 @@ public class SessionActivity extends AppCompatActivity {
                 if (result.getMeta().isError()) {
                     Utils.logError(rootView.getContext(), result.toString());
                     Utils.showConnectionError(rootView, getString(R.string.error_user_login));
+                    logOut();
                 } else {
                     Utils.logDebug(clazz, "Collected instagram user data: " + result.toString());
                     if (isNewUser) {
@@ -390,6 +403,7 @@ public class SessionActivity extends AppCompatActivity {
                 }
             } else {
                 Utils.showConnectionError(rootView, getString(R.string.error_user_login));
+                logOut();
             }
         }
     }
@@ -434,6 +448,7 @@ public class SessionActivity extends AppCompatActivity {
                 invalidateOptionsMenu();
             } else {
                 Utils.showConnectionError(rootView, getString(R.string.error_user_login));
+                logOut();
             }
         }
     }

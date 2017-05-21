@@ -143,6 +143,8 @@ public class SubcategoryActivity extends SessionActivity {
                 .content(R.string.suggest_new_subcategory)
                 .positiveText(R.string.suggest)
                 .negativeText(R.string.cancel)
+                .positiveColorRes(R.color.colorAccent)
+                .negativeColorRes(R.color.colorAccent)
                 .titleColorRes(R.color.colorPrimaryDark)
                 .inputType(InputType.TYPE_CLASS_TEXT)
                 .inputRangeRes(1, 20, R.color.colorError)
@@ -251,7 +253,8 @@ public class SubcategoryActivity extends SessionActivity {
     }
 
     private class ProcessAddSubcategory extends AsyncTask<String, Void, Boolean> {
-        Subcategory newSubcategory;   // TODO: ogranicz mozliwosc do x-razy
+        // TODO!!: ogranicz mozliwosc do x-razy
+        Subcategory newSubcategory;
 
         @Override
         protected void onPreExecute() {

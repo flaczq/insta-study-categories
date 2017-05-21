@@ -99,7 +99,7 @@ public class UserActivity extends SessionActivity {
             @Override
             public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
                 User selected = userAdapter.getItem(position);
-                Utils.showQuickInfo(layout, getString(R.string.ig_profile_open) + selected.getUsername() + "&#8230;");
+                //Utils.showQuickInfo(layout, getString(R.string.ig_profile_open) + selected.getUsername() + "...");
                 Intent nextIntent = Utils.getInstagramIntent(selected.getUsername());
 
                 if (Utils.isIntentAvailable(clazz, nextIntent)) {

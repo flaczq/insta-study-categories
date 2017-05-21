@@ -1,5 +1,5 @@
 <resources>
-    <!--<string name="app_name">InstaStudyCategories</string>-->
+    <!--<string name="app_name">InStudyGroup</string>-->
     <string name="imageview.description">Image description</string>
 
     <string name="category_name.all">All</string>

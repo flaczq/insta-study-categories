@@ -96,7 +96,7 @@ public class ChatAdapter extends BaseAdapter {
         }
 
         private void bind(final WebSocketMessage model, Boolean sameAsBefore) {
-            // TODO: prezentacja u góry liczby aktywnych użytkowników
+            // TODO!!: prezentacja u góry liczby aktywnych użytkowników
             if (Utils.isNotEmpty(model)) {
                 User user = Api.getUserByUsername(model.getName());
                 if (Utils.isEmpty(user) || sameAsBefore) {
