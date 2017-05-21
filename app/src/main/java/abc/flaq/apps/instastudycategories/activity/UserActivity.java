@@ -9,7 +9,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -47,7 +49,9 @@ import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGOR
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_NAME;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_FOREIGN_ID;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_NAME;
+import static android.view.inputmethod.EditorInfo.IME_ACTION_SEND;
 
+// FIXME: zalogować się tu i ikonki menu są źle
 public class UserActivity extends SessionActivity {
 
     private final AppCompatActivity clazz = this;
@@ -73,13 +77,13 @@ public class UserActivity extends SessionActivity {
         layout = (CoordinatorLayout) findViewById(R.id.user_layout);
         listView = (ListView) findViewById(R.id.user_list);
         preloader = (CrystalPreloader) findViewById(R.id.user_preloader);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.user_fab);
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.user_fab);
 
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View chatView = inflater.inflate(R.layout.activity_user_chat, null);
         ListView chatList = (ListView) chatView.findViewById(R.id.user_chat_list);
         final TextView chatInput = (TextView) chatView.findViewById(R.id.user_chat_input);
-        ImageButton sendButton = (ImageButton) chatView.findViewById(R.id.user_chat_input_send);
+        final ImageButton sendButton = (ImageButton) chatView.findViewById(R.id.user_chat_input_send);
 
         ChatAdapter chatAdapter = new ChatAdapter(clazz, new ArrayList<WebSocketMessage>());
         chatList.setAdapter(chatAdapter);
@@ -91,7 +95,6 @@ public class UserActivity extends SessionActivity {
             // Scroll list when keyboard is shown
             chatWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         }
-
         Intent intent = getIntent();
         String categoryForeignId = intent.getStringExtra(INTENT_CATEGORY_FOREIGN_ID);
 
@@ -127,6 +130,17 @@ public class UserActivity extends SessionActivity {
                 if (chatInput.hasFocus()) {
                     chatInput.clearFocus();
                 }
+                fab.setBackgroundTintList(ContextCompat.getColorStateList(clazz, R.color.colorAccent));
+            }
+        });
+        chatInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                if (actionId == IME_ACTION_SEND) {
+                    sendButton.performClick();
+                    return true;
+                }
+                return false;
             }
         });
         sendButton.setOnClickListener(new View.OnClickListener() {
@@ -139,7 +153,7 @@ public class UserActivity extends SessionActivity {
             }
         });
 
-        webSocket = WebSocketClientSide.createWebSocketClientSide(clazz, layout, chatAdapter);
+        webSocket = WebSocketClientSide.createWebSocketClientSide(clazz, layout, fab, chatAdapter);
 
         // Check if parentForeignId is from newCategory or subcategory
         if (Utils.isNotEmpty(categoryForeignId)) {
@@ -269,6 +283,7 @@ public class UserActivity extends SessionActivity {
         @Override
         protected Void doInBackground(Void... params) {
             try {
+                Api.getAllUsers(false);
                 if (isCategory) {
                     users = Api.getUsersByCategoryForeignId(parentForeignId);
                 } else {

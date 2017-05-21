@@ -1,6 +1,8 @@
 package abc.flaq.apps.instastudycategories.general;
 
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -32,10 +34,11 @@ public class WebSocketClientSide extends WebSocketClient {
 
     private AppCompatActivity clazz;
     private CoordinatorLayout layout;
+    private FloatingActionButton fab;
     private ChatAdapter adapter;
     private ObjectMapper mapper = new ObjectMapper();
 
-    public static WebSocketClientSide createWebSocketClientSide(AppCompatActivity clazz, CoordinatorLayout layout, ChatAdapter adapter) {
+    public static WebSocketClientSide createWebSocketClientSide(AppCompatActivity clazz, CoordinatorLayout layout, FloatingActionButton fab, ChatAdapter adapter) {
         URI uri = null;
         try {
             uri = new URI(API_WEB_SOCKET_URL);
@@ -46,12 +49,13 @@ public class WebSocketClientSide extends WebSocketClient {
         Map<String, String> headers = new HashMap<>();
         headers.put("Origin", API_WEB_SOCKET_ORIGIN);
         int timeout = 0;
-        return new WebSocketClientSide(uri, draft, headers, timeout, clazz, layout, adapter);
+        return new WebSocketClientSide(uri, draft, headers, timeout, clazz, layout, fab, adapter);
     }
-    private WebSocketClientSide(URI uri, Draft draft, Map<String, String> headers, int timeout, AppCompatActivity clazz, CoordinatorLayout layout, ChatAdapter adapter) {
+    private WebSocketClientSide(URI uri, Draft draft, Map<String, String> headers, int timeout, AppCompatActivity clazz, CoordinatorLayout layout, FloatingActionButton fab, ChatAdapter adapter) {
         super(uri, draft, headers, timeout);
         this.clazz = clazz;
         this.layout = layout;
+        this.fab = fab;
         this.adapter = adapter;
         connect();
     }
@@ -70,6 +74,9 @@ public class WebSocketClientSide extends WebSocketClient {
                 @Override
                 public void run() {
                     adapter.addItem(message);
+                    if (adapter.getCount() > 10) {
+                        fab.setBackgroundTintList(ContextCompat.getColorStateList(clazz, R.color.colorPrimary));
+                    }
                 }
             });
         } catch (JsonParseException e) {

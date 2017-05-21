@@ -52,11 +52,11 @@
     <string name="error_ig_login">Couldn\'t log into Instagram</string>
     <string name="error_chat_connection">Couldn\'t connect to chat</string>
     <string name="next">NEXT</string>
-    <string name="error_connection">Check your Internet connection and try again later</string>
+    <string name="error_connection">Check your Internet connection and try again</string>
     <string name="error_login_try_again">Log in and try again</string>
     <string name="back">Back</string>
     <string name="logout">Log out</string>
-    <string name="delete_account">Delete account</string>
+    <string name="delete_account">Delete\naccount</string>
     <string name="logged_out">Logged out</string>
     <string name="remove_account_info">All your informations will be removed</string>
     <string name="remove">REMOVE</string>

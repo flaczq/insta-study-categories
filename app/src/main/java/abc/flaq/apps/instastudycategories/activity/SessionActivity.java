@@ -71,6 +71,7 @@ public class SessionActivity extends AppCompatActivity {
             if (Utils.isNotEmpty(accessToken)) {
                 new ProcessGetUser().execute();
             }
+            initLoginDialog();
         }
     }
 
@@ -162,17 +163,13 @@ public class SessionActivity extends AppCompatActivity {
             }
         });
 
-        if (Build.VERSION.SDK_INT >= 21) {
-            CookieManager.getInstance().removeAllCookies(null);
-        } else {
-            CookieManager.getInstance().removeAllCookie();
-        }
         loginDialog = new Dialog(clazz);
         loginDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         loginDialog.setContentView(loginWebView);
+        loginDialog.show();
+        loginDialog.hide();
     }
     private void showLoginDialog() {
-        initLoginDialog();
         loginDialog.show();
     }
 
@@ -180,35 +177,30 @@ public class SessionActivity extends AppCompatActivity {
         MaterialDialog.Builder infoDialogBuilder = new MaterialDialog.Builder(clazz)
                 .title(Session.getInstance().getUser().getUsername())
                 .content(Session.getInstance().getUser().getInfoContent())
-                .contentColorRes(android.R.color.primary_text_light)
                 .positiveText(R.string.back)
-                .negativeText(R.string.logout)
-                .neutralText(R.string.delete_account)
-                .positiveColorRes(R.color.colorAccent)
-                .negativeColorRes(R.color.colorAccent)
-                .neutralColorRes(R.color.colorAdditionalAction)
-                .titleColorRes(R.color.colorPrimaryDark)
-                .backgroundColorRes(R.color.colorBackgroundLight)
-                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                .neutralText(R.string.logout)
+                .negativeText(R.string.delete_account)
+                .onNeutral(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         Utils.showQuickInfo(rootView, getString(R.string.logged_out));
                         logOut();
-                        dialog.dismiss();
+                        dialog.hide();
                     }
                 })
-                .onNeutral(new MaterialDialog.SingleButtonCallback() {
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                    public void onClick(@NonNull final MaterialDialog dialog, @NonNull DialogAction which) {
                         Snackbar.make(Utils.findSnackbarView(rootView), R.string.remove_account_info, Snackbar.LENGTH_LONG)
                                 .setActionTextColor(ContextCompat.getColor(clazz, R.color.colorAccent))
                                 .setAction(R.string.remove, new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
+                                        dialog.dismiss();
                                         new ProcessDeleteUser().execute();
                                     }
                                 }).show();
-                        dialog.dismiss();
+                        dialog.hide();
                     }
                 });
 
@@ -233,7 +225,7 @@ public class SessionActivity extends AppCompatActivity {
                     clazz.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + Session.getInstance().getUser().getUsername())));
                 }
 
-                infoDialog.dismiss();
+                infoDialog.hide();
             }
         });
         infoDialog.getTitleView().setOnClickListener(new View.OnClickListener() {
@@ -250,9 +242,11 @@ public class SessionActivity extends AppCompatActivity {
                     clazz.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + Session.getInstance().getUser().getUsername())));
                 }
 
-                infoDialog.dismiss();
+                infoDialog.hide();
             }
         });
+        infoDialog.getActionButton(DialogAction.NEGATIVE).setMaxLines(2);
+        infoDialog.getActionButton(DialogAction.NEGATIVE).setPadding(0, 0, 0, 0);
     }
     private void showInfoDialog() {
         initInfoDialog();
@@ -289,6 +283,13 @@ public class SessionActivity extends AppCompatActivity {
         removeAccessToken();
         setMainMenuVisibility(mainMenu);
         invalidateOptionsMenu();
+        initLoginDialog();
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            CookieManager.getInstance().removeAllCookies(null);
+        } else {
+            CookieManager.getInstance().removeAllCookie();
+        }
     }
 
     private class ProcessGetAccessToken extends AsyncTask<String, Void, InstagramAccessToken> {

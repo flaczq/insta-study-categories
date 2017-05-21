@@ -128,12 +128,9 @@ public class CategoryActivity extends SessionActivity {
                 .title(R.string.new_category)
                 .content(R.string.suggest_new_category)
                 .positiveText(R.string.suggest)
-                .negativeText(R.string.cancel)
-                .positiveColorRes(R.color.colorAccent)
-                .negativeColorRes(R.color.colorAccent)
-                .titleColorRes(R.color.colorPrimaryDark)
+                .neutralText(R.string.cancel)
                 .inputType(InputType.TYPE_CLASS_TEXT)
-                .inputRangeRes(1, 20, R.color.colorError)
+                .inputRangeRes(1, 50, R.color.colorError)
                 .input(getString(R.string.type_name), null, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {

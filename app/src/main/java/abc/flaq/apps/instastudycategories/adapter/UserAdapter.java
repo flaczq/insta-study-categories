@@ -94,7 +94,7 @@ public class UserAdapter extends BaseAdapter {
 
                 username.setText(model.getUsername());
                 joined.setText(Utils.formatDate(model.getCreated(), DATE_FORMAT));
-                followers.setText("\uD83D\uDE03 " + (Utils.isEmpty(model.getFollowers()) ? "0" : Utils.formatNumber(model.getFollowers().toString())));
+                followers.setText("\uD83D\uDE03 " + (Utils.isEmpty(model.getFollowers()) ? "0" : Utils.formatNumber(model.getFollowers())));
                 media.setText("\uD83D\uDCF7 " + (Utils.isEmpty(model.getMedia()) ? "0" : model.getMedia().toString()));
             }
         }

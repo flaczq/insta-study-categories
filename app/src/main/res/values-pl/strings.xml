@@ -53,11 +53,11 @@
     <string name="error_ig_login">Błąd logowania do Instagrama</string>
     <string name="error_chat_connection">Błąd połączenia z czatem</string>
     <string name="next">DALEJ</string>
-    <string name="error_connection">Sprawdź połączenie z Internetem i spróbuj ponownie później</string>
+    <string name="error_connection">Sprawdź połączenie z Internetem i spróbuj ponownie</string>
     <string name="error_login_try_again">Zaloguj się i spróbuj ponownie</string>
     <string name="back">Wróć</string>
     <string name="logout">Wyloguj</string>
-    <string name="delete_account">Usuń konto</string>
+    <string name="delete_account">Usuń\nkonto</string>
     <string name="logged_out">Wylowano</string>
     <string name="remove_account_info">Wszystkie informacje o Tobie zostaną usunięte</string>
     <string name="remove">USUŃ</string>

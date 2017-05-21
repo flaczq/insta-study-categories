@@ -115,6 +115,9 @@ public class Api {
         if (Utils.isNotEmpty(etag)) {
             connection.setRequestProperty("If-Match", etag);
         }
+        /*if (isPatch) {
+            connection.setRequestProperty("X-HTTP-Method-Override", "PATCH");
+        }*/
         connection.setRequestProperty("Authorization", API_CREDENTIALS);
         connection.setDoInput(true);
         connection.setUseCaches(false);
@@ -130,6 +133,7 @@ public class Api {
     private static InputStreamReader postRequest(String url, String data) throws IOException {
         return sendAuthorizedRequest("POST", url, null, data);
     }
+    // FIXME: nie działa na sdk < 21?
     private static InputStreamReader patchRequest(String url, String etag, String data) throws IOException {
         return sendAuthorizedRequest("PATCH", url, etag, data);
     }

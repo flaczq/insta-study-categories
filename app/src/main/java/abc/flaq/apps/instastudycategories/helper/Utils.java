@@ -250,11 +250,15 @@ public class Utils {
         String formattedDate = DateFormat.format(format, calendar.getTime()).toString();
         return formattedDate;
     }
-    public static String formatNumber(String number) {
-        if (number.length() >= 4) {
-            return (number.substring(0, number.length() - 3) + "k");
+    public static String formatNumber(Integer number) {
+        if (number > 999) {
+            String stringNumber = number.toString();
+            if (number % 1000 > 500) {
+                return (stringNumber.substring(0, stringNumber.length() - 3) + ".5k");
+            }
+            return (stringNumber.substring(0, stringNumber.length() - 3) + "k");
         }
-        return number;
+        return number.toString();
     }
 
     private static String getStringByName(Context context, String name) {
