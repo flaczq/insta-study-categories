@@ -5,6 +5,7 @@
     <color name="windowBackground">#FFFFFF</color>
     <color name="navigationBarColor">#000000</color>
     <color name="colorAccent">#5CB85C</color>
+    <color name="colorAccentDark">#3E8E3E</color>
     <color name="colorError">#D9534F</color>
     <color name="colorBackgroundLight">#F3F3F3</color>
     <color name="colorBackgroundNotSoLight">#A0A0A0</color>

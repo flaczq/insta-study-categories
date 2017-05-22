@@ -32,8 +32,8 @@
     <string name="error_subcategories_load">Couldn\'t load subcategories</string>
     <string name="error_subcategory_add">Couldn\'t add subcategory</string>
 
-    <string name="user_category_add_success">User added to category</string>
-    <string name="user_subcategory_add_success">User added to subcategory</string>
+    <string name="user_category_add_success">User added to category.</string>
+    <string name="user_subcategory_add_success">User added to subcategory.</string>
     <string name="user_category_remove_success">User removed from category</string>
     <string name="user_subcategory_remove_success">User removed from subcategory</string>
     <string name="error_users_load">Couldn\'t load users</string>

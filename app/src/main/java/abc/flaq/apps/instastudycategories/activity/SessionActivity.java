@@ -71,6 +71,7 @@ public class SessionActivity extends AppCompatActivity {
             if (Utils.isNotEmpty(accessToken)) {
                 new ProcessGetUser().execute();
             }
+            // FIXME ?
             initLoginDialog();
         }
     }

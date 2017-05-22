@@ -158,7 +158,7 @@ public class SubcategoryActivity extends SessionActivity {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         if (Utils.isNotEmpty(dialog.getInputEditText()) && Utils.isNotEmpty(dialog.getInputEditText().getText())) {
-                            new ProcessAddSubcategory().execute(dialog.getInputEditText().getText().toString());
+                            new ProcessAddSubcategory().execute(dialog.getInputEditText().getText().toString().trim().toLowerCase());
                         }
                         dialog.dismiss();
                     }

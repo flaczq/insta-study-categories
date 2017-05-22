@@ -1,8 +1,6 @@
 package abc.flaq.apps.instastudycategories.adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +22,6 @@ import abc.flaq.apps.instastudycategories.pojo.WebSocketMessage;
 
 import static abc.flaq.apps.instastudycategories.helper.Constants.CHAT_DATE_FORMAT;
 import static abc.flaq.apps.instastudycategories.helper.Constants.CHAT_LATE_DATE_FORMAT;
-import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_URL;
 
 public class ChatAdapter extends BaseAdapter {
 
@@ -32,11 +29,13 @@ public class ChatAdapter extends BaseAdapter {
     private LayoutInflater inflater;
 
     private List<WebSocketMessage> messages;
+    private Date sixDaysAgo;
 
     public ChatAdapter(Context context, List<WebSocketMessage> messages) {
         this.context = context;
         this.messages = messages;
         this.inflater = LayoutInflater.from(context);
+        this.sixDaysAgo = Utils.moveDateByDays(new Date(), -6);
     }
 
     @Override
@@ -48,7 +47,7 @@ public class ChatAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
+    public WebSocketMessage getItem(int position) {
         return messages.get(position);
     }
 
@@ -96,7 +95,8 @@ public class ChatAdapter extends BaseAdapter {
         }
 
         private void bind(final WebSocketMessage model, Boolean sameAsBefore) {
-            // TODO!!: prezentacja u góry liczby aktywnych użytkowników
+            // TODO: uprościć - przenieść profilePicUrl do WebScoketMessage
+            // TODO: wywalić nazwę tygodnia chyba że ostatnia wiad starsza niż tydzień
             if (Utils.isNotEmpty(model)) {
                 User user = Api.getUserByUsername(model.getName());
                 if (Utils.isEmpty(user) || sameAsBefore) {
@@ -109,24 +109,9 @@ public class ChatAdapter extends BaseAdapter {
                         UrlImageViewHelper.setUrlDrawable(profilePic, profilePicUrl, R.drawable.placeholder_profile_pic_72);
                     }
                     profilePic.setVisibility(View.VISIBLE);
-                    profilePic.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent nextIntent = Utils.getInstagramIntent(model.getName());
-
-                            if (Utils.isIntentAvailable(context, nextIntent)) {
-                                Utils.logDebug(context, "Instagram intent is available");
-                                context.startActivity(nextIntent);
-                            } else {
-                                Utils.logDebug(context, "Instagram intent is NOT available");
-                                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + model.getName())));
-                            }
-                        }
-                    });
                 }
 
-                Date dateWeekAgo = Utils.moveDateByDays(new Date(), -6);
-                if (model.getDate().after(dateWeekAgo)) {
+                if (model.getDate().after(sixDaysAgo)) {
                     date.setText(DateFormat.format(CHAT_DATE_FORMAT, model.getDate()));
                 } else {
                     date.setText(DateFormat.format(CHAT_LATE_DATE_FORMAT, model.getDate()));

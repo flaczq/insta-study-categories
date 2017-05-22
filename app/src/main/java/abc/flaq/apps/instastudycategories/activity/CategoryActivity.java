@@ -144,7 +144,7 @@ public class CategoryActivity extends SessionActivity {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         if (Utils.isNotEmpty(dialog.getInputEditText()) && Utils.isNotEmpty(dialog.getInputEditText().getText())) {
-                            new ProcessAddCategory().execute(dialog.getInputEditText().getText().toString());
+                            new ProcessAddCategory().execute(dialog.getInputEditText().getText().toString().trim().toLowerCase());
                         }
                         dialog.dismiss();
                     }

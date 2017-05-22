@@ -11,6 +11,9 @@
     <com.etsy.android.grid.StaggeredGridView android:id="@+id/subcategory_grid"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:smoothScrollbar="true"
+        android:scrollingCache="false"
+        android:animationCache="false"
         app:item_margin="@dimen/margin_between_grids"
         app:column_count="2" />
 

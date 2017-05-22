@@ -14,7 +14,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:background="@drawable/border_round"
+        android:background="@drawable/chat_border_round"
         android:gravity="center_vertical"
         android:descendantFocusability="beforeDescendants"
         android:focusableInTouchMode="true">
@@ -41,8 +41,33 @@
         android:layout_height="match_parent"
         android:dividerHeight="1px"
         android:divider="@drawable/chat_divider"
+        android:smoothScrollbar="true"
+        android:scrollingCache="false"
+        android:animationCache="false"
         android:stackFromBottom="true"
         android:transcriptMode="alwaysScroll"
+        android:layout_below="@+id/user_chat_header_layout"
         android:layout_above="@id/user_chat_input_layout" />
+
+    <LinearLayout android:id="@+id/user_chat_header_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="@color/colorAccent"
+        android:gravity="center_vertical">
+
+        <TextView android:id="@+id/user_chat_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-light"
+            android:text="Liczba aktywnych użytkowników na czacie: 123"
+            android:textSize="13sp"
+            android:textColor="@color/textColorMaybeImportant"
+            android:layout_margin="@dimen/default_small_margin"
+            android:gravity="center_horizontal" />
+
+    </LinearLayout>
 
 </RelativeLayout>

@@ -75,29 +75,9 @@ public class UserActivity extends SessionActivity {
         setContentView(R.layout.activity_user);
 
         layout = (CoordinatorLayout) findViewById(R.id.user_layout);
-        listView = (ListView) findViewById(R.id.user_list);
         preloader = (CrystalPreloader) findViewById(R.id.user_preloader);
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.user_fab);
 
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View chatView = inflater.inflate(R.layout.activity_user_chat, null);
-        ListView chatList = (ListView) chatView.findViewById(R.id.user_chat_list);
-        final TextView chatInput = (TextView) chatView.findViewById(R.id.user_chat_input);
-        final ImageButton sendButton = (ImageButton) chatView.findViewById(R.id.user_chat_input_send);
-
-        ChatAdapter chatAdapter = new ChatAdapter(clazz, new ArrayList<WebSocketMessage>());
-        chatList.setAdapter(chatAdapter);
-
-        chatDialog = new Dialog(clazz, R.style.DialogTheme);
-        chatDialog.setContentView(chatView);
-        Window chatWindow = chatDialog.getWindow();
-        if (Utils.isNotEmpty(chatWindow)) {
-            // Scroll list when keyboard is shown
-            chatWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-        }
-        Intent intent = getIntent();
-        String categoryForeignId = intent.getStringExtra(INTENT_CATEGORY_FOREIGN_ID);
-
+        listView = (ListView) findViewById(R.id.user_list);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
@@ -114,47 +94,11 @@ public class UserActivity extends SessionActivity {
                 }
             }
         });
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (Utils.isEmpty(Session.getInstance().getUser())) {
-                    Utils.showLoginError(layout, getString(R.string.error_chat_login));
-                } else {
-                    showChatDialog();
-                }
-            }
-        });
-        chatDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialogInterface) {
-                if (chatInput.hasFocus()) {
-                    chatInput.clearFocus();
-                }
-                fab.setBackgroundTintList(ContextCompat.getColorStateList(clazz, R.color.colorAccent));
-            }
-        });
-        chatInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-                if (actionId == IME_ACTION_SEND) {
-                    sendButton.performClick();
-                    return true;
-                }
-                return false;
-            }
-        });
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (Utils.isNotEmpty(chatInput.getText())) {
-                    webSocket.sendMessage(chatInput.getText().toString());
-                    chatInput.setText(null);
-                }
-            }
-        });
 
-        webSocket = WebSocketClientSide.createWebSocketClientSide(clazz, layout, fab, chatAdapter);
+        initWebSocket();
 
+        Intent intent = getIntent();
+        String categoryForeignId = intent.getStringExtra(INTENT_CATEGORY_FOREIGN_ID);
         // Check if parentForeignId is from newCategory or subcategory
         if (Utils.isNotEmpty(categoryForeignId)) {
             isCategory = true;
@@ -268,6 +212,82 @@ public class UserActivity extends SessionActivity {
         return true;
     }
 
+    private void initWebSocket() {
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View chatView = inflater.inflate(R.layout.activity_user_chat, null);
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.user_fab);
+        final ListView chatList = (ListView) chatView.findViewById(R.id.user_chat_list);
+        final TextView chatInput = (TextView) chatView.findViewById(R.id.user_chat_input);
+        final ImageButton sendButton = (ImageButton) chatView.findViewById(R.id.user_chat_input_send);
+
+        final ChatAdapter chatAdapter = new ChatAdapter(clazz, new ArrayList<WebSocketMessage>());
+        chatList.setAdapter(chatAdapter);
+        chatList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                WebSocketMessage selected = chatAdapter.getItem(position);
+                Intent nextIntent = Utils.getInstagramIntent(selected.getName());
+
+                if (Utils.isIntentAvailable(clazz, nextIntent)) {
+                    Utils.logDebug(clazz, "Instagram intent is available");
+                    clazz.startActivity(nextIntent);
+                } else {
+                    Utils.logDebug(clazz, "Instagram intent is NOT available");
+                    clazz.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + selected.getName())));
+                }
+            }
+        });
+
+        chatDialog = new Dialog(clazz, R.style.DialogTheme);
+        chatDialog.setContentView(chatView);
+        Window chatWindow = chatDialog.getWindow();
+        if (Utils.isNotEmpty(chatWindow)) {
+            // Scroll list when keyboard is shown
+            chatWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        }
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (Utils.isEmpty(Session.getInstance().getUser())) {
+                    Utils.showLoginError(layout, getString(R.string.error_chat_login));
+                } else {
+                    showChatDialog();
+                }
+            }
+        });
+        chatDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                if (chatInput.hasFocus()) {
+                    chatInput.clearFocus();
+                }
+                fab.setBackgroundTintList(ContextCompat.getColorStateList(clazz, R.color.colorAccent));
+            }
+        });
+        chatInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                if (actionId == IME_ACTION_SEND) {
+                    sendButton.performClick();
+                    return true;
+                }
+                return false;
+            }
+        });
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (Utils.isNotEmpty(chatInput.getText())) {
+                    webSocket.sendMessage(chatInput.getText().toString());
+                    chatInput.setText(null);
+                }
+            }
+        });
+
+        webSocket = WebSocketClientSide.createWebSocketClientSide(clazz, layout, chatAdapter, chatView);
+    }
+
     private void showChatDialog() {
         chatDialog.show();
     }
@@ -361,8 +381,9 @@ public class UserActivity extends SessionActivity {
             listView.setVisibility(View.VISIBLE);
 
             if (result) {
-                Utils.showInfo(layout,
-                        getString(R.string.user_subcategory_add_success)
+                Utils.showInfoDismiss(layout,
+                        getString(R.string.user_subcategory_add_success) + "\n" +
+                                getString(R.string.subcategory_add_success_2)
                 );
 
                 users.add(0, Session.getInstance().getUser());

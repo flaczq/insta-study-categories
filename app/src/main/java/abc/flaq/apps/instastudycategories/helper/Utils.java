@@ -253,10 +253,9 @@ public class Utils {
     public static String formatNumber(Integer number) {
         if (number > 999) {
             String stringNumber = number.toString();
-            if (number % 1000 > 500) {
-                return (stringNumber.substring(0, stringNumber.length() - 3) + ".5k");
-            }
-            return (stringNumber.substring(0, stringNumber.length() - 3) + "k");
+            int digit = ((number % 1000) / 100);
+            String symbol = (Locale.getDefault().getLanguage().equals("en") ? "." : ",");
+            return (stringNumber.substring(0, stringNumber.length() - 3) + symbol + digit + "k");
         }
         return number.toString();
     }
@@ -309,7 +308,7 @@ public class Utils {
         List<String> names = new ArrayList<>();
         if (isNotEmpty(Session.getInstance().getCategories())) {
             for (Category category : Session.getInstance().getCategories()) {
-                names.add(getStringByCategoryName(context, category.getName()).toLowerCase());
+                names.add(getStringByCategoryName(context, category.getName()).trim().toLowerCase());
             }
         }
         return names;
@@ -318,7 +317,7 @@ public class Utils {
         List<String> names = new ArrayList<>();
         if (isNotEmpty(Session.getInstance().getSubcategories(foreignCategoryId))) {
             for (Subcategory subcategory : Session.getInstance().getSubcategories(foreignCategoryId)) {
-                names.add(getStringBySubcategoryName(context, subcategory.getName()).toLowerCase());
+                names.add(getStringBySubcategoryName(context, subcategory.getName()).trim().toLowerCase());
             }
         }
         return names;

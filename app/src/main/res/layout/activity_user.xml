@@ -12,7 +12,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:dividerHeight="1px"
-        android:divider="@drawable/user_divider" />
+        android:divider="@drawable/user_divider"
+        android:smoothScrollbar="true"
+        android:scrollingCache="false"
+        android:animationCache="false" />
 
     <com.crystal.crystalpreloaders.widgets.CrystalPreloader android:id="@+id/user_preloader"
         android:layout_width="match_parent"

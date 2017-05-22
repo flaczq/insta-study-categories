@@ -28,13 +28,13 @@
     <string name="new_subcategory">Nowa podkategoria</string>
     <string name="suggest_new_subcategory">Zaproponuj nową podkategorię</string>
     <string name="subcategory_add_success_1">Nowa podkategoria znajduje się w zakładce NIEAKTYWNE.</string>
-    <string name="subcategory_add_success_2">Stanie się aktywna po dołączeniu do niej 10 użytkowników.</string>
+    <string name="subcategory_add_success_2">Stanie się ona aktywna po dołączeniu do niej 10 użytkowników.</string>
     <string name="error_subcategories_not_found">Nie znaleziono podkategorii</string>
     <string name="error_subcategories_load">Nie udało się pobrać podkategorii</string>
     <string name="error_subcategory_add">Nie udało się dodać podkategorii</string>
 
-    <string name="user_category_add_success">Dodano użytkownika do kategorii</string>
-    <string name="user_subcategory_add_success">Dodano użytkownika do podkategorii</string>
+    <string name="user_category_add_success">Dodano użytkownika do kategorii.</string>
+    <string name="user_subcategory_add_success">Dodano użytkownika do podkategorii.</string>
     <string name="user_category_remove_success">Usunięto użytkownika z kategorii</string>
     <string name="user_subcategory_remove_success">Usunięto użytkownika z podkategorii</string>
     <string name="error_users_load">Nie udało się pobrać listy użytkowników</string>
