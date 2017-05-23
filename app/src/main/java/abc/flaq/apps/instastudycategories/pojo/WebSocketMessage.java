@@ -1,5 +1,7 @@
 package abc.flaq.apps.instastudycategories.pojo;
 
+import android.graphics.drawable.Drawable;
+
 import java.util.Date;
 
 public class WebSocketMessage {
@@ -7,9 +9,9 @@ public class WebSocketMessage {
     private String message;
     private String name;
     private Date date;
+    private Drawable profilePic;
 
     public WebSocketMessage() {
-
     }
     public WebSocketMessage(String message, String name, Date date) {
         this.message = message;
@@ -36,6 +38,13 @@ public class WebSocketMessage {
     }
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public Drawable getProfilePic() {
+        return profilePic;
+    }
+    public void setProfilePic(Drawable profilePic) {
+        this.profilePic = profilePic;
     }
 
     @Override

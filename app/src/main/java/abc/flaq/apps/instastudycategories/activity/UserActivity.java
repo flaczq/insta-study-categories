@@ -1,6 +1,8 @@
 package abc.flaq.apps.instastudycategories.activity;
 
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,10 +21,11 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crystal.crystalpreloaders.widgets.CrystalPreloader;
 
@@ -44,6 +47,8 @@ import abc.flaq.apps.instastudycategories.pojo.Subcategory;
 import abc.flaq.apps.instastudycategories.pojo.User;
 import abc.flaq.apps.instastudycategories.pojo.WebSocketMessage;
 
+import static abc.flaq.apps.instastudycategories.R.id.menu_sort_alphabet;
+import static abc.flaq.apps.instastudycategories.R.id.menu_sort_followers;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_URL;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_FOREIGN_ID;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_NAME;
@@ -68,6 +73,9 @@ public class UserActivity extends SessionActivity {
     private Boolean isApiWorking = false;
     private WebSocketClientSide webSocket;
     private Dialog chatDialog;
+    private Boolean sortDate = false;
+    private Boolean sortFollowers = true;
+    private Boolean sortAlphabet = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +124,8 @@ public class UserActivity extends SessionActivity {
         }
 
         if (Utils.isEmpty(parentForeignId)) {
-            Utils.showConnectionError(layout, "Empty 'categoryId' and 'subcategoryId'");
+            handleConnectionError(getString(R.string.error_users_load));
+            Utils.logError(clazz, "Empty 'categoryId' and 'subcategoryId'");
         } else {
             new ProcessUsers().execute();
         }
@@ -158,6 +167,10 @@ public class UserActivity extends SessionActivity {
         if (isApiWorking) {
             return true;
         }
+
+        CharSequence title = item.getTitle();
+        int length = title.length();
+
         switch (item.getItemId()) {
             case R.id.menu_suggest:
                 // not available from here
@@ -169,38 +182,37 @@ public class UserActivity extends SessionActivity {
                 new ProcessRemoveUserFromSubcategory().execute();
                 break;
             case R.id.menu_sort:
-                PopupMenu popup = new PopupMenu(clazz, findViewById(R.id.menu_sort));
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem menuItem) {
-                        switch (menuItem.getItemId()) {
-                            case R.id.sort_menu_joined_date:
-                                Utils.sortByJoinedDate(users, false);
-                                break;
-                            case R.id.sort_menu_joined_date_rev:
-                                Utils.sortByJoinedDate(users, true);
-                                break;
-                            case R.id.sort_menu_followers:
-                                Utils.sortByFollowers(users, false);
-                                break;
-                            case R.id.sort_menu_followers_rev:
-                                Utils.sortByFollowers(users, true);
-                                break;
-                            case R.id.sort_menu_alphabetically:
-                                Utils.sortAlphabetically(users, false);
-                                break;
-                            case R.id.sort_menu_alphabetically_rev:
-                                Utils.sortAlphabetically(users, true);
-                                break;
-                            default:
-                                break;
-                        }
-                        userAdapter.notifyDataSetChanged();
-                        return true;
-                    }
-                });
-                popup.inflate(R.menu.sort_menu);
-                popup.show();
+                // submenu only
+                break;
+            case R.id.menu_sort_joined_date:
+                if (sortDate) {
+                    item.setTitle("Od najstarszego");
+                } else {
+                    item.setTitle("Od najmłodszego");
+                }
+                sortDate = !sortDate;
+                Utils.sortByJoinedDate(users, sortDate);
+                userAdapter.notifyDataSetChanged();
+                break;
+            case menu_sort_followers:
+                if (sortFollowers) {
+                    item.setTitle("Najmniej followersów");
+                } else {
+                    item.setTitle("Najwięcej followersów");
+                }
+                sortFollowers = !sortFollowers;
+                Utils.sortByFollowers(users, sortFollowers);
+                userAdapter.notifyDataSetChanged();
+                break;
+            case menu_sort_alphabet:
+                if (sortAlphabet) {
+                    item.setTitle("Alfabetycznie (Z-A)");
+                } else {
+                    item.setTitle("Alfabetycznie (A-Z)");
+                }
+                sortAlphabet = !sortAlphabet;
+                Utils.sortAlphabetically(users, sortAlphabet);
+                userAdapter.notifyDataSetChanged();
                 break;
             case R.id.menu_info:
                 return super.onOptionsItemSelected(item);
@@ -217,26 +229,8 @@ public class UserActivity extends SessionActivity {
         View chatView = inflater.inflate(R.layout.activity_user_chat, null);
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.user_fab);
         final ListView chatList = (ListView) chatView.findViewById(R.id.user_chat_list);
-        final TextView chatInput = (TextView) chatView.findViewById(R.id.user_chat_input);
+        final EditText chatInput = (EditText) chatView.findViewById(R.id.user_chat_input);
         final ImageButton sendButton = (ImageButton) chatView.findViewById(R.id.user_chat_input_send);
-
-        final ChatAdapter chatAdapter = new ChatAdapter(clazz, new ArrayList<WebSocketMessage>());
-        chatList.setAdapter(chatAdapter);
-        chatList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                WebSocketMessage selected = chatAdapter.getItem(position);
-                Intent nextIntent = Utils.getInstagramIntent(selected.getName());
-
-                if (Utils.isIntentAvailable(clazz, nextIntent)) {
-                    Utils.logDebug(clazz, "Instagram intent is available");
-                    clazz.startActivity(nextIntent);
-                } else {
-                    Utils.logDebug(clazz, "Instagram intent is NOT available");
-                    clazz.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + selected.getName())));
-                }
-            }
-        });
 
         chatDialog = new Dialog(clazz, R.style.DialogTheme);
         chatDialog.setContentView(chatView);
@@ -285,11 +279,43 @@ public class UserActivity extends SessionActivity {
             }
         });
 
-        webSocket = WebSocketClientSide.createWebSocketClientSide(clazz, layout, chatAdapter, chatView);
+        final ChatAdapter chatAdapter = new ChatAdapter(clazz, new ArrayList<WebSocketMessage>());
+        chatList.setAdapter(chatAdapter);
+        chatList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                WebSocketMessage selected = chatAdapter.getItem(position);
+                String text = ("@" + selected.getName() + " ");
+                if (Utils.isNotEmpty(chatInput.getText())) {
+                    chatInput.setText(chatInput.getText().toString().trim() + " " + text);
+                } else {
+                    chatInput.setText(text);
+                }
+                chatInput.setSelection(chatInput.getText().length());
+            }
+        });
+        chatList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+                WebSocketMessage selected = chatAdapter.getItem(position);
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                ClipData clipData = ClipData.newPlainText("text", selected.getMessage());
+                clipboard.setPrimaryClip(clipData);
+                Toast.makeText(clazz, getString(R.string.message_copied), Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
+
+        webSocket = WebSocketClientSide.createWebSocketClientSide(clazz, layout, chatAdapter, chatView, chatDialog);
     }
 
     private void showChatDialog() {
         chatDialog.show();
+    }
+
+    private void handleConnectionError(String message) {
+        isApiWorking = true;
+        Utils.showConnectionError(layout, message);
     }
 
     private class ProcessUsers extends AsyncTask<Void, Void, Void> {
@@ -322,11 +348,11 @@ public class UserActivity extends SessionActivity {
                     }
                 }
             } catch (JSONException e) {
+                handleConnectionError(getString(R.string.error_users_load));
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
-                Utils.showConnectionError(layout, getString(R.string.error_users_load));
             } catch (IOException e) {
+                handleConnectionError(getString(R.string.error_users_load));
                 Utils.logError(clazz, "IOException: " + e.getMessage());
-                Utils.showConnectionError(layout, getString(R.string.error_users_load));
             }
             return null;
         }
@@ -364,11 +390,11 @@ public class UserActivity extends SessionActivity {
                     result = Api.addUserToSubcategory(Session.getInstance().getUser(), subcategory);
                 }
             } catch (JSONException e) {
+                handleConnectionError(getString(R.string.error_user_subcategory_add));
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
-                Utils.showConnectionError(layout, getString(R.string.error_user_subcategory_add));
             } catch (IOException e) {
+                handleConnectionError(getString(R.string.error_user_subcategory_add));
                 Utils.logError(clazz, "IOException: " + e.getMessage());
-                Utils.showConnectionError(layout, getString(R.string.error_user_subcategory_add));
             }
             return result;
         }
@@ -419,11 +445,11 @@ public class UserActivity extends SessionActivity {
                     result = Api.removeUserFromSubcategory(Session.getInstance().getUser(), subcategory);
                 }
             } catch (JSONException e) {
+                handleConnectionError(getString(R.string.error_user_subcategory_remove));
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
-                Utils.showConnectionError(layout, getString(R.string.error_user_subcategory_remove));
             } catch (IOException e) {
+                handleConnectionError(getString(R.string.error_user_subcategory_remove));
                 Utils.logError(clazz, "IOException: " + e.getMessage());
-                Utils.showConnectionError(layout, getString(R.string.error_user_subcategory_remove));
             }
             return result;
         }

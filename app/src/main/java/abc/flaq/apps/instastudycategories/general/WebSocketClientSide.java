@@ -1,5 +1,9 @@
 package abc.flaq.apps.instastudycategories.general;
 
+import android.app.Dialog;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
@@ -11,6 +15,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
@@ -28,7 +33,9 @@ import java.util.Map;
 
 import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.adapter.ChatAdapter;
+import abc.flaq.apps.instastudycategories.api.Api;
 import abc.flaq.apps.instastudycategories.helper.Utils;
+import abc.flaq.apps.instastudycategories.pojo.User;
 import abc.flaq.apps.instastudycategories.pojo.WebSocketMessage;
 
 import static abc.flaq.apps.instastudycategories.helper.Constants.API_WEB_SOCKET_ORIGIN;
@@ -46,9 +53,10 @@ public class WebSocketClientSide extends WebSocketClient {
     private ChatAdapter adapter;
     private TextView chatHeader;
     private FloatingActionButton fab;
+    private Dialog chatDialog;
     private ObjectMapper mapper = new ObjectMapper();
 
-    public static WebSocketClientSide createWebSocketClientSide(AppCompatActivity clazz, CoordinatorLayout layout, ChatAdapter adapter, View view) {
+    public static WebSocketClientSide createWebSocketClientSide(AppCompatActivity clazz, CoordinatorLayout layout, ChatAdapter adapter, View view, Dialog chatDialog) {
         URI uri = null;
         try {
             uri = new URI(API_WEB_SOCKET_URL);
@@ -59,21 +67,23 @@ public class WebSocketClientSide extends WebSocketClient {
         Map<String, String> headers = new HashMap<>();
         headers.put("Origin", API_WEB_SOCKET_ORIGIN);
         int timeout = 0;
-        return new WebSocketClientSide(uri, draft, headers, timeout, clazz, layout, adapter, view);
+        return new WebSocketClientSide(uri, draft, headers, timeout, clazz, layout, adapter, view, chatDialog);
     }
-    private WebSocketClientSide(URI uri, Draft draft, Map<String, String> headers, int timeout, AppCompatActivity clazz, CoordinatorLayout layout, ChatAdapter adapter, View view) {
+    private WebSocketClientSide(URI uri, Draft draft, Map<String, String> headers, int timeout, AppCompatActivity clazz, CoordinatorLayout layout, ChatAdapter adapter, View view, Dialog chatDialog) {
         super(uri, draft, headers, timeout);
         this.clazz = clazz;
         this.layout = layout;
         this.adapter = adapter;
         this.chatHeader = (TextView) view.findViewById(R.id.user_chat_header);
         this.fab = (FloatingActionButton) layout.findViewById(R.id.user_fab);
+        this.chatDialog = chatDialog;
 
         connect();
     }
 
     @Override
     public void onOpen(ServerHandshake serverHandshake) {
+        fab.setClickable(true);
         Utils.logDebug(clazz, "Opened WebSocket");
     }
 
@@ -86,6 +96,19 @@ public class WebSocketClientSide extends WebSocketClient {
             if (WEB_SOCKET_TYPE_MESSAGE.equals(type)) {
                 final WebSocketMessage message = mapper.readValue(json.getString(WEB_SOCKET_DATA), WebSocketMessage.class);
                 Utils.logDebug(clazz, message.toString());
+
+                User user = Api.getUserByUsername(message.getName());
+                if (Utils.isNotEmpty(user) && Utils.isNotEmpty(user.getProfilePicUrl())) {
+                    Bitmap profilePicBitmap = UrlImageViewHelper.getCachedBitmap(user.getProfilePicUrl());
+                    BitmapDrawable profilePic = new BitmapDrawable(clazz.getResources(), profilePicBitmap);
+                    message.setProfilePic(profilePic.getCurrent());
+                } else {
+                    if (Build.VERSION.SDK_INT >= 21) {
+                        message.setProfilePic(clazz.getDrawable(R.drawable.placeholder_profile_pic_72));
+                    } else {
+                        message.setProfilePic(clazz.getResources().getDrawable(R.drawable.placeholder_profile_pic_72));
+                    }
+                }
                 clazz.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -100,29 +123,26 @@ public class WebSocketClientSide extends WebSocketClient {
                 clazz.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        chatHeader.setText("Liczba aktywnych użytkowników na czacie: " + totalUsers);
+                        chatHeader.setText(clazz.getString(R.string.chat_total_users, totalUsers));
                     }
                 });
                 Utils.logDebug(clazz, totalUsers.toString());
             } else {
+                handleConnectionError();
                 Utils.logError(clazz, "Nieprawidłowy typ wiadomości WebSocket");
             }
         } catch (JSONException e) {
-            fab.setClickable(false);
+            handleConnectionError();
             Utils.logError(clazz, "JSONException: " + e.getMessage());
-            Utils.showConnectionError(layout, clazz.getString(R.string.error_chat_connection));
         } catch (JsonParseException e) {
-            fab.setClickable(false);
+            handleConnectionError();
             Utils.logError(clazz, "JsonParseException: " + e.getMessage());
-            Utils.showConnectionError(layout, clazz.getString(R.string.error_chat_connection));
         } catch (JsonMappingException e) {
-            fab.setClickable(false);
+            handleConnectionError();
             Utils.logError(clazz, "JsonMappingException: " + e.getMessage());
-            Utils.showConnectionError(layout, clazz.getString(R.string.error_chat_connection));
         } catch (IOException e) {
-            fab.setClickable(false);
+            handleConnectionError();
             Utils.logError(clazz, "IOException: " + e.getMessage());
-            Utils.showConnectionError(layout, clazz.getString(R.string.error_chat_connection));
         }
     }
 
@@ -143,12 +163,18 @@ public class WebSocketClientSide extends WebSocketClient {
                 String json = mapper.writeValueAsString(newMessage);
                 send(json);
             } catch (JsonProcessingException e) {
+                handleConnectionError();
                 Utils.logError(clazz, "JsonProcessingException: " + e.getMessage());
-                Utils.showConnectionError(layout, clazz.getString(R.string.error_chat_connection));
             }
         } else {
-            Utils.showConnectionError(layout, clazz.getString(R.string.error_chat_connection));
+            handleConnectionError();
         }
+    }
+
+    private void handleConnectionError() {
+        fab.setClickable(false);
+        chatDialog.dismiss();
+        Utils.showConnectionError(layout, clazz.getString(R.string.error_chat_connection));
     }
 
 }

@@ -153,6 +153,11 @@ public class CategoryActivity extends SessionActivity {
                 .show();
     }
 
+    private void handleConnectionError(String message) {
+        isApiWorking = true;
+        Utils.showConnectionError(tabs, message);
+    }
+
     private void startCategoryFragment() {
         Intent intent = new Intent(INTENT_CATEGORY);
         intent.putExtra(INTENT_CATEGORY_ACTIVE_START, true);
@@ -213,11 +218,11 @@ public class CategoryActivity extends SessionActivity {
             try {
                 categories = Api.getAllCategories(true);
             } catch (JSONException e) {
+                handleConnectionError(getString(R.string.error_categories_load));
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
-                Utils.showConnectionError(tabs, getString(R.string.error_categories_load));
             } catch (IOException e) {
+                handleConnectionError(getString(R.string.error_categories_load));
                 Utils.logError(clazz, "IOException: " + e.getMessage());
-                Utils.showConnectionError(tabs, getString(R.string.error_categories_load));
             }
             return null;
         }
@@ -252,11 +257,11 @@ public class CategoryActivity extends SessionActivity {
                     result = Boolean.TRUE;
                 }
             } catch (JSONException e) {
+                handleConnectionError(getString(R.string.error_category_add));
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
-                Utils.showConnectionError(tabs, getString(R.string.error_category_add));
             } catch (IOException e) {
+                handleConnectionError(getString(R.string.error_category_add));
                 Utils.logError(clazz, "IOException: " + e.getMessage());
-                Utils.showConnectionError(tabs, getString(R.string.error_category_add));
             }
             return result;
         }
@@ -272,7 +277,7 @@ public class CategoryActivity extends SessionActivity {
                                 getString(R.string.category_add_success_2)
                 );
 
-                // Don't show preloader, because categories are loaded just after
+                // Don't show preloa der, because categories are loaded just after
                 Session.getInstance().setCategoryChanged(true);
                 new ProcessCategories().execute();
             } else {

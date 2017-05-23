@@ -34,6 +34,7 @@
         android:src="@android:drawable/stat_notify_chat"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/default_margin"
+        android:clickable="false"
         app:backgroundTint="@color/colorAccent"
         app:fabSize="normal"
         app:layout_behavior="abc.flaq.apps.instastudycategories.design.MoveUpBehavior"/>

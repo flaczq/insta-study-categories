@@ -241,6 +241,7 @@ public class Utils {
 
     public static Date moveDateByDays(Date date, int days) {
         calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.add(Calendar.DAY_OF_MONTH, days);
         return calendar.getTime();
     }

@@ -63,4 +63,6 @@
     <string name="logged_in">Logged in</string>
     <string name="error_account_remove">Couldn\'t remove user account</string>
     <string name="remove_account_success">User account removed</string>
+    <string name="message_copied">Message copied</string>
+    <string name="chat_total_users">Number of active users in chat: %1$d</string>
 </resources>

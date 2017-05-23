@@ -68,11 +68,10 @@ public class SessionActivity extends AppCompatActivity {
         rootView = findViewById(android.R.id.content);
         accessToken = Session.getInstance().getSettings().getString(SETTINGS_ACCESS_TOKEN, null);
         if (Utils.isEmpty(Session.getInstance().getUser())) {
+            initLoginDialog();
             if (Utils.isNotEmpty(accessToken)) {
                 new ProcessGetUser().execute();
             }
-            // FIXME ?
-            initLoginDialog();
         }
     }
 
@@ -133,8 +132,8 @@ public class SessionActivity extends AppCompatActivity {
         try {
             instagramAuthUrl = InstagramApi.getAuthUrl(Constants.INSTAGRAM_SCOPES.public_content);
         } catch (URISyntaxException e) {
+            handleConnectionError(getString(R.string.error_user_login));
             Utils.logError(clazz, "URISyntaxException: " + e.getMessage());
-            Utils.showConnectionError(rootView, getString(R.string.error_user_login));
         }
         WebView loginWebView = new WebView(clazz);
         loginWebView.loadUrl(instagramAuthUrl);
@@ -144,10 +143,10 @@ public class SessionActivity extends AppCompatActivity {
                 if (url.startsWith(INSTAGRAM_REDIRECT_URL)) {
                     String code = InstagramApi.getCodeFromUrl(rootView, url);
                     if (Utils.isEmpty(code)) {
+                        handleConnectionError(getString(R.string.error_ig_login));
                         Utils.logError(clazz, "Empty Instagram code");
-                        Utils.showConnectionError(rootView, getString(R.string.error_ig_login));
                         loginDialog.dismiss();
-                    } else {
+                    } else if (loginDialog.isShowing()) {
                         new ProcessGetAccessToken().execute(code);
                     }
                 } else {
@@ -159,7 +158,7 @@ public class SessionActivity extends AppCompatActivity {
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 super.onReceivedError(view, request, error);
-                Utils.showConnectionError(rootView, getString(R.string.error_ig_login));
+                handleConnectionError(getString(R.string.error_ig_login));
                 loginDialog.dismiss();
             }
         });
@@ -167,8 +166,6 @@ public class SessionActivity extends AppCompatActivity {
         loginDialog = new Dialog(clazz);
         loginDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         loginDialog.setContentView(loginWebView);
-        loginDialog.show();
-        loginDialog.hide();
     }
     private void showLoginDialog() {
         loginDialog.show();
@@ -193,7 +190,7 @@ public class SessionActivity extends AppCompatActivity {
                     @Override
                     public void onClick(@NonNull final MaterialDialog dialog, @NonNull DialogAction which) {
                         Snackbar.make(Utils.findSnackbarView(rootView), R.string.remove_account_info, Snackbar.LENGTH_LONG)
-                                .setActionTextColor(ContextCompat.getColor(clazz, R.color.colorAccent))
+                                .setActionTextColor(ContextCompat.getColor(clazz, R.color.colorError))
                                 .setAction(R.string.remove, new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
@@ -277,7 +274,7 @@ public class SessionActivity extends AppCompatActivity {
                 .apply();
     }
 
-    public void logOut() {
+    private void logOut() {
         user = null;
         Session.getInstance().setUser(null);
         accessToken = null;
@@ -291,6 +288,11 @@ public class SessionActivity extends AppCompatActivity {
         } else {
             CookieManager.getInstance().removeAllCookie();
         }
+    }
+
+    private void handleConnectionError(String message) {
+        isApiWorking = true;
+        Utils.showConnectionError(rootView, message);
     }
 
     private class ProcessGetAccessToken extends AsyncTask<String, Void, InstagramAccessToken> {
@@ -307,8 +309,8 @@ public class SessionActivity extends AppCompatActivity {
             try {
                 instagramToken = InstagramApi.getAccessTokenByCode(code);
             } catch (IOException e) {
+                handleConnectionError(getString(R.string.error_user_login));
                 Utils.logError(clazz, "IOException: " + e.getMessage());
-                Utils.showConnectionError(rootView, getString(R.string.error_user_login));
             }
             return instagramToken;
         }
@@ -365,11 +367,11 @@ public class SessionActivity extends AppCompatActivity {
                     }
                 }
             } catch (IOException e) {
+                handleConnectionError(getString(R.string.error_user_login));
                 Utils.logError(clazz, "IOException: " + e.getMessage());
-                Utils.showConnectionError(rootView, getString(R.string.error_user_login));
             } catch (JSONException e) {
+                handleConnectionError(getString(R.string.error_user_login));
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
-                Utils.showConnectionError(rootView, getString(R.string.error_user_login));
             }
             return instagramUser;
         }
@@ -391,7 +393,7 @@ public class SessionActivity extends AppCompatActivity {
                     if (isNewUser) {
                         new ProcessAddUser().execute();
                     } else {
-                        Utils.showQuickInfo(rootView, "Zalogowano");
+                        Utils.showQuickInfo(rootView, getString(R.string.logged_in));
                         Session.getInstance().setUser(user);
                         saveAccessToken(accessToken);
 
@@ -423,11 +425,11 @@ public class SessionActivity extends AppCompatActivity {
             try {
                 result = Api.addUser(user);
             } catch (JSONException e) {
+                handleConnectionError(getString(R.string.error_user_login));
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
-                Utils.showConnectionError(rootView, getString(R.string.error_user_login));
             } catch (IOException e) {
+                handleConnectionError(getString(R.string.error_user_login));
                 Utils.logError(clazz, "IOException: " + e.getMessage());
-                Utils.showConnectionError(rootView, getString(R.string.error_user_login));
             }
             return result;
         }
@@ -468,11 +470,11 @@ public class SessionActivity extends AppCompatActivity {
             try {
                 result = Api.removeUser(Session.getInstance().getUser());
             } catch (IOException e) {
+                handleConnectionError(getString(R.string.error_account_remove));
                 Utils.logError(clazz, "IOException: " + e.getMessage());
-                Utils.showConnectionError(rootView, getString(R.string.error_account_remove));
             } catch (JSONException e) {
+                handleConnectionError(getString(R.string.error_account_remove));
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
-                Utils.showConnectionError(rootView, getString(R.string.error_account_remove));
             }
             return result;
         }

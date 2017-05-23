@@ -1,0 +1,10 @@
+<resources>
+
+    <style name="DialogTheme" parent="DialogTheme">
+        <item name="android:windowBackground">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:statusBarColor">@color/colorAccentDark</item>
+    </style>
+
+</resources>

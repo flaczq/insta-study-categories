@@ -13,17 +13,31 @@
         app:showAsAction="ifRoom" />
     <item android:id="@+id/menu_leave"
         android:title="Usuń"
+        android:icon="@android:drawable/ic_delete"
         app:showAsAction="ifRoom" />
     <item android:id="@+id/menu_sort"
         android:title="Sortuj"
         android:icon="@android:drawable/ic_menu_sort_by_size"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom">
+        <menu>
+            <item android:id="@+id/menu_sort_joined_date"
+                android:title="Od najstarszego"
+                app:showAsAction="ifRoom" />
+            <item android:id="@+id/menu_sort_followers"
+                android:title="Najwięcej followersów"
+                app:showAsAction="ifRoom" />
+            <item android:id="@+id/menu_sort_alphabet"
+                android:title="Alfabetycznie (A-Z)"
+                app:showAsAction="ifRoom" />
+        </menu>
+    </item>
     <item android:id="@+id/menu_info"
         android:title="Info"
         android:icon="@android:drawable/ic_menu_info_details"
         app:showAsAction="ifRoom" />
     <item android:id="@+id/menu_login"
         android:title="Login"
+        android:icon="@android:drawable/ic_input_add"
         app:showAsAction="ifRoom" />
 
 </menu>

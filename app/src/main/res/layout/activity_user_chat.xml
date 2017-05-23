@@ -62,7 +62,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-light"
-            android:text="Liczba aktywnych użytkowników na czacie: 123"
+            android:text="Trwa łączenie z czatem..."
             android:textSize="13sp"
             android:textColor="@color/textColorMaybeImportant"
             android:layout_margin="@dimen/default_small_margin"

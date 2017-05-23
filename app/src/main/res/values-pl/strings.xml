@@ -64,4 +64,6 @@
     <string name="logged_in">Zalogowano</string>
     <string name="error_account_remove">Nie udało się usunąć konta użytkownika</string>
     <string name="remove_account_success">Usunięto konto użytkownika</string>
+    <string name="message_copied">Wiadomość skopiowana</string>
+    <string name="chat_total_users">Liczba aktywnych użytkowników na czacie: %1$d</string>
 </resources>
