@@ -158,6 +158,7 @@ public class CategoryActivity extends SessionActivity {
         Utils.showConnectionError(tabs, message);
     }
 
+    // FIXME: czasem nie ma preloadera na początku
     private void startCategoryFragment() {
         Intent intent = new Intent(INTENT_CATEGORY);
         intent.putExtra(INTENT_CATEGORY_ACTIVE_START, true);

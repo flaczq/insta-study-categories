@@ -9,12 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.Date;
 import java.util.List;
 
 import abc.flaq.apps.instastudycategories.R;
+import abc.flaq.apps.instastudycategories.general.Session;
 import abc.flaq.apps.instastudycategories.helper.Utils;
 import abc.flaq.apps.instastudycategories.pojo.WebSocketMessage;
 
@@ -84,6 +86,7 @@ public class ChatAdapter extends BaseAdapter {
     }
 
     private class ChatViewHolder {
+        private final RelativeLayout layout;
         private final ImageView profilePic;
         private final TextView date;
         private final TextView username;
@@ -94,10 +97,17 @@ public class ChatAdapter extends BaseAdapter {
             date = (TextView) view.findViewById(R.id.user_chat_item_date);
             username = (TextView) view.findViewById(R.id.user_chat_item_username);
             text = (TextView) view.findViewById(R.id.user_chat_item_text);
+            layout = (RelativeLayout) view;
         }
 
         private void bind(final WebSocketMessage model, Boolean sameAsBefore) {
             if (Utils.isNotEmpty(model)) {
+                if (model.getMessage().contains("@" + Session.getInstance().getUser().getUsername())) {
+                    layout.setBackgroundResource(R.drawable.chat_gradient);
+                } else {
+                    layout.setBackgroundResource(R.color.colorBackgroundLight);
+                }
+
                 if (sameAsBefore) {
                     profilePic.setVisibility(View.INVISIBLE);
                 } else {

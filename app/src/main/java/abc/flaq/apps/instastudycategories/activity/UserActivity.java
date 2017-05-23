@@ -86,6 +86,7 @@ public class UserActivity extends SessionActivity {
         preloader = (CrystalPreloader) findViewById(R.id.user_preloader);
 
         listView = (ListView) findViewById(R.id.user_list);
+        // TODO: kliknięcie w obrazek - IG, reszta - info o userze
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
@@ -162,6 +163,7 @@ public class UserActivity extends SessionActivity {
             mainMenu.findItem(R.id.menu_sort).setVisible(users.size() > 1);
         }
     }
+    // TODO: maks szerokość nazwy żeby zmieściły się ikonki
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (isApiWorking) {
