@@ -212,7 +212,6 @@ public class SessionActivity extends AppCompatActivity {
         infoDialog.getIconView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Utils.showQuickInfo(rootView, getString(R.string.ig_profile_open) + Session.getInstance().getUser().getUsername() + "...");
                 Intent nextIntent = Utils.getInstagramIntent(Session.getInstance().getUser().getUsername());
 
                 if (Utils.isIntentAvailable(clazz, nextIntent)) {
@@ -229,7 +228,6 @@ public class SessionActivity extends AppCompatActivity {
         infoDialog.getTitleView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Utils.showQuickInfo(rootView, getString(R.string.ig_profile_open) + Session.getInstance().getUser().getUsername() + "...");
                 Intent nextIntent = Utils.getInstagramIntent(Session.getInstance().getUser().getUsername());
 
                 if (Utils.isIntentAvailable(clazz, nextIntent)) {

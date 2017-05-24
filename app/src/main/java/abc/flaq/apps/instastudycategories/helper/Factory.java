@@ -42,6 +42,7 @@ public class Factory {
         user.setCategoriesSize(categories.size());
         user.setSubcategories(new ArrayList<String>());
         user.setSubcategoriesSize(0);
+        user.setSubcategoriesDates(new ArrayList<String>());
         user.setActive(Boolean.TRUE);
         return user;
     }

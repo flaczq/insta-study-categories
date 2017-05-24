@@ -11,6 +11,7 @@
     <string name="suggest_new_category">Suggest new category</string>
     <string name="category_add_success_1">New category is in INACTIVE tab.</string>
     <string name="category_add_success_2">It will be active after reaching 10 users in its subcategories.</string>
+    <string name="category_add_success_short">New category will be active after reaching 10 users in its subcategories</string>
     <string name="error_categories_not_found">No categories were found</string>
     <string name="error_categories_load">Couldn\'t load categories</string>
     <string name="error_category_add">Couldn\'t add category</string>
@@ -28,12 +29,14 @@
     <string name="suggest_new_subcategory">Suggest new subcategory</string>
     <string name="subcategory_add_success_1">New subcategory is in INACTIVE tab.</string>
     <string name="subcategory_add_success_2">It will be active after reaching 10 users.</string>
+    <string name="subcategory_add_success_short">New subcategory will be active after reaching 10 users</string>
     <string name="error_subcategories_not_found">No subcategories were found</string>
     <string name="error_subcategories_load">Couldn\'t load subcategories</string>
     <string name="error_subcategory_add">Couldn\'t add subcategory</string>
 
     <string name="user_category_add_success">User added to category.</string>
     <string name="user_subcategory_add_success">User added to subcategory.</string>
+    <string name="user_subcategory_add_success_short">New subcategory will be active after reaching 10 users</string>
     <string name="user_category_remove_success">User removed from category</string>
     <string name="user_subcategory_remove_success">User removed from subcategory</string>
     <string name="error_users_load">Couldn\'t load users</string>

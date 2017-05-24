@@ -2,12 +2,17 @@ package abc.flaq.apps.instastudycategories.pojo;
 
 import android.support.annotation.NonNull;
 
-import java.util.ArrayList;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
-import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramUser;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+
 import abc.flaq.apps.instastudycategories.helper.Utils;
+import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramUser;
 
 import static abc.flaq.apps.instastudycategories.helper.Constants.DATE_FORMAT;
+import static abc.flaq.apps.instastudycategories.helper.Constants.FULL_DATE_FORMAT;
 import static abc.flaq.apps.instastudycategories.helper.Constants.HOUR_FORMAT;
 
 public class User extends EveObject implements Comparable<User> {
@@ -23,6 +28,9 @@ public class User extends EveObject implements Comparable<User> {
     private Integer categoriesSize;
     private ArrayList<String> subcategories;
     private Integer subcategoriesSize;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = FULL_DATE_FORMAT, timezone = "Poland")
+    private ArrayList<String> subcategoriesDates = new ArrayList<>();
+    private Date joinDate;
     private Boolean active;
 
     public String getInstagramId() {
@@ -102,6 +110,20 @@ public class User extends EveObject implements Comparable<User> {
         this.subcategoriesSize = subcategoriesSize;
     }
 
+    public ArrayList<String> getSubcategoriesDates() {
+        return subcategoriesDates;
+    }
+    public void setSubcategoriesDates(ArrayList<String> subcategoriesDates) {
+        this.subcategoriesDates = subcategoriesDates;
+    }
+
+    public Date getJoinDate() {
+        return joinDate;
+    }
+    public void setJoinDate(Date joinDate) {
+        this.joinDate = joinDate;
+    }
+
     public Boolean isActive() {
         return active;
     }
@@ -123,6 +145,7 @@ public class User extends EveObject implements Comparable<User> {
         string += "categoriesSize: " + categoriesSize + ", ";
         string += "subcategories: " + subcategories + ", ";
         string += "subcategoriesSize: " + subcategoriesSize + ", ";
+        string += "subcategoriesDates: " + subcategoriesDates + ", ";
         string += "active: " + active;
         string += "]";
         return string;
@@ -130,7 +153,10 @@ public class User extends EveObject implements Comparable<User> {
 
     @Override
     public int compareTo(@NonNull User user) {
-        return (user.getFollowers() - followers);
+        if (Utils.isNotEmpty(getJoinDate()) && Utils.isNotEmpty(user.getJoinDate())) {
+            return (user.getJoinDate().compareTo(getJoinDate()));
+        }
+        return (user.getCreated().compareTo(getCreated()));
     }
 
     public String toPostJson() {
@@ -147,6 +173,7 @@ public class User extends EveObject implements Comparable<User> {
         json += "\"categoriesSize\":" + categoriesSize + ",";
         json += "\"subcategories\":" + Utils.listToString(subcategories) + ",";
         json += "\"subcategoriesSize\":" + subcategoriesSize + ",";
+        json += "\"subcategoriesDates\":" + Utils.listToString(subcategoriesDates) + ",";
         json += "\"active\":" + active;
         json += "}";
         return json;
@@ -166,6 +193,15 @@ public class User extends EveObject implements Comparable<User> {
             media = instagramUser.getCounts().getMedia();
         }
         active = Boolean.TRUE;
+    }
+
+    public void calculateJoinDate(String subcategoryForeignId) throws ParseException {
+        int dateIndex = subcategories.indexOf(subcategoryForeignId);
+        if (dateIndex == -1) {
+            joinDate = getCreated();
+        } else {
+            joinDate = Utils.parseStringDate(subcategoriesDates.get(dateIndex), FULL_DATE_FORMAT);
+        }
     }
 
     public String getInfoContent() {
@@ -199,12 +235,5 @@ public class User extends EveObject implements Comparable<User> {
         }
         return infoContent;
     }
-
-    /*
-    "Followersów: " + Session.getInstance().getUser().getFollowers() +
-                        "\nData dołączenia: " + Utils.formatDate(Session.getInstance().getUser().getCreated()) +
-                        "\nImię: " + Session.getInstance().getUser().getFullname() +
-                        "\nLiczba kategorii: " + (Session.getInstance().getUser().getCategoriesSize() + Session.getInstance().getUser().getSubcategoriesSize() - 1))
-     */
 
 }

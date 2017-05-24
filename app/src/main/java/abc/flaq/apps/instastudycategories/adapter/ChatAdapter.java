@@ -12,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
+
 import java.util.Date;
 import java.util.List;
 
@@ -111,8 +113,12 @@ public class ChatAdapter extends BaseAdapter {
                 if (sameAsBefore) {
                     profilePic.setVisibility(View.INVISIBLE);
                 } else {
-                    profilePic.setImageDrawable(model.getProfilePic());
                     profilePic.setVisibility(View.VISIBLE);
+                    if (Utils.isEmpty(model.getProfilePic())) {
+                        profilePic.setImageResource(R.drawable.placeholder_profile_pic_72);
+                    } else {
+                        UrlImageViewHelper.setUrlDrawable(profilePic, model.getProfilePic(), R.drawable.placeholder_profile_pic_72);
+                    }
                 }
                 profilePic.setOnClickListener(new View.OnClickListener() {
                     @Override

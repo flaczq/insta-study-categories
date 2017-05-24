@@ -17,6 +17,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -29,6 +30,7 @@ import abc.flaq.apps.instastudycategories.helper.Factory;
 import abc.flaq.apps.instastudycategories.helper.Utils;
 import abc.flaq.apps.instastudycategories.pojo.Category;
 import abc.flaq.apps.instastudycategories.pojo.EveObject;
+import abc.flaq.apps.instastudycategories.pojo.Info;
 import abc.flaq.apps.instastudycategories.pojo.Response;
 import abc.flaq.apps.instastudycategories.pojo.Subcategory;
 import abc.flaq.apps.instastudycategories.pojo.User;
@@ -36,6 +38,7 @@ import abc.flaq.apps.instastudycategories.pojo.User;
 import static abc.flaq.apps.instastudycategories.helper.Constants.API_ALL_CATEGORY_NAME;
 import static abc.flaq.apps.instastudycategories.helper.Constants.API_CATEGORIES_URL;
 import static abc.flaq.apps.instastudycategories.helper.Constants.API_CREDENTIALS;
+import static abc.flaq.apps.instastudycategories.helper.Constants.API_INFOS_URL;
 import static abc.flaq.apps.instastudycategories.helper.Constants.API_SUBCATEGORIES_URL;
 import static abc.flaq.apps.instastudycategories.helper.Constants.API_USERS_URL;
 
@@ -47,6 +50,7 @@ public class Api {
     private static ArrayList<Category> allCategories = new ArrayList<>();
     private static ArrayList<Subcategory> allSubcategories = new ArrayList<>();
     private static ArrayList<User> allUsers = new ArrayList<>();
+    private static ArrayList<Info> allInfos = new ArrayList<>();
 
     public static String getStream(InputStreamReader isr) throws IOException {
         BufferedReader br = new BufferedReader(isr);
@@ -152,7 +156,7 @@ public class Api {
         return handleResponse(connection);
     }
 
-    // Not used, correcting date during format and show
+    // Not used, correcting date through format and show
     private static void correctDate(EveObject eveObject) {
         Date date = eveObject.getCreated();
         calendar.setTime(date);
@@ -455,7 +459,16 @@ public class Api {
 
         return null;
     }
-    public static User getUserByUsername(String username) {
+    public static User getUserByUsername(String username) throws IOException, JSONException {
+        if (allUsers.size() > 0) {
+            for (User user : allUsers) {
+                if (username.equals(user.getUsername())) {
+                    return user;
+                }
+            }
+        }
+
+        getAllUsers(true);
         if (allUsers.size() > 0) {
             for (User user : allUsers) {
                 if (username.equals(user.getUsername())) {
@@ -605,25 +618,27 @@ public class Api {
 
         return Boolean.TRUE;
     }
-    public static Boolean addUserToSubcategory(User user, Subcategory subcategory) throws IOException, JSONException {
+    public static Boolean addUserToSubcategory(User user, Subcategory subcategory) throws IOException, JSONException, ParseException {
+        ArrayList<String> subcategoriesDates = user.getSubcategoriesDates();
         ArrayList<String> subcategories = user.getSubcategories();
         if (subcategories.contains(subcategory.getForeignId())) {
             Utils.logDebug("Api.addUserToSubcategory()", "Użytkownik " + user.getUsername() + " znajduje się już w podkategorii: " + subcategory.getForeignId());
             return Boolean.FALSE;
         }
 
+        subcategoriesDates.add(Utils.formatJoinedDate(new Date()));
         subcategories.add(subcategory.getForeignId());
         InputStreamReader is = patchRequest(
                 API_USERS_URL + "/" + user.getId(),
                 user.getEtag(),
                 "{\"subcategories\":" + Utils.listToString(subcategories) + "," +
-                        "\"subcategoriesSize\":" + subcategories.size() + "}"
+                        "\"subcategoriesSize\":" + subcategories.size() + "," +
+                        "\"subcategoriesDates\":" + Utils.listToString(subcategoriesDates) + "}"
         );
         String stream = getStream(is);
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
             Utils.logError("Api.addUserToSubcategory()", stream);
-            subcategories.remove(subcategory.getForeignId());
             return Boolean.FALSE;
         }
 
@@ -787,7 +802,6 @@ public class Api {
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
             Utils.logError("Api.removeUserFromCategory()", stream);
-            categories.add(category.getForeignId());
             return Boolean.FALSE;
         }
 
@@ -811,24 +825,26 @@ public class Api {
         return Boolean.TRUE;
     }
     public static Boolean removeUserFromSubcategory(User user, Subcategory subcategory) throws IOException, JSONException {
+        ArrayList<String> subcategoriesDates = user.getSubcategoriesDates();
         ArrayList<String> subcategories = user.getSubcategories();
         if (!subcategories.contains(subcategory.getForeignId())) {
             Utils.logDebug("Api.removeUserFromSubcategory()", "Użytkownik: " + user.toString() + " nie znajdował się w podkategorii: " + subcategory.getForeignId());
             return Boolean.TRUE;
         }
 
+        subcategoriesDates.remove(subcategories.indexOf(subcategory.getForeignId()));
         subcategories.remove(subcategory.getForeignId());
         InputStreamReader is = patchRequest(
                 API_USERS_URL + "/" + user.getId(),
                 user.getEtag(),
                 "{\"subcategories\":" + Utils.listToString(subcategories) + "," +
-                        "\"subcategoriesSize\":" + subcategories.size() + "}"
+                        "\"subcategoriesSize\":" + subcategories.size() + "," +
+                        "\"subcategoriesDates\":" + Utils.listToString(subcategoriesDates) + "}"
         );
         String stream = getStream(is);
         Response response = mapper.readValue(stream, Response.class);
         if (response.isError()) {
             Utils.logError("Api.removeUserFromSubcategory()", stream);
-            subcategories.add(subcategory.getForeignId());
             return Boolean.FALSE;
         }
 
@@ -866,6 +882,28 @@ public class Api {
         ///getAllCategories(true);
 
         return Boolean.TRUE;
+    }
+
+    // INFOS
+    public static ArrayList<Info> getAllInfos(boolean force) throws IOException, JSONException {
+        if (!force && allInfos.size() > 0) {
+            return allInfos;
+        }
+
+        InputStreamReader is = getAuthorizedRequest(API_INFOS_URL);
+        String stream = getStream(is);
+        JSONArray items = getItems(stream);
+
+        ArrayList<Info> infos = new ArrayList<>();
+        for (int i = 0; i < items.length(); i++) {
+            Info info = mapper.readValue(items.getString(i), Info.class);
+            //correctDate(info);
+            infos.add(info);
+        }
+        Collections.sort(infos);
+        allInfos = infos;
+
+        return infos;
     }
 
 }

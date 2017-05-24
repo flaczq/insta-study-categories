@@ -58,7 +58,7 @@ public class SubcategoryActiveFragment extends Fragment {
         View parentView = inflater.inflate(R.layout.activity_subcategory, container, false);
 
         preloader = (CrystalPreloader) parentView.findViewById(R.id.subcategory_preloader);
-        //preloader.setVisibility(View.VISIBLE);
+        preloader.setVisibility(View.VISIBLE);
 
         subcategoryAdapter = new SubcategoryAdapter(getActivity(), activeSubcategories);
 

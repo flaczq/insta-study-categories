@@ -27,7 +27,7 @@
                 android:title="Najwięcej followersów"
                 app:showAsAction="ifRoom" />
             <item android:id="@+id/menu_sort_alphabet"
-                android:title="Alfabetycznie (A-Z)"
+                android:title="Alfabetycznie (A - Z)"
                 app:showAsAction="ifRoom" />
         </menu>
     </item>

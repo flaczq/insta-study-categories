@@ -23,15 +23,19 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.crystal.crystalpreloaders.widgets.CrystalPreloader;
+import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,25 +90,13 @@ public class UserActivity extends SessionActivity {
         preloader = (CrystalPreloader) findViewById(R.id.user_preloader);
 
         listView = (ListView) findViewById(R.id.user_list);
-        // TODO: kliknięcie w obrazek - IG, reszta - info o userze
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 User selected = userAdapter.getItem(position);
-                //Utils.showQuickInfo(layout, getString(R.string.ig_profile_open) + selected.getUsername() + "...");
-                Intent nextIntent = Utils.getInstagramIntent(selected.getUsername());
-
-                if (Utils.isIntentAvailable(clazz, nextIntent)) {
-                    Utils.logDebug(clazz, "Instagram intent is available");
-                    clazz.startActivity(nextIntent);
-                } else {
-                    Utils.logDebug(clazz, "Instagram intent is NOT available");
-                    clazz.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + selected.getUsername())));
-                }
+                showOtherUserInfoDialog(selected);
             }
         });
-
-        initWebSocket();
 
         Intent intent = getIntent();
         String categoryForeignId = intent.getStringExtra(INTENT_CATEGORY_FOREIGN_ID);
@@ -134,7 +126,9 @@ public class UserActivity extends SessionActivity {
 
     @Override
     protected void onDestroy() {
-        webSocket.close();
+        if (Utils.isNotEmpty(webSocket)) {
+            webSocket.close();
+        }
         super.onDestroy();
     }
 
@@ -208,9 +202,9 @@ public class UserActivity extends SessionActivity {
                 break;
             case menu_sort_alphabet:
                 if (sortAlphabet) {
-                    item.setTitle("Alfabetycznie (Z-A)");
+                    item.setTitle("Alfabetycznie (Z - A)");
                 } else {
-                    item.setTitle("Alfabetycznie (A-Z)");
+                    item.setTitle("Alfabetycznie (A - Z)");
                 }
                 sortAlphabet = !sortAlphabet;
                 Utils.sortAlphabetically(users, sortAlphabet);
@@ -315,6 +309,57 @@ public class UserActivity extends SessionActivity {
         chatDialog.show();
     }
 
+    private void showOtherUserInfoDialog(final User user) {
+        MaterialDialog.Builder infoDialogBuilder = new MaterialDialog.Builder(clazz)
+                .title(user.getUsername())
+                .content(user.getInfoContent())
+                .positiveText(R.string.back);
+
+        if (Utils.isEmpty(user.getProfilePicUrl())) {
+            infoDialogBuilder.iconRes(R.drawable.placeholder_profile_pic_72);
+        } else {
+            ImageView profilePic = new ImageView(clazz);
+            UrlImageViewHelper.setUrlDrawable(profilePic, user.getProfilePicUrl(), R.drawable.placeholder_profile_pic_72);
+            infoDialogBuilder.icon(profilePic.getDrawable());
+        }
+
+        final MaterialDialog infoDialog = infoDialogBuilder.build();
+        infoDialog.getIconView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent nextIntent = Utils.getInstagramIntent(user.getUsername());
+
+                if (Utils.isIntentAvailable(clazz, nextIntent)) {
+                    Utils.logDebug(clazz, "Instagram intent is available");
+                    clazz.startActivity(nextIntent);
+                } else {
+                    Utils.logDebug(clazz, "Instagram intent is NOT available");
+                    clazz.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + user.getUsername())));
+                }
+
+                infoDialog.hide();
+            }
+        });
+        infoDialog.getTitleView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent nextIntent = Utils.getInstagramIntent(user.getUsername());
+
+                if (Utils.isIntentAvailable(clazz, nextIntent)) {
+                    Utils.logDebug(clazz, "Instagram intent is available");
+                    clazz.startActivity(nextIntent);
+                } else {
+                    Utils.logDebug(clazz, "Instagram intent is NOT available");
+                    clazz.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + user.getUsername())));
+                }
+
+                infoDialog.hide();
+            }
+        });
+
+        infoDialog.show();
+    }
+
     private void handleConnectionError(String message) {
         isApiWorking = true;
         Utils.showConnectionError(layout, message);
@@ -331,7 +376,7 @@ public class UserActivity extends SessionActivity {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                Api.getAllUsers(false);
+                Api.getAllUsers(true);
                 if (isCategory) {
                     users = Api.getUsersByCategoryForeignId(parentForeignId);
                 } else {
@@ -339,7 +384,6 @@ public class UserActivity extends SessionActivity {
                 }
                 hasJoined = false;
                 for (User user : users) {
-                    Utils.logDebug(clazz, user.toString());
                     if (Utils.isNotEmpty(Session.getInstance().getUser()) &&
                             user.getId().equals(Session.getInstance().getUser().getId())) {
                         if (isCategory) {
@@ -348,6 +392,8 @@ public class UserActivity extends SessionActivity {
                             hasJoined = Session.getInstance().getUser().getSubcategories().contains(parentForeignId);
                         }
                     }
+
+                    user.calculateJoinDate(parentForeignId);
                 }
             } catch (JSONException e) {
                 handleConnectionError(getString(R.string.error_users_load));
@@ -355,6 +401,9 @@ public class UserActivity extends SessionActivity {
             } catch (IOException e) {
                 handleConnectionError(getString(R.string.error_users_load));
                 Utils.logError(clazz, "IOException: " + e.getMessage());
+            } catch (ParseException e) {
+                handleConnectionError(getString(R.string.error_users_load));
+                Utils.logError(clazz, "ParseException: " + e.getMessage());
             }
             return null;
         }
@@ -368,6 +417,8 @@ public class UserActivity extends SessionActivity {
             userAdapter = new UserAdapter(clazz, users);
             listView.setAdapter(userAdapter);
             setCategoryMenuVisibility(hasJoined);
+
+            initWebSocket();
         }
     }
 
@@ -391,12 +442,17 @@ public class UserActivity extends SessionActivity {
                     Subcategory subcategory = Api.getSubcategoryById(Utils.undoForeignId(parentForeignId));
                     result = Api.addUserToSubcategory(Session.getInstance().getUser(), subcategory);
                 }
+
+                Session.getInstance().getUser().calculateJoinDate(parentForeignId);
             } catch (JSONException e) {
                 handleConnectionError(getString(R.string.error_user_subcategory_add));
                 Utils.logError(clazz, "JSONException: " + e.getMessage());
             } catch (IOException e) {
                 handleConnectionError(getString(R.string.error_user_subcategory_add));
                 Utils.logError(clazz, "IOException: " + e.getMessage());
+            } catch (ParseException e) {
+                handleConnectionError(getString(R.string.error_user_subcategory_add));
+                Utils.logError(clazz, "ParseException: " + e.getMessage());
             }
             return result;
         }
@@ -409,9 +465,8 @@ public class UserActivity extends SessionActivity {
             listView.setVisibility(View.VISIBLE);
 
             if (result) {
-                Utils.showInfoDismiss(layout,
-                        getString(R.string.user_subcategory_add_success) + "\n" +
-                                getString(R.string.subcategory_add_success_2)
+                Utils.showInfo(layout,
+                        getString(R.string.user_subcategory_add_success_short)
                 );
 
                 users.add(0, Session.getInstance().getUser());
@@ -464,9 +519,9 @@ public class UserActivity extends SessionActivity {
             listView.setVisibility(View.VISIBLE);
 
             if (result) {
-                Utils.showInfo(layout,
+                /*Utils.showInfo(layout,
                         getString(R.string.user_subcategory_remove_success)
-                );
+                );*/
 
                 Session.getInstance().getUser().removeFromList(users);
                 userAdapter.notifyDataSetChanged();

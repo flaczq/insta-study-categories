@@ -71,7 +71,7 @@ public class CategoryActivity extends SessionActivity {
                 public void run() {
                     endProcessCategoryFragment();
                 }
-            }, 50);
+            }, 10);
         }
     }
     @Override
@@ -210,7 +210,7 @@ public class CategoryActivity extends SessionActivity {
                     public void run() {
                         startCategoryFragment();
                     }
-                }, 50);
+                }, 10);
             }
         }
 
@@ -273,9 +273,8 @@ public class CategoryActivity extends SessionActivity {
             isApiWorking = false;
 
             if (result) {
-                Utils.showInfoDismiss(tabs,
-                        getString(R.string.category_add_success_1) + "\n" +
-                                getString(R.string.category_add_success_2)
+                Utils.showInfo(tabs,
+                        getString(R.string.category_add_success_short)
                 );
 
                 // Don't show preloa der, because categories are loaded just after

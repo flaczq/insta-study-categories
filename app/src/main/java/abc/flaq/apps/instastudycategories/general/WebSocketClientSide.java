@@ -1,9 +1,6 @@
 package abc.flaq.apps.instastudycategories.general;
 
 import android.app.Dialog;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.Build;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
@@ -15,7 +12,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
@@ -98,16 +94,10 @@ public class WebSocketClientSide extends WebSocketClient {
                 Utils.logDebug(clazz, message.toString());
 
                 User user = Api.getUserByUsername(message.getName());
-                if (Utils.isNotEmpty(user) && Utils.isNotEmpty(user.getProfilePicUrl())) {
-                    Bitmap profilePicBitmap = UrlImageViewHelper.getCachedBitmap(user.getProfilePicUrl());
-                    BitmapDrawable profilePic = new BitmapDrawable(clazz.getResources(), profilePicBitmap);
-                    message.setProfilePic(profilePic.getCurrent());
+                if (Utils.isEmpty(user)) {
+                    message.setProfilePic("");
                 } else {
-                    if (Build.VERSION.SDK_INT >= 21) {
-                        message.setProfilePic(clazz.getDrawable(R.drawable.placeholder_profile_pic_72));
-                    } else {
-                        message.setProfilePic(clazz.getResources().getDrawable(R.drawable.placeholder_profile_pic_72));
-                    }
+                    message.setProfilePic(user.getProfilePicUrl());
                 }
                 clazz.runOnUiThread(new Runnable() {
                     @Override

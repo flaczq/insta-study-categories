@@ -19,6 +19,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,7 +85,7 @@ public class SubcategoryActivity extends SessionActivity {
                     public void run() {
                         endProcessSubcategoryFragment();
                     }
-                }, 50);
+                }, 10);
             }
         }
     }
@@ -223,7 +224,7 @@ public class SubcategoryActivity extends SessionActivity {
                     public void run() {
                         startSubcategoryFragment();
                     }
-                }, 50);
+                }, 10);
             }
         }
 
@@ -283,6 +284,9 @@ public class SubcategoryActivity extends SessionActivity {
             } catch (IOException e) {
                 handleConnectionError(getString(R.string.error_subcategory_add));
                 Utils.logError(clazz, "IOException: " + e.getMessage());
+            } catch (ParseException e) {
+                handleConnectionError(getString(R.string.error_subcategory_add));
+                Utils.logError(clazz, "ParseException: " + e.getMessage());
             }
             return result;
         }
@@ -293,9 +297,8 @@ public class SubcategoryActivity extends SessionActivity {
             isApiWorking = false;
 
             if (result) {
-                Utils.showInfoDismiss(tabs,
-                        getString(R.string.subcategory_add_success_1) + "\n" +
-                                getString(R.string.subcategory_add_success_2)
+                Utils.showInfo(tabs,
+                        getString(R.string.subcategory_add_success_short)
                 );
 
                 // Don't show preloader, because subcategories are loaded just after

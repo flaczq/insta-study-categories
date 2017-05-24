@@ -22,6 +22,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.text.Normalizer;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -36,6 +38,7 @@ import abc.flaq.apps.instastudycategories.pojo.Category;
 import abc.flaq.apps.instastudycategories.pojo.Subcategory;
 import abc.flaq.apps.instastudycategories.pojo.User;
 
+import static abc.flaq.apps.instastudycategories.helper.Constants.FULL_DATE_FORMAT;
 import static abc.flaq.apps.instastudycategories.helper.Constants.GRID_HEIGHT_DIFF;
 import static abc.flaq.apps.instastudycategories.helper.Constants.GRID_MAX_HEIGHT;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_PACKAGE;
@@ -251,6 +254,17 @@ public class Utils {
         String formattedDate = DateFormat.format(format, calendar.getTime()).toString();
         return formattedDate;
     }
+    public static String formatJoinedDate(Date date) {
+        String formattedDate = DateFormat.format(FULL_DATE_FORMAT, date).toString();
+        return formattedDate;
+    }
+    public static Date parseStringDate(String date, String format) throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(format, Locale.ENGLISH);
+        Date parsedDate = dateFormat.parse(date);
+        calendar.setTime(parsedDate);
+        calendar.add(Calendar.HOUR_OF_DAY, -2);
+        return calendar.getTime();
+    }
     public static String formatNumber(Integer number) {
         if (number > 999) {
             String stringNumber = number.toString();
@@ -439,7 +453,7 @@ public class Utils {
     context.getResources().updateConfiguration(config, context.getResources().getDisplayMetrics());
     }
 
-    public static String listToString(List<String> list) {
+    public static String listToString(List list) {
         String string = "[";
         for (int i = 0; i < list.size(); i++) {
             string += "\"";
@@ -472,11 +486,11 @@ public class Utils {
             for (int j = 0; j < length - 1; j++) {
                 k = j + 1;
                 if (rev) {
-                    if (users.get(j).getCreated().compareTo(users.get(k).getCreated()) > 0) {
+                    if (users.get(j).getJoinDate().compareTo(users.get(k).getJoinDate()) > 0) {
                         swapNumbers(users, j, k);
                     }
                 } else {
-                    if (users.get(j).getCreated().compareTo(users.get(k).getCreated()) < 0) {
+                    if (users.get(j).getJoinDate().compareTo(users.get(k).getJoinDate()) < 0) {
                         swapNumbers(users, j, k);
                     }
                 }

@@ -59,7 +59,7 @@ public class CategoryActiveFragment extends Fragment {
         View parentView = inflater.inflate(R.layout.activity_category, container, false);
 
         preloader = (CrystalPreloader) parentView.findViewById(R.id.category_preloader);
-        //preloader.setVisibility(View.VISIBLE);
+        preloader.setVisibility(View.VISIBLE);
 
         categoryAdapter = new CategoryAdapter(getActivity(), activeCategories);
 
