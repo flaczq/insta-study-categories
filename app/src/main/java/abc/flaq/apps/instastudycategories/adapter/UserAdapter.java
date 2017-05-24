@@ -18,8 +18,8 @@ import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.helper.Utils;
 import abc.flaq.apps.instastudycategories.pojo.User;
 
+import static abc.flaq.apps.instastudycategories.helper.Constants.FULL_DATE_FORMAT;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_URL;
-import static abc.flaq.apps.instastudycategories.helper.Constants.USER_FULL_DATE_FORMAT;
 
 public class UserAdapter extends BaseAdapter {
 
@@ -111,7 +111,7 @@ public class UserAdapter extends BaseAdapter {
 
                 username.setText(model.getUsername());
                 if (Utils.isNotEmpty(model.getJoinDate())) {
-                    joined.setText(Utils.formatDate(model.getJoinDate(), USER_FULL_DATE_FORMAT));
+                    joined.setText(Utils.formatDate(model.getJoinDate(), FULL_DATE_FORMAT));
                 }
                 followers.setText("\uD83D\uDE03 " + (Utils.isEmpty(model.getFollowers()) ? "0" : Utils.formatNumber(model.getFollowers())));
                 media.setText("\uD83D\uDCF7 " + (Utils.isEmpty(model.getMedia()) ? "0" : model.getMedia().toString()));
