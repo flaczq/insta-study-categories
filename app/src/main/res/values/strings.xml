@@ -4,7 +4,7 @@
 
     <string name="category_name.all">All</string>
     <string name="category_name.college">College</string>
-    <string name="category_name.high_school">Highschool</string>
+    <string name="category_name.high_school">High School</string>
     <string name="category_name.work">Work</string>
 
     <string name="new_category">New category</string>
@@ -30,7 +30,7 @@
     <string name="subcategory_add_success_1">New subcategory is in INACTIVE tab.</string>
     <string name="subcategory_add_success_2">It will be active after reaching 10 users.</string>
     <string name="subcategory_add_success_short">New subcategory will be active after reaching 10 users</string>
-    <string name="error_subcategories_not_found">No subcategories were found</string>
+    <string name="error_subcategories_not_found">There are no subcategories yet. Go ahead and suggest one!</string>
     <string name="error_subcategories_load">Couldn\'t load subcategories</string>
     <string name="error_subcategory_add">Couldn\'t add subcategory</string>
 
@@ -39,6 +39,20 @@
     <string name="user_subcategory_add_success_short">New subcategory will be active after reaching 10 users</string>
     <string name="user_category_remove_success">User removed from category</string>
     <string name="user_subcategory_remove_success">User removed from subcategory</string>
+    <string name="user_info_1">My name is&#160;</string>
+    <string name="user_info_2">I have&#160;</string>
+    <string name="user_info_3">&#160;post on my instagram profile,&#160;</string>
+    <string name="user_info_4">&#160;posts on my instagram profile,&#160;</string>
+    <string name="user_info_5">which is followed by&#160;</string>
+    <string name="user_info_6">&#160;person.&#160;</string>
+    <string name="user_info_7">&#160;people.&#160;</string>
+    <string name="user_info_8">&#160;people.&#160;</string>
+    <string name="user_info_9">&#160;I\'m not in any subcategory yet and I joined here&#160;</string>
+    <string name="user_info_10">&#160;at&#160;</string>
+    <string name="user_info_11">I\'m only in one subcategory, but I joined here only&#160;</string>
+    <string name="user_info_12">I\'m already in&#160;</string>
+    <string name="user_info_13">&#160;subcategories and I joined here&#160;</string>
+    <string name="user_info_14">This sentence describes me the best:&#160;</string>
     <string name="error_users_load">Couldn\'t load users</string>
     <string name="error_user_login">Couldn\'t log in</string>
     <string name="error_user_category_add">Couldn\'t add user to category</string>
@@ -68,4 +82,6 @@
     <string name="remove_account_success">User account removed</string>
     <string name="message_copied">Message copied</string>
     <string name="chat_total_users">Number of active users in chat: %1$d</string>
+    <string name="tab_active">ACTIVE</string>
+    <string name="tab_inactive">INACTIVE</string>
 </resources>

@@ -1,5 +1,6 @@
 package abc.flaq.apps.instastudycategories.pojo;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -8,6 +9,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 
+import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.helper.Utils;
 import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramUser;
 
@@ -204,34 +206,34 @@ public class User extends EveObject implements Comparable<User> {
         }
     }
 
-    public String getInfoContent() {
+    public String getInfoContent(Context context) {
         String infoContent = "";
         if (Utils.isNotEmpty(fullname)) {
-            infoContent += "Nazywam się " + fullname + ". ";
+            infoContent += context.getString(R.string.user_info_1) + fullname + ". ";
         }
         if (media > 0 && media < 5) {
-            infoContent += "Mam " + media + " posty na profilu instagramowym, ";
+            infoContent += context.getString(R.string.user_info_2) + media + context.getString(R.string.user_info_3);
         } else {
-            infoContent += "Mam " + media + " postów na profilu instagramowym, ";
+            infoContent += context.getString(R.string.user_info_2) + media + context.getString(R.string.user_info_4);
         }
         if (followers == 1) {
-            infoContent += "który obserwuje " + followers + " osoba. ";
+            infoContent += context.getString(R.string.user_info_5) + followers + context.getString(R.string.user_info_6);
         } else if (followers > 0 && followers < 5) {
-            infoContent += "który obserwuje " + followers + " osoby. ";
+            infoContent += context.getString(R.string.user_info_5) + followers + context.getString(R.string.user_info_7);
         } else {
-            infoContent += "który obserwuje " + followers + " osób. ";
+            infoContent += context.getString(R.string.user_info_5) + followers + context.getString(R.string.user_info_8);
         }
         String date = Utils.formatDate(getCreated(), DATE_FORMAT);
         String hour = Utils.formatDate(getCreated(), HOUR_FORMAT);
         if (subcategoriesSize == 0) {
-            infoContent += "Nie ma mnie jeszcze w żadnej podkategorii, a dołączyłam/em tu dnia " + date + " o " + hour + ". ";
+            infoContent += context.getString(R.string.user_info_9) + date + context.getString(R.string.user_info_10) + hour + ". ";
         } else if (subcategoriesSize == 1) {
-            infoContent += "Jestem dopiero w jednej podkategorii, ale dołączyłam/em tu dopiero dnia " + date + " o " + hour + ". ";
+            infoContent += context.getString(R.string.user_info_11) + date + context.getString(R.string.user_info_10) + hour + ". ";
         } else {
-            infoContent += "Jestem już w " + subcategoriesSize + " podkategoriach, a dołączyłam/em tu dopiero dnia " + date + " o " + hour + ". ";
+            infoContent += context.getString(R.string.user_info_12) + subcategoriesSize + context.getString(R.string.user_info_13) + date + context.getString(R.string.user_info_10) + hour + ". ";
         }
         if (Utils.isNotEmpty(bio)) {
-            infoContent += "Najlepiej opisuje mnie zdanie: " + bio;
+            infoContent += context.getString(R.string.user_info_14) + bio;
         }
         return infoContent;
     }

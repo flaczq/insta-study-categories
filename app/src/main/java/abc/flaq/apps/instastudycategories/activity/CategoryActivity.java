@@ -36,7 +36,6 @@ import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGOR
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_INACTIVE;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_INACTIVE_END;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_INACTIVE_START;
-import static abc.flaq.apps.instastudycategories.helper.Constants.TAB_ACTIVE;
 import static abc.flaq.apps.instastudycategories.helper.Constants.TAB_INACTIVE;
 
 public class CategoryActivity extends SessionActivity {
@@ -54,7 +53,7 @@ public class CategoryActivity extends SessionActivity {
         setContentView(R.layout.activity_category_container);
 
         pager = (ViewPager) findViewById(R.id.category_pager);
-        pager.setAdapter(new CategoryTabAdapter(getSupportFragmentManager()));
+        pager.setAdapter(new CategoryTabAdapter(getSupportFragmentManager(), clazz));
 
         tabs = (TabLayout) findViewById(R.id.category_tabs);
         tabs.setupWithViewPager(pager);
@@ -158,7 +157,6 @@ public class CategoryActivity extends SessionActivity {
         Utils.showConnectionError(tabs, message);
     }
 
-    // FIXME: czasem nie ma preloadera na początku
     private void startCategoryFragment() {
         Intent intent = new Intent(INTENT_CATEGORY);
         intent.putExtra(INTENT_CATEGORY_ACTIVE_START, true);
@@ -242,7 +240,6 @@ public class CategoryActivity extends SessionActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pager.setCurrentItem(TAB_ACTIVE, true);
             isApiWorking = true;
 
             startCategoryFragment();
@@ -277,7 +274,9 @@ public class CategoryActivity extends SessionActivity {
                         getString(R.string.category_add_success_short)
                 );
 
-                // Don't show preloa der, because categories are loaded just after
+                pager.setCurrentItem(TAB_INACTIVE, true);
+
+                // Don't show preloader, because categories are loaded just after
                 Session.getInstance().setCategoryChanged(true);
                 new ProcessCategories().execute();
             } else {

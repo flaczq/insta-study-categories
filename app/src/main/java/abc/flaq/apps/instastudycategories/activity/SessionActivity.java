@@ -130,7 +130,7 @@ public class SessionActivity extends AppCompatActivity {
     private void initLoginDialog() {
         String instagramAuthUrl = "";
         try {
-            instagramAuthUrl = InstagramApi.getAuthUrl(Constants.INSTAGRAM_SCOPES.public_content);
+            instagramAuthUrl = InstagramApi.getAuthUrl(Constants.INSTAGRAM_SCOPES.basic);
         } catch (URISyntaxException e) {
             handleConnectionError(getString(R.string.error_user_login));
             Utils.logError(clazz, "URISyntaxException: " + e.getMessage());
@@ -174,7 +174,7 @@ public class SessionActivity extends AppCompatActivity {
     private void initInfoDialog() {
         MaterialDialog.Builder infoDialogBuilder = new MaterialDialog.Builder(clazz)
                 .title(Session.getInstance().getUser().getUsername())
-                .content(Session.getInstance().getUser().getInfoContent())
+                .content(Session.getInstance().getUser().getInfoContent(clazz))
                 .positiveText(R.string.back)
                 .neutralText(R.string.logout)
                 .negativeText(R.string.delete_account)

@@ -312,7 +312,7 @@ public class UserActivity extends SessionActivity {
     private void showOtherUserInfoDialog(final User user) {
         MaterialDialog.Builder infoDialogBuilder = new MaterialDialog.Builder(clazz)
                 .title(user.getUsername())
-                .content(user.getInfoContent())
+                .content(user.getInfoContent(clazz))
                 .positiveText(R.string.back);
 
         if (Utils.isEmpty(user.getProfilePicUrl())) {

@@ -31,7 +31,7 @@
     <string name="subcategory_add_success_1">Nowa podkategoria znajduje się w zakładce NIEAKTYWNE.</string>
     <string name="subcategory_add_success_2">Stanie się ona aktywna po dołączeniu do niej 10 użytkowników.</string>
     <string name="subcategory_add_success_short">Nowa podkategoria stanie się aktywna po dołączeniu do niej 10 użytkowników</string>
-    <string name="error_subcategories_not_found">Nie znaleziono podkategorii</string>
+    <string name="error_subcategories_not_found">Brak podkategorii. Zasugeruj jakąś!</string>
     <string name="error_subcategories_load">Nie udało się pobrać podkategorii</string>
     <string name="error_subcategory_add">Nie udało się dodać podkategorii</string>
 
@@ -40,6 +40,20 @@
     <string name="user_subcategory_add_success_short">Nowa podkategoria stanie się aktywna po dołączeniu do niej 10 użytkowników</string>
     <string name="user_category_remove_success">Usunięto użytkownika z kategorii</string>
     <string name="user_subcategory_remove_success">Usunięto użytkownika z podkategorii</string>
+    <string name="user_info_1">Nazwam się&#160;</string>
+    <string name="user_info_2">Mam&#160;</string>
+    <string name="user_info_3">&#160;posty na profilu instagramowym,&#160;</string>
+    <string name="user_info_4">&#160;postów na profilu instagramowym,&#160;</string>
+    <string name="user_info_5">który obserwuje&#160;</string>
+    <string name="user_info_6">&#160;osoba.&#160;</string>
+    <string name="user_info_7">&#160;osoby.&#160;</string>
+    <string name="user_info_8">&#160;osób.&#160;</string>
+    <string name="user_info_9">&#160;Nie ma mnie jeszcze w żadnej podkategorii, a dołączyłam/em tu już dnia&#160;</string>
+    <string name="user_info_10">&#160;o&#160;</string>
+    <string name="user_info_11">Jestem dopiero w jednej podkategorii, ale dołączyłam/em tu dopiero dnia&#160;</string>
+    <string name="user_info_12">Jestem już w&#160;</string>
+    <string name="user_info_13">&#160;podkategoriach, a dołączyłam/em tu dopiero dnia&#160;</string>
+    <string name="user_info_14">Najlepiej opisuje mnie zdanie:&#160;</string>
     <string name="error_users_load">Nie udało się pobrać listy użytkowników</string>
     <string name="error_user_login">Nie udało się zalogować</string>
     <string name="error_user_category_add">Nie udało się dodać użytkownika do kategorii</string>
@@ -69,4 +83,6 @@
     <string name="remove_account_success">Usunięto konto użytkownika</string>
     <string name="message_copied">Wiadomość skopiowana</string>
     <string name="chat_total_users">Liczba aktywnych użytkowników na czacie: %1$d</string>
+    <string name="tab_active">AKTYWNE</string>
+    <string name="tab_inactive">NIEAKTYWNE</string>
 </resources>

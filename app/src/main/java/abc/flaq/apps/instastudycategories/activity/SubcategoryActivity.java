@@ -39,7 +39,6 @@ import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATE
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_INACTIVE;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_INACTIVE_END;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_INACTIVE_START;
-import static abc.flaq.apps.instastudycategories.helper.Constants.TAB_ACTIVE;
 import static abc.flaq.apps.instastudycategories.helper.Constants.TAB_INACTIVE;
 
 public class SubcategoryActivity extends SessionActivity {
@@ -58,7 +57,7 @@ public class SubcategoryActivity extends SessionActivity {
         setContentView(R.layout.activity_subcategory_container);
 
         pager = (ViewPager) findViewById(R.id.subcategory_pager);
-        pager.setAdapter(new SubcategoryTabAdapter(getSupportFragmentManager()));
+        pager.setAdapter(new SubcategoryTabAdapter(getSupportFragmentManager(), clazz));
 
         tabs = (TabLayout) findViewById(R.id.subcategory_tabs);
         tabs.setupWithViewPager(pager);
@@ -181,7 +180,7 @@ public class SubcategoryActivity extends SessionActivity {
     }
     private void endProcessSubcategoryFragment() {
         if (subcategories.size() == 0) {
-            Utils.showQuickInfo(tabs, getString(R.string.error_subcategories_not_found));
+            Utils.showInfo(tabs, getString(R.string.error_subcategories_not_found));
         } else {
             Session.getInstance().setSubcategories(categoryForeignId, subcategories);
         }
@@ -262,7 +261,6 @@ public class SubcategoryActivity extends SessionActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pager.setCurrentItem(TAB_ACTIVE, true);
             isApiWorking = true;
 
             startSubcategoryFragment();
@@ -300,6 +298,8 @@ public class SubcategoryActivity extends SessionActivity {
                 Utils.showInfo(tabs,
                         getString(R.string.subcategory_add_success_short)
                 );
+
+                pager.setCurrentItem(TAB_INACTIVE, true);
 
                 // Don't show preloader, because subcategories are loaded just after
                 Session.getInstance().setSubcategoryChanged(true);

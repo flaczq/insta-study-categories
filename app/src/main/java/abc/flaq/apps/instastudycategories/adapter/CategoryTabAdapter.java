@@ -1,16 +1,21 @@
 package abc.flaq.apps.instastudycategories.adapter;
 
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.fragment.CategoryActiveFragment;
 import abc.flaq.apps.instastudycategories.fragment.CategoryInactiveFragment;
 
 public class CategoryTabAdapter extends FragmentPagerAdapter {
 
-    public CategoryTabAdapter(FragmentManager fm) {
+    private Context context;
+
+    public CategoryTabAdapter(FragmentManager fm, Context context) {
         super(fm);
+        this.context = context;
     }
 
     @Override
@@ -34,9 +39,9 @@ public class CategoryTabAdapter extends FragmentPagerAdapter {
         switch (position) {
             case 0:
             default:
-                return "AKTYWNE";
+                return context.getString(R.string.tab_active);
             case 1:
-                return "NIEAKTYWNE";
+                return context.getString(R.string.tab_inactive);
         }
     }
 }
