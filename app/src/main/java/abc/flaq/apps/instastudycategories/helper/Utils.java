@@ -474,27 +474,27 @@ public class Utils {
         list.set(j, temp);
     }
     public static void sortByFollowers(List<User> users, Boolean rev) {
-        Collections.sort(users);
-        if (rev) {
-            Collections.reverse(users);
-        }
-    }
-    public static void sortByJoinedDate(List<User> users, Boolean rev) {
         int length = users.size();
         int k;
         for (int i = length; i >= 0; i--) {
             for (int j = 0; j < length - 1; j++) {
                 k = j + 1;
                 if (rev) {
-                    if (users.get(j).getJoinDate().compareTo(users.get(k).getJoinDate()) > 0) {
+                    if (users.get(j).getFollowers() > users.get(k).getFollowers()) {
                         swapNumbers(users, j, k);
                     }
                 } else {
-                    if (users.get(j).getJoinDate().compareTo(users.get(k).getJoinDate()) < 0) {
+                    if (users.get(j).getFollowers() < users.get(k).getFollowers()) {
                         swapNumbers(users, j, k);
                     }
                 }
             }
+        }
+    }
+    public static void sortByJoinedDate(List<User> users, Boolean rev) {
+        Collections.sort(users);
+        if (rev) {
+            Collections.reverse(users);
         }
     }
     public static void sortAlphabetically(List<User> users, Boolean rev) {

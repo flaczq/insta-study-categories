@@ -160,6 +160,7 @@ public class SessionActivity extends AppCompatActivity {
                 super.onReceivedError(view, request, error);
                 handleConnectionError(getString(R.string.error_ig_login));
                 loginDialog.dismiss();
+                logOut();
             }
         });
 
