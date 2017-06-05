@@ -26,7 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorBackgroundForText"
-        android:text="@string/subcategory_name.c_biology"
+        android:text="@string/subcategory_name.c_doctor"
         android:fontFamily="casual"
         android:textAllCaps="true"
         android:textSize="26sp"

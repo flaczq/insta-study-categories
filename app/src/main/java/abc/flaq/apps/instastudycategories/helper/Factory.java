@@ -13,8 +13,6 @@ import abc.flaq.apps.instastudycategories.pojo.Subcategory;
 import abc.flaq.apps.instastudycategories.pojo.User;
 import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramUser;
 
-import static abc.flaq.apps.instastudycategories.helper.Constants.API_ALL_CATEGORY_NAME;
-
 public class Factory {
 
     public static User userFromInstagramUser(InstagramUser.InstagramUserData instagramUser) throws IOException, JSONException {
@@ -34,7 +32,7 @@ public class Factory {
         }
         // Adding user to "all" category by default
         ArrayList<String> categories = new ArrayList<>();
-        Category categoryAll = Api.getCategoryByName(API_ALL_CATEGORY_NAME);
+        Category categoryAll = Api.getCategoryByName("all");
         if (Utils.isNotEmpty(categoryAll)) {
             categories.add(categoryAll.getForeignId());
         }
@@ -71,7 +69,7 @@ public class Factory {
         subcategory.setCategoriesSize(1);
         subcategory.setHashtags(new ArrayList<String>());
         subcategory.setImageUrl("");
-        subcategory.setActive(Boolean.FALSE);
+        subcategory.setActive(Boolean.TRUE);
         return subcategory;
     }
 

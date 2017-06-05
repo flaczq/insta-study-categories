@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">InStudyGroup-dev</string>
+    <string name="app_name">StudyGram-dev</string>
     <string name="imageview.description">Opis obrazu</string>
 
     <string name="category_name.all">Wszyscy</string>
-    <string name="category_name.college">Studia</string>
+    <string name="category_name.elementary_school">Szkoła podstawowa</string>
+    <string name="category_name.junior_high_school">Gimnazjum</string>
     <string name="category_name.high_school">Liceum</string>
+    <string name="category_name.school_certificate">Matura</string>
+    <string name="category_name.college">Studia</string>
     <string name="category_name.work">Praca</string>
 
     <string name="new_category">Nowa kategoria</string>
@@ -17,14 +20,38 @@
     <string name="error_categories_load">Nie udało się pobrać kategorii</string>
     <string name="error_category_add">Nie udało się dodać kategorii</string>
 
-    <string name="subcategory_name.hs_biology">Biologia</string>
-    <string name="subcategory_name.hs_chemistry">Chemia</string>
-    <string name="subcategory_name.hs_maths">Matma</string>
-    <string name="subcategory_name.hs_it">Informatyka</string>
-    <string name="subcategory_name.c_biology">Biologia</string>
-    <string name="subcategory_name.c_chemistry">Chemia</string>
+    <string name="subcategory_name.c_doctor">Lekarski</string>
+    <string name="subcategory_name.c_dentistry">Stomatologia</string>
+    <string name="subcategory_name.c_pharmacy">Farmacja</string>
+    <string name="subcategory_name.c_obstetrics">Położnictwo</string>
+    <string name="subcategory_name.c_nursing">Pielęgniarstwo</string>
+    <string name="subcategory_name.c_veterinary">Weterynaria</string>
+    <string name="subcategory_name.c_physiotherapy">Fizjoterapia</string>
+    <string name="subcategory_name.c_dietetics">Dietetyka</string>
+    <string name="subcategory_name.c_psychology">Psychologia</string>
+    <string name="subcategory_name.c_cosmetology">Kosmetologia</string>
+    <string name="subcategory_name.c_emergency">Ratownictwo medyczne</string>
+    <string name="subcategory_name.c_law">Prawo</string>
+    <string name="subcategory_name.c_philology">Filologia</string>
+    <string name="subcategory_name.sc_biology">Biologia</string>
+    <string name="subcategory_name.sc_chemistry">Chemia</string>
+    <string name="subcategory_name.sc_physics">Fizyka</string>
+    <string name="subcategory_name.sc_math">Matematyka</string>
+    <string name="subcategory_name.sc_geography">Geografia</string>
+    <string name="subcategory_name.sc_social">WOS</string>
+    <string name="subcategory_name.sc_polish">Język polski</string>
+    <string name="subcategory_name.sc_english">Język angielski</string>
+    <string name="subcategory_name.hs_bio_chem">Biologiczno-Chemiczny</string>
+    <string name="subcategory_name.hs_hum">Humanistyczny</string>
+    <string name="subcategory_name.hs_mat_phy">Matematyczno-Fizyczny</string>
+    <string name="subcategory_name.hs_mat_geo">Matematyczno-Geograficzny</string>
+    <string name="subcategory_name.hs_lang">Językowy</string>
     <string name="subcategory_name.w_doctor">Lekarz</string>
-    <string name="subcategory_name.w_it">Informatyk</string>
+    <string name="subcategory_name.w_dentist">Stomatolog</string>
+    <string name="subcategory_name.w_pharmacist">Farmaceuta</string>
+    <string name="subcategory_name.w_psychologist">Psycholog</string>
+    <string name="subcategory_name.w_nurse">Pielęgniarka</string>
+    <string name="subcategory_name.w_midwife">Położna</string>
 
     <string name="new_subcategory">Nowa podkategoria</string>
     <string name="suggest_new_subcategory">Zaproponuj nową podkategorię</string>
@@ -38,9 +65,10 @@
     <string name="user_category_add_success">Dodano użytkownika do kategorii.</string>
     <string name="user_subcategory_add_success">Dodano użytkownika do podkategorii.</string>
     <string name="user_subcategory_add_success_short">Nowa podkategoria stanie się aktywna po dołączeniu do niej 10 użytkowników</string>
+    <string name="user_subcategory_add_success_short_more">Nowa podkategoria stała się właśnie aktywna!</string>
     <string name="user_category_remove_success">Usunięto użytkownika z kategorii</string>
     <string name="user_subcategory_remove_success">Usunięto użytkownika z podkategorii</string>
-    <string name="user_info_1">Nazwam się&#160;</string>
+    <string name="user_info_1">Nazywam się&#160;</string>
     <string name="user_info_2">Mam&#160;</string>
     <string name="user_info_3">&#160;posty na profilu instagramowym,&#160;</string>
     <string name="user_info_4">&#160;postów na profilu instagramowym,&#160;</string>
@@ -85,4 +113,7 @@
     <string name="chat_total_users">Liczba aktywnych użytkowników na czacie: %1$d</string>
     <string name="tab_active">AKTYWNE</string>
     <string name="tab_inactive">NIEAKTYWNE</string>
+    <string name="login">Logowanie</string>
+    <string name="login_info">Aplikacja StudyGram korzysta z narzędzia \"Pixel Union\" w celu połączenia z kontem Instagram. Na następnej stronie zaloguj się do swojego konta Instagram, a następnie zezwól aplikacji \"PXU Access Token\" na dostęp do swoich podstawowych informacji.</string>
+    <string name="log_in">Zaloguj</string>
 </resources>

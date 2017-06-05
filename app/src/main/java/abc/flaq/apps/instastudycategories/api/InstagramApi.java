@@ -1,7 +1,5 @@
 package abc.flaq.apps.instastudycategories.api;
 
-import android.view.View;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.json.JSONArray;
@@ -18,7 +16,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramAccessToken;
 import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramMeta;
 import abc.flaq.apps.instastudycategories.helper.Constants;
@@ -26,7 +23,9 @@ import abc.flaq.apps.instastudycategories.helper.Utils;
 
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_AUTH_URL;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_CODE_URL;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_REMOTE_AUTH_URL;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_REDIRECT_URL;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_REMOTE_REDIRECT_URL;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_REQUEST_ACCESS_TOKEN_URL;
 
 public class InstagramApi {
@@ -114,37 +113,40 @@ public class InstagramApi {
 
         return uri.toString();
     }
+    public static String getRemoteAuthUrl() throws URISyntaxException {
+        String authUrl = INSTAGRAM_REMOTE_AUTH_URL;
+        URI uri = new URI("https", "api.instagram.com", "/oauth/authorize", authUrl, null);
+        return uri.toString();
+    }
 
-    public static String getAccessTokenFromUrl(View view, String url) {
-        int errorIndex = url.indexOf("?error=");
+    public static String getAccessTokenFromUrl(String url) {
+        int errorIndex = url.indexOf("?error_reason=");
         if (errorIndex >= 0) {
-            Utils.logError(view.getContext(), url.substring(errorIndex + "?error=".length()));
-            Utils.showConnectionError(view, view.getResources().getString(R.string.error_ig_login));
+            Utils.logError("InstagramApi.getAccessTokenFromUrl()", url.substring(errorIndex + "?error_reason=".length()));
             return null;
         }
 
-        int accessTokenIndex = url.lastIndexOf(INSTAGRAM_REDIRECT_URL + "/#access_token=");
-        if (accessTokenIndex >= 0) {
-            return url.substring(accessTokenIndex + (INSTAGRAM_REDIRECT_URL + "/#access_token=").length());
+        int accessTokenIndex = url.lastIndexOf(INSTAGRAM_REMOTE_REDIRECT_URL + "/#access_token=");
+        if (accessTokenIndex == -1) {
+            return null;
         }
 
-        return null;
+        return url.substring(accessTokenIndex + (INSTAGRAM_REMOTE_REDIRECT_URL + "/#access_token=").length());
     }
 
-    public static String getCodeFromUrl(View view, String url) {
+    public static String getCodeFromUrl(String url) {
         int errorIndex = url.indexOf("?error=");
         if (errorIndex >= 0) {
-            Utils.logError(view.getContext(), url.substring(errorIndex + "?error=".length()));
-            Utils.showConnectionError(view, view.getResources().getString(R.string.error_ig_login));
+            Utils.logError("InstagramApi.getCodeFromUrl()", url.substring(errorIndex + "?error=".length()));
             return null;
         }
 
         int codeIndex = url.lastIndexOf(INSTAGRAM_REDIRECT_URL + "/?code=");
-        if (codeIndex >= 0) {
-            return url.substring(codeIndex + (INSTAGRAM_REDIRECT_URL + "/?code=").length());
+        if (codeIndex == -1) {
+            return null;
         }
 
-        return null;
+        return url.substring(codeIndex + (INSTAGRAM_REDIRECT_URL + "/?code=").length());
     }
 
     public static InstagramAccessToken getAccessTokenByCode(String code) throws IOException {
@@ -153,7 +155,8 @@ public class InstagramApi {
 
         InstagramAccessToken accessToken = mapper.readValue(stream, InstagramAccessToken.class);
         if (accessToken.isError()) {
-            // error
+            Utils.logError("InstagramApi.getAccessTokenByCode()", accessToken.toString());
+            return null;
         }
 
         return accessToken;

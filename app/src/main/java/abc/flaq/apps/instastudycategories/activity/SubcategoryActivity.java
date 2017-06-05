@@ -26,6 +26,7 @@ import java.util.List;
 import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.adapter.SubcategoryTabAdapter;
 import abc.flaq.apps.instastudycategories.api.Api;
+import abc.flaq.apps.instastudycategories.design.Decorator;
 import abc.flaq.apps.instastudycategories.general.Session;
 import abc.flaq.apps.instastudycategories.helper.Utils;
 import abc.flaq.apps.instastudycategories.pojo.Subcategory;
@@ -70,7 +71,7 @@ public class SubcategoryActivity extends SessionActivity {
             Utils.logError(clazz, "Empty 'categoryForeignId'");
         } else {
             String categoryName = intent.getStringExtra(INTENT_CATEGORY_NAME);
-            Utils.setActionBarTitle(clazz, Utils.getStringByCategoryName(clazz, categoryName), null);
+            Decorator.setActionBarTitle(clazz, Utils.getStringByCategoryName(clazz, categoryName), null);
 
             if (Utils.isEmpty(Session.getInstance().getSubcategories(categoryForeignId))) {
                 new ProcessSubcategories().execute();

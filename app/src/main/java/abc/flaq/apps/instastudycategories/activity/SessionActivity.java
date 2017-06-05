@@ -34,8 +34,8 @@ import java.net.URISyntaxException;
 import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.api.Api;
 import abc.flaq.apps.instastudycategories.api.InstagramApi;
+import abc.flaq.apps.instastudycategories.design.Decorator;
 import abc.flaq.apps.instastudycategories.general.Session;
-import abc.flaq.apps.instastudycategories.helper.Constants;
 import abc.flaq.apps.instastudycategories.helper.Factory;
 import abc.flaq.apps.instastudycategories.helper.Utils;
 import abc.flaq.apps.instastudycategories.pojo.User;
@@ -43,7 +43,7 @@ import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramAccessToken;
 import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramUser;
 
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_ENDPOINT_USER_SELF;
-import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_REDIRECT_URL;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_REMOTE_REDIRECT_URL;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_URL;
 import static abc.flaq.apps.instastudycategories.helper.Constants.SETTINGS_ACCESS_TOKEN;
 
@@ -56,19 +56,18 @@ public class SessionActivity extends AppCompatActivity {
     private User user;
     private String accessToken;
     private MaterialDialog infoDialog;
-    private Dialog loginDialog;
+    private Dialog instagramDialog;
     private Boolean isApiWorking = false;
 
     // TODO!!: menu z lewej
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Utils.removeActionBarShadow(clazz);
+        Decorator.removeActionBarShadow(clazz);
 
         rootView = findViewById(android.R.id.content);
         accessToken = Session.getInstance().getSettings().getString(SETTINGS_ACCESS_TOKEN, null);
         if (Utils.isEmpty(Session.getInstance().getUser())) {
-            initLoginDialog();
             if (Utils.isNotEmpty(accessToken)) {
                 new ProcessGetUser().execute();
             }
@@ -127,10 +126,26 @@ public class SessionActivity extends AppCompatActivity {
         return true;
     }
 
-    private void initLoginDialog() {
+    private void showLoginDialog() {
+        initInstagramDialog();
+        new MaterialDialog.Builder(clazz)
+                .title(R.string.login)
+                .content(R.string.login_info)
+                .positiveText(R.string.log_in)
+                .neutralText(R.string.back)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        instagramDialog.show();
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
+    private void initInstagramDialog() {
         String instagramAuthUrl = "";
         try {
-            instagramAuthUrl = InstagramApi.getAuthUrl(Constants.INSTAGRAM_SCOPES.basic);
+            instagramAuthUrl = InstagramApi.getRemoteAuthUrl();
         } catch (URISyntaxException e) {
             handleConnectionError(getString(R.string.error_user_login));
             Utils.logError(clazz, "URISyntaxException: " + e.getMessage());
@@ -140,14 +155,19 @@ public class SessionActivity extends AppCompatActivity {
         loginWebView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url.startsWith(INSTAGRAM_REDIRECT_URL)) {
-                    String code = InstagramApi.getCodeFromUrl(rootView, url);
-                    if (Utils.isEmpty(code)) {
-                        handleConnectionError(getString(R.string.error_ig_login));
-                        Utils.logError(clazz, "Empty Instagram code");
-                        loginDialog.dismiss();
-                    } else if (loginDialog.isShowing()) {
-                        new ProcessGetAccessToken().execute(code);
+                if (url.startsWith(INSTAGRAM_REMOTE_REDIRECT_URL) && url.length() > INSTAGRAM_REMOTE_REDIRECT_URL.length()) {
+                    if (url.contains("user_denied")) {
+                        instagramDialog.dismiss();
+                    } else {
+                        accessToken = InstagramApi.getAccessTokenFromUrl(url);
+                        if (Utils.isEmpty(accessToken)) {
+                            handleConnectionError(getString(R.string.error_ig_login));
+                            Utils.logError(clazz, "Empty Instagram accessToken");
+                            instagramDialog.dismiss();
+                        } else if (instagramDialog.isShowing()) {
+                            Utils.logDebug(clazz, "Collected instagram access token: " + accessToken);
+                            new ProcessGetUser().execute();
+                        }
                     }
                 } else {
                     view.loadUrl(url);
@@ -159,20 +179,17 @@ public class SessionActivity extends AppCompatActivity {
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 super.onReceivedError(view, request, error);
                 handleConnectionError(getString(R.string.error_ig_login));
-                loginDialog.dismiss();
+                instagramDialog.dismiss();
                 logOut();
             }
         });
 
-        loginDialog = new Dialog(clazz);
-        loginDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        loginDialog.setContentView(loginWebView);
-    }
-    private void showLoginDialog() {
-        loginDialog.show();
+        instagramDialog = new Dialog(clazz);
+        instagramDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        instagramDialog.setContentView(loginWebView);
     }
 
-    private void initInfoDialog() {
+    private void showInfoDialog() {
         MaterialDialog.Builder infoDialogBuilder = new MaterialDialog.Builder(clazz)
                 .title(Session.getInstance().getUser().getUsername())
                 .content(Session.getInstance().getUser().getInfoContent(clazz))
@@ -244,9 +261,6 @@ public class SessionActivity extends AppCompatActivity {
         });
         infoDialog.getActionButton(DialogAction.NEGATIVE).setMaxLines(2);
         infoDialog.getActionButton(DialogAction.NEGATIVE).setPadding(0, 0, 0, 0);
-    }
-    private void showInfoDialog() {
-        initInfoDialog();
         infoDialog.show();
     }
 
@@ -280,7 +294,6 @@ public class SessionActivity extends AppCompatActivity {
         removeAccessToken();
         setMainMenuVisibility(mainMenu);
         invalidateOptionsMenu();
-        initLoginDialog();
 
         if (Build.VERSION.SDK_INT >= 21) {
             CookieManager.getInstance().removeAllCookies(null);
@@ -333,8 +346,8 @@ public class SessionActivity extends AppCompatActivity {
                 Utils.showConnectionError(rootView, getString(R.string.error_user_login));
                 logOut();
             }
-            if (Utils.isNotEmpty(loginDialog)) {
-                loginDialog.dismiss();
+            if (Utils.isNotEmpty(instagramDialog)) {
+                instagramDialog.dismiss();
             }
         }
     }
@@ -380,7 +393,8 @@ public class SessionActivity extends AppCompatActivity {
             super.onPostExecute(result);
             isApiWorking = false;
 
-            if (Utils.isNotEmpty(result) &&
+            if (Utils.isNotEmpty(user) &&
+                    Utils.isNotEmpty(result) &&
                     Utils.isNotEmpty(result.getMeta()) &&
                     Utils.isNotEmpty(result.getData())) {
                 if (result.getMeta().isError()) {
@@ -407,6 +421,9 @@ public class SessionActivity extends AppCompatActivity {
             } else {
                 Utils.showConnectionError(rootView, getString(R.string.error_user_login));
                 logOut();
+            }
+            if (Utils.isNotEmpty(instagramDialog)) {
+                instagramDialog.dismiss();
             }
         }
     }

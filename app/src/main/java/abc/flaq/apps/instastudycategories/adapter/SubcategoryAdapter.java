@@ -17,10 +17,9 @@ import java.util.List;
 import java.util.Locale;
 
 import abc.flaq.apps.instastudycategories.R;
-import abc.flaq.apps.instastudycategories.pojo.Subcategory;
+import abc.flaq.apps.instastudycategories.design.Decorator;
 import abc.flaq.apps.instastudycategories.helper.Utils;
-
-import static android.util.TypedValue.COMPLEX_UNIT_SP;
+import abc.flaq.apps.instastudycategories.pojo.Subcategory;
 
 public class SubcategoryAdapter extends BaseAdapter {
 
@@ -101,9 +100,7 @@ public class SubcategoryAdapter extends BaseAdapter {
             }
             String subcategoryName = Utils.getStringBySubcategoryName(context, model.getName());
             name.setText(Utils.simplifyCharacters(subcategoryName));
-            if (name.getText().length() >= 10) {
-                name.setTextSize(COMPLEX_UNIT_SP, 22);
-            }
+            Decorator.fitFont(name);
 
             if (Utils.isEmpty(model.getImageUrl())) {
                 Drawable drawable = Utils.getSubcategoryDrawable(context, model.getName());

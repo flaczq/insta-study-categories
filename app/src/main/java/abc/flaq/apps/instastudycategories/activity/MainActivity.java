@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import abc.flaq.apps.instastudycategories.BuildConfig;
+import abc.flaq.apps.instastudycategories.design.Decorator;
 import abc.flaq.apps.instastudycategories.general.Session;
 import abc.flaq.apps.instastudycategories.helper.Utils;
 
@@ -24,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         );
 
         if (BuildConfig.IS_DEBUG) {
-            Utils.setLocale(this, "pl");
+            Decorator.setLocale(this, "pl");
         }
 
         SharedPreferences settings = getSharedPreferences(SETTINGS_NAME, MODE_PRIVATE);

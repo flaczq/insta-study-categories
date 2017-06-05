@@ -1,10 +1,13 @@
 <resources>
-    <!--<string name="app_name">InStudyGroup</string>-->
+    <!--<string name="app_name">StudyGram</string>-->
     <string name="imageview.description">Image description</string>
 
     <string name="category_name.all">All</string>
-    <string name="category_name.college">College</string>
+    <string name="category_name.elementary_school">Elementary School</string>
+    <string name="category_name.junior_high_school">Junior High School</string>
     <string name="category_name.high_school">High School</string>
+    <string name="category_name.school_certificate">School Certificate</string>
+    <string name="category_name.college">College</string>
     <string name="category_name.work">Work</string>
 
     <string name="new_category">New category</string>
@@ -16,14 +19,38 @@
     <string name="error_categories_load">Couldn\'t load categories</string>
     <string name="error_category_add">Couldn\'t add category</string>
 
-    <string name="subcategory_name.hs_biology">Biology</string>
-    <string name="subcategory_name.hs_chemistry">Chemistry</string>
-    <string name="subcategory_name.hs_maths">Maths</string>
-    <string name="subcategory_name.hs_it">It</string>
-    <string name="subcategory_name.c_biology">Biology</string>
-    <string name="subcategory_name.c_chemistry">Chemistry</string>
+    <string name="subcategory_name.c_doctor">Medical</string>
+    <string name="subcategory_name.c_dentistry">Dentistry</string>
+    <string name="subcategory_name.c_pharmacy">Pharmacy</string>
+    <string name="subcategory_name.c_obstetrics">Obstetrics</string>
+    <string name="subcategory_name.c_nursing">Nursing</string>
+    <string name="subcategory_name.c_veterinary">Veterinary</string>
+    <string name="subcategory_name.c_physiotherapy">Physiotherapy</string>
+    <string name="subcategory_name.c_dietetics">Dietetics</string>
+    <string name="subcategory_name.c_psychology">Psychology</string>
+    <string name="subcategory_name.c_cosmetology">Cosmetology</string>
+    <string name="subcategory_name.c_emergency">Emergency Medical Services</string>
+    <string name="subcategory_name.c_law">Law</string>
+    <string name="subcategory_name.c_philology">Philology</string>
+    <string name="subcategory_name.sc_biology">Biology</string>
+    <string name="subcategory_name.sc_chemistry">Chemistry</string>
+    <string name="subcategory_name.sc_physics">Physics</string>
+    <string name="subcategory_name.sc_math">Mathematics</string>
+    <string name="subcategory_name.sc_geography">Geography</string>
+    <string name="subcategory_name.sc_social">Social Studies</string>
+    <string name="subcategory_name.sc_polish">Polish Language</string>
+    <string name="subcategory_name.sc_english">English Language</string>
+    <string name="subcategory_name.hs_bio_chem">Biology-Chemistry</string>
+    <string name="subcategory_name.hs_hum">Humanistic</string>
+    <string name="subcategory_name.hs_mat_phy">Math-Physics</string>
+    <string name="subcategory_name.hs_mat_geo">Math-Geography</string>
+    <string name="subcategory_name.hs_lang">Lingual</string>
     <string name="subcategory_name.w_doctor">Doctor</string>
-    <string name="subcategory_name.w_it">It</string>
+    <string name="subcategory_name.w_dentist">Dentist</string>
+    <string name="subcategory_name.w_pharmacist">Pharmacist</string>
+    <string name="subcategory_name.w_psychologist">Psychologist</string>
+    <string name="subcategory_name.w_nurse">Nurse</string>
+    <string name="subcategory_name.w_midwife">Midwife</string>
 
     <string name="new_subcategory">New subcategory</string>
     <string name="suggest_new_subcategory">Suggest new subcategory</string>
@@ -37,6 +64,7 @@
     <string name="user_category_add_success">User added to category.</string>
     <string name="user_subcategory_add_success">User added to subcategory.</string>
     <string name="user_subcategory_add_success_short">New subcategory will be active after reaching 10 users</string>
+    <string name="user_subcategory_add_success_short_more">New subcategory has just become active!</string>
     <string name="user_category_remove_success">User removed from category</string>
     <string name="user_subcategory_remove_success">User removed from subcategory</string>
     <string name="user_info_1">My name is&#160;</string>
@@ -84,4 +112,7 @@
     <string name="chat_total_users">Number of active users in chat: %1$d</string>
     <string name="tab_active">ACTIVE</string>
     <string name="tab_inactive">INACTIVE</string>
+    <string name="login">Login</string>
+    <string name="login_info">StudyGroup app uses plugin called \"Pixel Union\" to connect with Instagram account. On the next page please login to your Instagram and allow permissions for \"PXU Access Token\" app.</string>
+    <string name="log_in">Log in</string>
 </resources>

@@ -39,14 +39,14 @@ android {
             versionNameSuffix ""
             buildConfigField 'String', 'FLAVOR_FULLNAME', '"production"'
             buildConfigField 'boolean', 'IS_DEBUG', 'false'
-            resValue 'string', 'app_name', 'InStudyGroup'
+            resValue 'string', 'app_name', 'StudyGram'
         }
         dev {
             applicationIdSuffix ".dev"
             versionNameSuffix "-dev"
             buildConfigField 'String', 'FLAVOR_FULLNAME', '"develop"'
             buildConfigField 'boolean', 'IS_DEBUG', 'true'
-            resValue 'string', 'app_name', 'InStudyGroup-dev'
+            resValue 'string', 'app_name', 'StudyGram-dev'
         }
     }
     /*android.variantFilter { variant ->

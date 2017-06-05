@@ -35,7 +35,6 @@ import abc.flaq.apps.instastudycategories.pojo.Response;
 import abc.flaq.apps.instastudycategories.pojo.Subcategory;
 import abc.flaq.apps.instastudycategories.pojo.User;
 
-import static abc.flaq.apps.instastudycategories.helper.Constants.API_ALL_CATEGORY_NAME;
 import static abc.flaq.apps.instastudycategories.helper.Constants.API_CATEGORIES_URL;
 import static abc.flaq.apps.instastudycategories.helper.Constants.API_CREDENTIALS;
 import static abc.flaq.apps.instastudycategories.helper.Constants.API_INFOS_URL;
@@ -223,7 +222,7 @@ public class Api {
         for (int i = 0; i < items.length(); i++) {
             Category category = mapper.readValue(items.getString(i), Category.class);
             //correctDate(category);
-            if (API_ALL_CATEGORY_NAME.equals(category.getName())) {
+            if ("all".equals(category.getName())) {
                 firstCategory = category;
             } else {
                 categories.add(category);
@@ -544,9 +543,9 @@ public class Api {
         correctForeignId(API_USERS_URL + "/" + user.getId(), user);
         getAllUsers(true);
 
-        Category category = getCategoryByName(API_ALL_CATEGORY_NAME);
+        Category category = getCategoryByName("all");
         if (Utils.isEmpty(category)) {
-            Utils.logDebug("Api.addUser()", "Zwiększenie liczby użytkowników w kategorii: " + API_ALL_CATEGORY_NAME + " zakończone niepowodzeniem");
+            Utils.logDebug("Api.addUser()", "Zwiększenie liczby użytkowników w kategorii: Wszyscy zakończone niepowodzeniem");
         } else {
             correctSize(
                     API_CATEGORIES_URL + "/" + category.getId(),

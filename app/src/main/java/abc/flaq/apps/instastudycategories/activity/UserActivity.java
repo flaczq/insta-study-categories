@@ -43,6 +43,7 @@ import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.adapter.ChatAdapter;
 import abc.flaq.apps.instastudycategories.adapter.UserAdapter;
 import abc.flaq.apps.instastudycategories.api.Api;
+import abc.flaq.apps.instastudycategories.design.Decorator;
 import abc.flaq.apps.instastudycategories.general.Session;
 import abc.flaq.apps.instastudycategories.general.WebSocketClientSide;
 import abc.flaq.apps.instastudycategories.helper.Utils;
@@ -61,6 +62,7 @@ import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATE
 import static android.view.inputmethod.EditorInfo.IME_ACTION_SEND;
 
 // FIXME: zalogować się tu i ikonki menu są źle
+// TODO: pull to refresh
 public class UserActivity extends SessionActivity {
 
     private final AppCompatActivity clazz = this;
@@ -105,14 +107,14 @@ public class UserActivity extends SessionActivity {
             isCategory = true;
             parentForeignId = categoryForeignId;
             String categoryParentName = Utils.getStringByCategoryName(clazz, intent.getStringExtra(INTENT_CATEGORY_NAME));
-            Utils.setActionBarTitle(clazz, categoryParentName, null);
+            Decorator.setActionBarTitle(clazz, categoryParentName, null);
         } else {
             String subcategoryForeignId = intent.getStringExtra(INTENT_SUBCATEGORY_FOREIGN_ID);
             if (Utils.isNotEmpty(subcategoryForeignId)) {
                 parentForeignId = subcategoryForeignId;
                 String categoryParentName = Utils.getStringByCategoryName(clazz, intent.getStringExtra(INTENT_CATEGORY_NAME));
                 String subcategoryParentName = Utils.getStringBySubcategoryName(clazz, intent.getStringExtra(INTENT_SUBCATEGORY_NAME));
-                Utils.setActionBarTitle(clazz, subcategoryParentName, categoryParentName);
+                Decorator.setActionBarTitle(clazz, subcategoryParentName, categoryParentName);
             }
         }
 
@@ -423,6 +425,8 @@ public class UserActivity extends SessionActivity {
     }
 
     private class ProcessAddUserToSubcategory extends AsyncTask<Void, Void, Boolean> {
+        int usersSize;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -437,9 +441,11 @@ public class UserActivity extends SessionActivity {
             try {
                 if (isCategory) {
                     Category category = Api.getCategoryById(Utils.undoForeignId(parentForeignId));
+                    usersSize = category.getUsersSize();
                     result = Api.addUserToCategory(Session.getInstance().getUser(), category);
                 } else {
                     Subcategory subcategory = Api.getSubcategoryById(Utils.undoForeignId(parentForeignId));
+                    usersSize = subcategory.getUsersSize();
                     result = Api.addUserToSubcategory(Session.getInstance().getUser(), subcategory);
                 }
 
@@ -465,9 +471,15 @@ public class UserActivity extends SessionActivity {
             listView.setVisibility(View.VISIBLE);
 
             if (result) {
-                Utils.showInfo(layout,
-                        getString(R.string.user_subcategory_add_success_short)
-                );
+                if (usersSize < 10) {
+                    Utils.showInfo(layout,
+                            getString(R.string.user_subcategory_add_success_short)
+                    );
+                } else {
+                    Utils.showInfo(layout,
+                            getString(R.string.user_subcategory_add_success_short_more)
+                    );
+                }
 
                 users.add(0, Session.getInstance().getUser());
                 userAdapter.notifyDataSetChanged();

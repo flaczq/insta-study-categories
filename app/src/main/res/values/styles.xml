@@ -9,7 +9,7 @@
 
         <item name="md_background_color">@color/colorBackgroundLight</item>
         <item name="md_buttons_gravity">center</item>
-        <item name="md_icon_max_size">64dp</item>
+        <item name="md_icon_max_size">72dp</item>
         <item name="md_title_color">@color/colorPrimary</item>
         <item name="md_content_color">@android:color/primary_text_light</item>
         <item name="md_positive_color">@color/colorAccent</item>
