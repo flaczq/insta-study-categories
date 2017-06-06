@@ -61,7 +61,6 @@ import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATE
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_NAME;
 import static android.view.inputmethod.EditorInfo.IME_ACTION_SEND;
 
-// FIXME: zalogować się tu i ikonki menu są źle
 // TODO: pull to refresh
 public class UserActivity extends SessionActivity {
 
@@ -112,7 +111,7 @@ public class UserActivity extends SessionActivity {
             String subcategoryForeignId = intent.getStringExtra(INTENT_SUBCATEGORY_FOREIGN_ID);
             if (Utils.isNotEmpty(subcategoryForeignId)) {
                 parentForeignId = subcategoryForeignId;
-                String categoryParentName = Utils.getStringByCategoryName(clazz, intent.getStringExtra(INTENT_CATEGORY_NAME));
+                String categoryParentName = Utils.getStringByCategoryName(clazz, Session.getInstance().getCategoryName());
                 String subcategoryParentName = Utils.getStringBySubcategoryName(clazz, intent.getStringExtra(INTENT_SUBCATEGORY_NAME));
                 Decorator.setActionBarTitle(clazz, subcategoryParentName, categoryParentName);
             }

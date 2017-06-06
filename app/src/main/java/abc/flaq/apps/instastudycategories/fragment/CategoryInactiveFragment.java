@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -24,6 +25,7 @@ import abc.flaq.apps.instastudycategories.adapter.CategoryAdapter;
 import abc.flaq.apps.instastudycategories.pojo.Category;
 import abc.flaq.apps.instastudycategories.helper.Utils;
 
+import static abc.flaq.apps.instastudycategories.helper.Constants.FONT_CATEGORY_NAME;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_INACTIVE_END;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_FOREIGN_ID;
@@ -61,7 +63,8 @@ public class CategoryInactiveFragment extends Fragment {
         preloader = (CrystalPreloader) parentView.findViewById(R.id.category_preloader);
         preloader.setVisibility(View.VISIBLE);
 
-        categoryAdapter = new CategoryAdapter(getActivity(), inactiveCategories);
+        Typeface font = Typeface.createFromAsset(getActivity().getAssets(), FONT_CATEGORY_NAME);
+        categoryAdapter = new CategoryAdapter(getActivity(), inactiveCategories, font);
 
         gridView = (StaggeredGridView) parentView.findViewById(R.id.category_grid);
         gridView.setAdapter(categoryAdapter);

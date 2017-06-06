@@ -16,7 +16,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -413,10 +412,11 @@ public class Utils {
     }
 
     public static String simplifyCharacters(String characters) {
-        String noExtraCharacters = Normalizer
+        return characters;
+        /*String noExtraCharacters = Normalizer
                 .normalize(characters, Normalizer.Form.NFD)
                 .replaceAll("\\p{M}", "");
-        return noExtraCharacters;
+        return noExtraCharacters;*/
     }
 
 }

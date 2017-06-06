@@ -27,11 +27,13 @@ public class SubcategoryAdapter extends BaseAdapter {
     private final LayoutInflater inflater;
 
     private final List<Subcategory> subcategories;
+    private final Typeface font;
 
-    public SubcategoryAdapter(Context context, List<Subcategory> subcategories) {
+    public SubcategoryAdapter(Context context, List<Subcategory> subcategories, Typeface font) {
         this.context = context;
         this.subcategories = subcategories;
         this.inflater = LayoutInflater.from(context);
+        this.font = font;
     }
 
     @Override
@@ -84,10 +86,9 @@ public class SubcategoryAdapter extends BaseAdapter {
             if (Build.VERSION.SDK_INT >= 21) {
                 users.setPadding(0, 3, 0, 0);
                 name.setPadding(0, 5, 0, 0);
-            } else {
-                users.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
-                name.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
             }
+            users.setTypeface(font);
+            name.setTypeface(font);
         }
 
         private void bind(Subcategory model) {
@@ -110,7 +111,6 @@ public class SubcategoryAdapter extends BaseAdapter {
                     image.setImageDrawable(drawable);
                 }
             } else {
-                // FIXME!!: images on server
                 UrlImageViewHelper.setUrlDrawable(image, model.getImageUrl(), R.drawable.placeholder_category);
             }
         }

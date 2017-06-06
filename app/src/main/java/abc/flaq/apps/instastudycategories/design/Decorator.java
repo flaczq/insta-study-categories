@@ -122,7 +122,7 @@ public class Decorator {
     public static void fitFont(TextView textView) {
         String text = textView.getText().toString();
         if (text.length() >= 13) {
-            textView.setTextSize(COMPLEX_UNIT_SP, 20);
+            textView.setTextSize(COMPLEX_UNIT_SP, 19);
         } else if (text.length() >= 10) {
             textView.setTextSize(COMPLEX_UNIT_SP, 22);
         }

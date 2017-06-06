@@ -27,11 +27,13 @@ public class CategoryAdapter extends BaseAdapter {
     private final LayoutInflater inflater;
 
     private final ArrayList<Category> categories;
+    private final Typeface font;
 
-    public CategoryAdapter(Context context, ArrayList<Category> categories) {
+    public CategoryAdapter(Context context, ArrayList<Category> categories, Typeface font) {
         this.context = context;
         this.categories = categories;
         this.inflater = LayoutInflater.from(context);
+        this.font = font;
     }
 
     @Override
@@ -84,10 +86,9 @@ public class CategoryAdapter extends BaseAdapter {
             if (Build.VERSION.SDK_INT >= 21) {
                 subcategories.setPadding(0, 3, 0, 0);
                 name.setPadding(0, 5, 0, 0);
-            } else {
-                subcategories.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
-                name.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
             }
+            subcategories.setTypeface(font);
+            name.setTypeface(font);
         }
 
         private void bind(Category model) {
@@ -116,7 +117,6 @@ public class CategoryAdapter extends BaseAdapter {
                     image.setImageDrawable(drawable);
                 }
             } else {
-                // FIXME!!: images on server
                 UrlImageViewHelper.setUrlDrawable(image, model.getImageUrl(), R.drawable.placeholder_category);
             }
         }

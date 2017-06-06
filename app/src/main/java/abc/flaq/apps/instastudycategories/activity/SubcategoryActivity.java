@@ -72,6 +72,7 @@ public class SubcategoryActivity extends SessionActivity {
         } else {
             String categoryName = intent.getStringExtra(INTENT_CATEGORY_NAME);
             Decorator.setActionBarTitle(clazz, Utils.getStringByCategoryName(clazz, categoryName), null);
+            Session.getInstance().setCategoryName(categoryName);
 
             if (Utils.isEmpty(Session.getInstance().getSubcategories(categoryForeignId))) {
                 new ProcessSubcategories().execute();

@@ -23,6 +23,7 @@ public class Session {
     private Map<String, List<Subcategory>> subcategoriesMap = new HashMap<>();
     private Boolean isCategoryChanged = false;
     private Boolean isSubcategoryChanged = false;
+    private String categoryName;
 
     private Session() {
     }
@@ -81,6 +82,13 @@ public class Session {
     }
     public void setSubcategoryChanged(Boolean subcategoryChanged) {
         isSubcategoryChanged = subcategoryChanged;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 
 }
