@@ -89,13 +89,10 @@ public class CategoryAdapter extends BaseAdapter {
             }
             subcategories.setTypeface(font);
             name.setTypeface(font);
+            name.setLineSpacing(0, 0.6f);
         }
 
         private void bind(Category model) {
-            // TODO: turn this on maybe?
-            /*if (!API_ALL_CATEGORY_NAME.equals(model.getName())) {
-                Utils.setSubcategoryGridDesign(model.getSubcategoriesSize(), image);
-            }*/
             if (model.isAsSubcategory()) {
                 if (Build.VERSION.SDK_INT >= 21) {
                     subcategories.setText(String.format(Locale.ENGLISH, "☻ %d", model.getUsersSize()));
@@ -118,6 +115,11 @@ public class CategoryAdapter extends BaseAdapter {
                 }
             } else {
                 UrlImageViewHelper.setUrlDrawable(image, model.getImageUrl(), R.drawable.placeholder_category);
+            }
+
+            // Calculate height for all except "all" category
+            if (!"all".equals(model.getName())) {
+                Decorator.setGridHeight(model.getSubcategoriesSize(), image);
             }
         }
     }

@@ -61,7 +61,6 @@ import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATE
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_NAME;
 import static android.view.inputmethod.EditorInfo.IME_ACTION_SEND;
 
-// TODO: pull to refresh
 public class UserActivity extends SessionActivity {
 
     private final AppCompatActivity clazz = this;
@@ -131,6 +130,12 @@ public class UserActivity extends SessionActivity {
             webSocket.close();
         }
         super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        chatDialog.dismiss();
+        super.onPause();
     }
 
     @Override

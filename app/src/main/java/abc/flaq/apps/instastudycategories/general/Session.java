@@ -21,9 +21,14 @@ public class Session {
     private ImageView userProfilePic;
     private ArrayList<Category> categories;
     private Map<String, List<Subcategory>> subcategoriesMap = new HashMap<>();
+    // For refreshing grids when something's changed
     private Boolean isCategoryChanged = false;
     private Boolean isSubcategoryChanged = false;
+    // --- HELPING
+    // For displaying subtitle in action bar on users list
     private String categoryName;
+    // For calculating grid height
+    private int maxGridSize;
 
     private Session() {
     }
@@ -89,6 +94,13 @@ public class Session {
     }
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    public int getMaxGridSize() {
+        return maxGridSize;
+    }
+    public void setMaxGridSize(int maxGridSize) {
+        this.maxGridSize = maxGridSize;
     }
 
 }

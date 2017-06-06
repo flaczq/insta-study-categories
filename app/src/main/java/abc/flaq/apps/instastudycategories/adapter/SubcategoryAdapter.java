@@ -89,6 +89,7 @@ public class SubcategoryAdapter extends BaseAdapter {
             }
             users.setTypeface(font);
             name.setTypeface(font);
+            name.setLineSpacing(0, 0.6f);
         }
 
         private void bind(Subcategory model) {

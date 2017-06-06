@@ -24,7 +24,7 @@
         android:layout_centerVertical="true"
         android:layout_gravity="center"
         android:visibility="invisible"
-        app:crs_pl_size="medium"
+        app:crs_pl_size="small"
         app:crs_pl_fg_color="@color/colorPrimaryDark"
         app:crs_pl_style="tornado_circle_1" />
 

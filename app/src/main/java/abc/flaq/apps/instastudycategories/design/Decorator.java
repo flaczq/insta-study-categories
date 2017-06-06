@@ -12,6 +12,7 @@ import android.widget.TextView;
 import java.util.Locale;
 
 import abc.flaq.apps.instastudycategories.R;
+import abc.flaq.apps.instastudycategories.general.Session;
 
 import static abc.flaq.apps.instastudycategories.helper.Constants.GRID_HEIGHT_DIFF;
 import static abc.flaq.apps.instastudycategories.helper.Constants.GRID_MAX_HEIGHT;
@@ -87,35 +88,19 @@ public class Decorator {
                 break;
         }
     }
-    public static void setCategoryGridDesign(int position, int size, int maxSize, TextView textView) {
-        int minSize = 10;
+    public static void setGridHeight(int size, ImageView imageView) {
 
-        if (size >= maxSize) {
-            textView.setMinimumHeight(GRID_MAX_HEIGHT);
-            textView.setHeight(GRID_MAX_HEIGHT);
-            textView.setMaxHeight(GRID_MAX_HEIGHT);
-        } else if (size > minSize) {
-            textView.setMinimumHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
-            textView.setHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
-            textView.setMaxHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
-        } else {
-            textView.setMinimumHeight(GRID_MAX_HEIGHT - 2*GRID_HEIGHT_DIFF);
-            textView.setHeight(GRID_MAX_HEIGHT - 2*GRID_HEIGHT_DIFF);
-            textView.setMaxHeight(GRID_MAX_HEIGHT - 2*GRID_HEIGHT_DIFF);
-        }
-
-        setColorByPosition(position, textView);
-    }
-    public static void setSubcategoryGridDesign(int size, ImageView imageView) {
-        if (size >= 2) {
-            imageView.setMinimumHeight(GRID_MAX_HEIGHT);
-            imageView.setMaxHeight(GRID_MAX_HEIGHT);
-        } else if (size > 1) {
-            imageView.setMinimumHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
-            imageView.setMaxHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
-        } else {
-            imageView.setMinimumHeight(GRID_MAX_HEIGHT - 2*GRID_HEIGHT_DIFF);
-            imageView.setMaxHeight(GRID_MAX_HEIGHT - 2*GRID_HEIGHT_DIFF);
+        if (Session.getInstance().getMaxGridSize() > 0) {
+            if (size >= Session.getInstance().getMaxGridSize()) {
+                imageView.setMinimumHeight(imageView.getHeight());
+                imageView.setMaxHeight(imageView.getHeight());
+            } else if (size >= Session.getInstance().getMaxGridSize() - 2) {
+                imageView.setMinimumHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
+                imageView.setMaxHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
+            } else {
+                imageView.setMinimumHeight(GRID_MAX_HEIGHT - 2 * GRID_HEIGHT_DIFF);
+                imageView.setMaxHeight(GRID_MAX_HEIGHT - 2 * GRID_HEIGHT_DIFF);
+            }
         }
     }
 

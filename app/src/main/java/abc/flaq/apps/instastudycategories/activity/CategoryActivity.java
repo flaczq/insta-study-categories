@@ -168,6 +168,8 @@ public class CategoryActivity extends SessionActivity {
             Utils.showConnectionError(tabs, getString(R.string.error_categories_not_found));
         } else {
             Session.getInstance().setCategories(categories);
+            // Get first (not "all") category's size
+            Session.getInstance().setMaxGridSize(categories.get(1).getSubcategoriesSize());
         }
 
         ArrayList<Category> activeCategories = new ArrayList<>();
