@@ -13,17 +13,21 @@
     <color name="colorTabIndicator">#F0AD4E</color>
     <color name="colorDivider">#A0A0A0</color>
 
+    <!-- ALPHA -->
     <color name="colorAccentAlpha">#805CB85C</color>
     <color name="colorErrorAlpha">#80D9534F</color>
     <color name="colorBackgroundForText">#90000000</color>
     <color name="colorBlackTransparent">#40000000</color>
+    <color name="colorWhiteTransparent">#80FFFFFF</color>
 
+    <!-- TEXT -->
     <color name="textColorPrimary">#FFFFFF</color>
     <color name="textColorSecondary">#000000</color>
     <color name="textColorDisabled">#214f78</color>
     <color name="textColorMaybeImportant">#404040</color>
     <color name="textColorLessImportant">#808080</color>
 
+    <!-- CATEGORY PASTEL -->
     <color name="colorCategoryBlue">#0D6BB6</color>
     <color name="colorCategoryBlueLight">#90D4F7</color>
     <color name="colorCategoryCreamy">#F0E8DB</color>
@@ -34,4 +38,7 @@
     <color name="colorCategoryPink">#FF89B5</color>
     <color name="colorCategoryPurple">#898CFF</color>
     <color name="colorCategoryRed">#CC6675</color>
+
+    <!-- DRAWER -->
+    <color name="material_drawer_background">#F3F3F3</color>
 </resources>

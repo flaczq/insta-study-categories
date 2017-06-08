@@ -6,6 +6,8 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,13 +16,21 @@ import java.util.Locale;
 import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.general.Session;
 
-import static abc.flaq.apps.instastudycategories.helper.Constants.GRID_HEIGHT_DIFF;
-import static abc.flaq.apps.instastudycategories.helper.Constants.GRID_MAX_HEIGHT;
 import static abc.flaq.apps.instastudycategories.helper.Utils.isNotEmpty;
 import static android.util.TypedValue.COMPLEX_UNIT_SP;
 
 public class Decorator {
 
+    public static void setBackNavigation(AppCompatActivity activity) {
+        ActionBar actionBar = activity.getActionBar();
+        if (isNotEmpty(actionBar)) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+        android.support.v7.app.ActionBar supportActionBar = activity.getSupportActionBar();
+        if (isNotEmpty(supportActionBar)) {
+            supportActionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
     public static void setActionBarTitle(AppCompatActivity activity, String title, String subtitle) {
         ActionBar actionBar = activity.getActionBar();
         String formattedTitle = (title.substring(0, 1).toUpperCase() + title.substring(1));
@@ -42,6 +52,14 @@ public class Decorator {
         android.support.v7.app.ActionBar supportActionBar = activity.getSupportActionBar();
         if (isNotEmpty(supportActionBar)) {
             supportActionBar.setElevation(0);
+        }
+    }
+    public static void setStatusBarColor(AppCompatActivity activity) {
+        Window window = activity.getWindow();
+        if (Build.VERSION.SDK_INT >= 21) {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
         }
     }
     public static void setLocale(Context context, String language) {
@@ -89,19 +107,8 @@ public class Decorator {
         }
     }
     public static void setGridHeight(int size, ImageView imageView) {
-
-        if (Session.getInstance().getMaxGridSize() > 0) {
-            if (size >= Session.getInstance().getMaxGridSize()) {
-                imageView.setMinimumHeight(imageView.getHeight());
-                imageView.setMaxHeight(imageView.getHeight());
-            } else if (size >= Session.getInstance().getMaxGridSize() - 2) {
-                imageView.setMinimumHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
-                imageView.setMaxHeight(GRID_MAX_HEIGHT - GRID_HEIGHT_DIFF);
-            } else {
-                imageView.setMinimumHeight(GRID_MAX_HEIGHT - 2 * GRID_HEIGHT_DIFF);
-                imageView.setMaxHeight(GRID_MAX_HEIGHT - 2 * GRID_HEIGHT_DIFF);
-            }
-        }
+        int height = Session.getInstance().getMaxGridSize();
+        // TODO SOMEDAY: how to set imageview height properly?
     }
 
     public static void fitFont(TextView textView) {

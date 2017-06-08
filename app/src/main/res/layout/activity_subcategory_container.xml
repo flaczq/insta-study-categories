@@ -7,17 +7,29 @@
     android:orientation="vertical"
     android:background="@color/colorBackgroundLight">
 
-    <android.support.design.widget.TabLayout android:id="@+id/subcategory_tabs"
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        app:tabTextColor="@color/textColorDisabled"
-        app:tabSelectedTextColor="@color/textColorPrimary"
-        app:tabIndicatorColor="@color/colorTabIndicator"
-        app:tabIndicatorHeight="8px"
-        app:tabMaxWidth="0dp"
-        app:tabGravity="fill"
-        app:tabMode="fixed" />
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar android:id="@+id/subcategory_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:theme="@style/ToolbarTheme"
+            app:popupTheme="@style/PopupToolbarTheme" />
+
+        <android.support.design.widget.TabLayout android:id="@+id/subcategory_tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            app:tabTextColor="@color/textColorDisabled"
+            app:tabSelectedTextColor="@color/textColorPrimary"
+            app:tabIndicatorColor="@color/colorTabIndicator"
+            app:tabIndicatorHeight="8px"
+            app:tabMaxWidth="0dp"
+            app:tabGravity="fill"
+            app:tabMode="fixed" />
+
+    </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.view.ViewPager android:id="@+id/subcategory_pager"
         android:layout_width="match_parent"

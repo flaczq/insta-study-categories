@@ -11,7 +11,7 @@
         android:scaleType="centerCrop"
         android:adjustViewBounds="true"
         android:contentDescription="@string/imageview.description" />
-    <TextView android:id="@+id/category_item_subcategories"
+    <com.mikepenz.iconics.view.IconicsTextView android:id="@+id/category_item_subcategories"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorBackgroundForText"

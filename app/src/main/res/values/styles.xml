@@ -6,6 +6,8 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
 
         <item name="md_background_color">@color/colorBackgroundLight</item>
         <item name="md_buttons_gravity">center</item>
@@ -31,6 +33,17 @@
         <item name="android:windowBackground">@null</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsFloating">false</item>
+    </style>
+
+    <style name="PopupToolbarTheme" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="android:colorBackground">@color/colorPrimaryDark</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="ToolbarTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textColorSecondary">@color/colorWhiteTransparent</item>
+        <item name="actionMenuTextColor">@android:color/white</item>
     </style>
 
 </resources>

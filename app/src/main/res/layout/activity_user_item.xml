@@ -46,7 +46,7 @@
         android:layout_marginBottom="8dp"
         android:layout_alignBottom="@id/user_item_profile_pic" />
 
-    <TextView android:id="@+id/user_item_followers"
+    <com.mikepenz.iconics.view.IconicsTextView android:id="@+id/user_item_followers"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-light"
@@ -56,7 +56,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignBaseline="@id/user_item_username" />
-    <TextView android:id="@+id/user_item_media"
+    <com.mikepenz.iconics.view.IconicsTextView android:id="@+id/user_item_media"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-light"

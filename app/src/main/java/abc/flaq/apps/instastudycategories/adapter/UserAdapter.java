@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
+import com.mikepenz.iconics.view.IconicsTextView;
 
 import java.util.List;
 
@@ -75,15 +76,15 @@ public class UserAdapter extends BaseAdapter {
         private final ImageView profilePic;
         private final TextView username;
         private final TextView joined;
-        private final TextView followers;
-        private final TextView media;
+        private final IconicsTextView followers;
+        private final IconicsTextView media;
 
         private UserViewHolder(View view) {
             profilePic = (ImageView) view.findViewById(R.id.user_item_profile_pic);
             username = (TextView) view.findViewById(R.id.user_item_username);
             joined = (TextView) view.findViewById(R.id.user_item_joined);
-            followers = (TextView) view.findViewById(R.id.user_item_followers);
-            media = (TextView) view.findViewById(R.id.user_item_media);
+            followers = (IconicsTextView) view.findViewById(R.id.user_item_followers);
+            media = (IconicsTextView) view.findViewById(R.id.user_item_media);
         }
 
         private void bind(final User model) {
@@ -113,8 +114,8 @@ public class UserAdapter extends BaseAdapter {
                 if (Utils.isNotEmpty(model.getJoinDate())) {
                     joined.setText(Utils.formatDate(model.getJoinDate(), FULL_DATE_FORMAT));
                 }
-                followers.setText("\uD83D\uDE03 " + (Utils.isEmpty(model.getFollowers()) ? "0" : Utils.formatNumber(model.getFollowers())));
-                media.setText("\uD83D\uDCF7 " + (Utils.isEmpty(model.getMedia()) ? "0" : model.getMedia().toString()));
+                followers.setText("{faw-users} " + (Utils.isEmpty(model.getFollowers()) ? "0" : Utils.formatNumber(model.getFollowers())));
+                media.setText("{faw-instagram} " + (Utils.isEmpty(model.getMedia()) ? "0" : model.getMedia().toString()));
             }
         }
     }

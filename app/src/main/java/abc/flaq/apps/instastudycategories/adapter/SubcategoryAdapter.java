@@ -12,9 +12,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
+import com.mikepenz.iconics.view.IconicsTextView;
 
 import java.util.List;
-import java.util.Locale;
 
 import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.design.Decorator;
@@ -74,32 +74,30 @@ public class SubcategoryAdapter extends BaseAdapter {
     }
 
     private class SubcategoryViewHolder {
-        private final TextView users;
+        private final IconicsTextView users;
         private final ImageView image;
         private final TextView name;
 
         private SubcategoryViewHolder(View view) {
-            users = (TextView) view.findViewById(R.id.subcategory_item_users);
+            users = (IconicsTextView) view.findViewById(R.id.subcategory_item_users);
             image = (ImageView) view.findViewById(R.id.subcategory_item_image);
             name = (TextView) view.findViewById(R.id.subcategory_item_name);
 
             if (Build.VERSION.SDK_INT >= 21) {
-                users.setPadding(0, 3, 0, 0);
+                users.setPadding(0, 5, 0, 0);
                 name.setPadding(0, 5, 0, 0);
+            } else {
+                users.setPadding(0, 3, 0, 0);
+                name.setPadding(0, 0, 0, 10);
             }
             users.setTypeface(font);
             name.setTypeface(font);
-            name.setLineSpacing(0, 0.6f);
+            name.setLineSpacing(0, 0.7f);
         }
 
         private void bind(Subcategory model) {
-            // TODO: turn this on maybe?
-            //Utils.setSubcategoryGridDesign(model.getUsersSize(), subcategoryViewHolder.image);
-            if (Build.VERSION.SDK_INT >= 21) {
-                users.setText(String.format(Locale.ENGLISH, "☻ %d", model.getUsersSize()));
-            } else {
-                users.setText(String.format(Locale.ENGLISH, "☺ %d", model.getUsersSize()));
-            }
+            users.setText("{faw-smile-o} " + model.getUsersSize());
+
             String subcategoryName = Utils.getStringBySubcategoryName(context, model.getName());
             name.setText(Utils.simplifyCharacters(subcategoryName));
             Decorator.fitFont(name);
@@ -114,6 +112,9 @@ public class SubcategoryAdapter extends BaseAdapter {
             } else {
                 UrlImageViewHelper.setUrlDrawable(image, model.getImageUrl(), R.drawable.placeholder_category);
             }
+
+            // Calculate height for all except "all" category
+            Decorator.setGridHeight(model.getUsersSize(), image);
         }
     }
 

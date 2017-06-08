@@ -69,7 +69,7 @@ public class Factory {
         subcategory.setCategoriesSize(1);
         subcategory.setHashtags(new ArrayList<String>());
         subcategory.setImageUrl("");
-        subcategory.setActive(Boolean.TRUE);
+        subcategory.setActive(Boolean.FALSE);
         return subcategory;
     }
 

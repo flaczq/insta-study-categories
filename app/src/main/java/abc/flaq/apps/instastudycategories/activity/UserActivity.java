@@ -6,13 +6,13 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,14 +23,11 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.crystal.crystalpreloaders.widgets.CrystalPreloader;
-import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 
 import org.json.JSONException;
 
@@ -54,7 +51,6 @@ import abc.flaq.apps.instastudycategories.pojo.WebSocketMessage;
 
 import static abc.flaq.apps.instastudycategories.R.id.menu_sort_alphabet;
 import static abc.flaq.apps.instastudycategories.R.id.menu_sort_followers;
-import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_URL;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_FOREIGN_ID;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_NAME;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_FOREIGN_ID;
@@ -86,6 +82,9 @@ public class UserActivity extends SessionActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.user_toolbar);
+        setSupportActionBar(toolbar);
+
         layout = (CoordinatorLayout) findViewById(R.id.user_layout);
         preloader = (CrystalPreloader) findViewById(R.id.user_preloader);
 
@@ -94,7 +93,7 @@ public class UserActivity extends SessionActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 User selected = userAdapter.getItem(position);
-                showOtherUserInfoDialog(selected);
+                showOtherUserInfoDialog(clazz, selected);
             }
         });
 
@@ -163,7 +162,6 @@ public class UserActivity extends SessionActivity {
             mainMenu.findItem(R.id.menu_sort).setVisible(users.size() > 1);
         }
     }
-    // TODO: maks szerokość nazwy żeby zmieściły się ikonki
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (isApiWorking) {
@@ -216,8 +214,6 @@ public class UserActivity extends SessionActivity {
                 Utils.sortAlphabetically(users, sortAlphabet);
                 userAdapter.notifyDataSetChanged();
                 break;
-            case R.id.menu_info:
-                return super.onOptionsItemSelected(item);
             case R.id.menu_login:
                 return super.onOptionsItemSelected(item);
             default:
@@ -313,57 +309,6 @@ public class UserActivity extends SessionActivity {
 
     private void showChatDialog() {
         chatDialog.show();
-    }
-
-    private void showOtherUserInfoDialog(final User user) {
-        MaterialDialog.Builder infoDialogBuilder = new MaterialDialog.Builder(clazz)
-                .title(user.getUsername())
-                .content(user.getInfoContent(clazz))
-                .positiveText(R.string.back);
-
-        if (Utils.isEmpty(user.getProfilePicUrl())) {
-            infoDialogBuilder.iconRes(R.drawable.placeholder_profile_pic_72);
-        } else {
-            ImageView profilePic = new ImageView(clazz);
-            UrlImageViewHelper.setUrlDrawable(profilePic, user.getProfilePicUrl(), R.drawable.placeholder_profile_pic_72);
-            infoDialogBuilder.icon(profilePic.getDrawable());
-        }
-
-        final MaterialDialog infoDialog = infoDialogBuilder.build();
-        infoDialog.getIconView().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent nextIntent = Utils.getInstagramIntent(user.getUsername());
-
-                if (Utils.isIntentAvailable(clazz, nextIntent)) {
-                    Utils.logDebug(clazz, "Instagram intent is available");
-                    clazz.startActivity(nextIntent);
-                } else {
-                    Utils.logDebug(clazz, "Instagram intent is NOT available");
-                    clazz.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + user.getUsername())));
-                }
-
-                infoDialog.hide();
-            }
-        });
-        infoDialog.getTitleView().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent nextIntent = Utils.getInstagramIntent(user.getUsername());
-
-                if (Utils.isIntentAvailable(clazz, nextIntent)) {
-                    Utils.logDebug(clazz, "Instagram intent is available");
-                    clazz.startActivity(nextIntent);
-                } else {
-                    Utils.logDebug(clazz, "Instagram intent is NOT available");
-                    clazz.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + user.getUsername())));
-                }
-
-                infoDialog.hide();
-            }
-        });
-
-        infoDialog.show();
     }
 
     private void handleConnectionError(String message) {

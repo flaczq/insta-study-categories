@@ -31,10 +31,6 @@
                 app:showAsAction="ifRoom" />
         </menu>
     </item>
-    <item android:id="@+id/menu_info"
-        android:title="Info"
-        android:icon="@android:drawable/ic_menu_info_details"
-        app:showAsAction="ifRoom" />
     <item android:id="@+id/menu_login"
         android:title="Log in"
         app:showAsAction="ifRoom" />

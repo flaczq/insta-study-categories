@@ -52,8 +52,8 @@ public class SubcategoryActiveFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle args = getArguments();
-        //tabNo = args.getInt(BUNDLE_SUBCATEGORY_TAB_NO);
+        /*Bundle args = getArguments();
+        tabNo = args.getInt(BUNDLE_SUBCATEGORY_TAB_NO);*/
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -97,7 +97,6 @@ public class SubcategoryActiveFragment extends Fragment {
         filter.addAction(INTENT_SUBCATEGORY);
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(receiver, filter);
     }
-
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {

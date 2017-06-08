@@ -52,7 +52,7 @@ public class Utils {
         }
     }
     public static void logError(Object activity, String message) {
-        // TODO: save to database
+        // TODO SOMEDAY: save to database
         log(LOG_ERROR, activity, message);
     }
     private static void log(int type, Object activity, String message) {

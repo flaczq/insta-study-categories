@@ -3,7 +3,10 @@ package abc.flaq.apps.instastudycategories.activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v7.app.AppCompatActivity;
+
+import com.mikepenz.iconics.context.IconicsLayoutInflater;
 
 import abc.flaq.apps.instastudycategories.BuildConfig;
 import abc.flaq.apps.instastudycategories.design.Decorator;
@@ -16,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
         super.onCreate(savedInstanceState);
 
         Utils.logDebug(this, "Build data: " +

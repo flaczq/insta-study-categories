@@ -7,8 +7,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -45,6 +44,8 @@ import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramUser;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_ENDPOINT_USER_SELF;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_REMOTE_REDIRECT_URL;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_URL;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SESSION;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SESSION_LOGIN;
 import static abc.flaq.apps.instastudycategories.helper.Constants.SETTINGS_ACCESS_TOKEN;
 
 public class SessionActivity extends AppCompatActivity {
@@ -55,11 +56,9 @@ public class SessionActivity extends AppCompatActivity {
     private Menu mainMenu;
     private User user;
     private String accessToken;
-    private MaterialDialog infoDialog;
     private Dialog instagramDialog;
     private Boolean isApiWorking = false;
 
-    // TODO!!: menu z lewej
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,14 +102,6 @@ public class SessionActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
             case R.id.menu_sort:
                 return super.onOptionsItemSelected(item);
-            case R.id.menu_info:
-                if (Utils.isEmpty(Session.getInstance().getUser())) {
-                    Utils.logDebug(clazz, "User is empty, but info icon is available");
-                    new ProcessGetUser().execute();
-                } else {
-                    showInfoDialog();
-                }
-                break;
             case R.id.menu_login:
                 if (Utils.isEmpty(Session.getInstance().getUser())) {
                     showLoginDialog();
@@ -126,7 +117,7 @@ public class SessionActivity extends AppCompatActivity {
         return true;
     }
 
-    private void showLoginDialog() {
+    public void showLoginDialog() {
         initInstagramDialog();
         new MaterialDialog.Builder(clazz)
                 .title(R.string.login)
@@ -189,55 +180,43 @@ public class SessionActivity extends AppCompatActivity {
         instagramDialog.setContentView(loginWebView);
     }
 
-    private void showInfoDialog() {
-        MaterialDialog.Builder infoDialogBuilder = new MaterialDialog.Builder(clazz)
-                .title(Session.getInstance().getUser().getUsername())
-                .content(Session.getInstance().getUser().getInfoContent(clazz))
-                .positiveText(R.string.back)
-                .neutralText(R.string.logout)
-                .negativeText(R.string.delete_account)
-                .onNeutral(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        Utils.showQuickInfo(rootView, getString(R.string.logged_out));
-                        logOut();
-                        dialog.hide();
-                    }
-                })
-                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull final MaterialDialog dialog, @NonNull DialogAction which) {
-                        Snackbar.make(Utils.findSnackbarView(rootView), R.string.remove_account_info, Snackbar.LENGTH_LONG)
-                                .setActionTextColor(ContextCompat.getColor(clazz, R.color.colorError))
-                                .setAction(R.string.remove, new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        dialog.dismiss();
-                                        new ProcessDeleteUser().execute();
-                                    }
-                                }).show();
-                        dialog.hide();
-                    }
-                });
+    public void setMainMenuVisibility(Menu menu) {
+        if (Utils.isNotEmpty(menu)) {
+            Boolean isAuthenticated = Utils.isNotEmpty(Session.getInstance().getUser());
+            menu.findItem(R.id.menu_suggest).setVisible(isAuthenticated);
+            menu.findItem(R.id.menu_join).setVisible(isAuthenticated);
+            menu.findItem(R.id.menu_leave).setVisible(isAuthenticated);
+            menu.findItem(R.id.menu_sort).setVisible(isAuthenticated);
+            menu.findItem(R.id.menu_login).setVisible(!isAuthenticated);
+        }
+    }
 
-        if (Utils.isEmpty(Session.getInstance().getUser().getProfilePicUrl())) {
+    public void showOtherUserInfoDialog(final AppCompatActivity activity, final User user) {
+        MaterialDialog.Builder infoDialogBuilder = new MaterialDialog.Builder(activity)
+                .title(user.getUsername())
+                .content(user.getInfoContent(activity))
+                .positiveText(R.string.back);
+
+        if (Utils.isEmpty(user.getProfilePicUrl())) {
             infoDialogBuilder.iconRes(R.drawable.placeholder_profile_pic_72);
         } else {
-            infoDialogBuilder.icon(Session.getInstance().getUserProfilePic().getDrawable());
+            ImageView profilePic = new ImageView(activity);
+            UrlImageViewHelper.setUrlDrawable(profilePic, user.getProfilePicUrl(), R.drawable.placeholder_profile_pic_72);
+            infoDialogBuilder.icon(profilePic.getDrawable());
         }
 
-        infoDialog = infoDialogBuilder.build();
+        final MaterialDialog infoDialog = infoDialogBuilder.build();
         infoDialog.getIconView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent nextIntent = Utils.getInstagramIntent(Session.getInstance().getUser().getUsername());
+                Intent nextIntent = Utils.getInstagramIntent(user.getUsername());
 
-                if (Utils.isIntentAvailable(clazz, nextIntent)) {
-                    Utils.logDebug(clazz, "Instagram intent is available");
-                    clazz.startActivity(nextIntent);
+                if (Utils.isIntentAvailable(activity, nextIntent)) {
+                    Utils.logDebug(activity, "Instagram intent is available");
+                    activity.startActivity(nextIntent);
                 } else {
-                    Utils.logDebug(clazz, "Instagram intent is NOT available");
-                    clazz.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + Session.getInstance().getUser().getUsername())));
+                    Utils.logDebug(activity, "Instagram intent is NOT available");
+                    activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + user.getUsername())));
                 }
 
                 infoDialog.hide();
@@ -246,34 +225,21 @@ public class SessionActivity extends AppCompatActivity {
         infoDialog.getTitleView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent nextIntent = Utils.getInstagramIntent(Session.getInstance().getUser().getUsername());
+                Intent nextIntent = Utils.getInstagramIntent(user.getUsername());
 
-                if (Utils.isIntentAvailable(clazz, nextIntent)) {
-                    Utils.logDebug(clazz, "Instagram intent is available");
-                    clazz.startActivity(nextIntent);
+                if (Utils.isIntentAvailable(activity, nextIntent)) {
+                    Utils.logDebug(activity, "Instagram intent is available");
+                    activity.startActivity(nextIntent);
                 } else {
-                    Utils.logDebug(clazz, "Instagram intent is NOT available");
-                    clazz.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + Session.getInstance().getUser().getUsername())));
+                    Utils.logDebug(activity, "Instagram intent is NOT available");
+                    activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + user.getUsername())));
                 }
 
                 infoDialog.hide();
             }
         });
-        infoDialog.getActionButton(DialogAction.NEGATIVE).setMaxLines(2);
-        infoDialog.getActionButton(DialogAction.NEGATIVE).setPadding(0, 0, 0, 0);
-        infoDialog.show();
-    }
 
-    public void setMainMenuVisibility(Menu menu) {
-        if (Utils.isNotEmpty(menu)) {
-            Boolean isAuthenticated = Utils.isNotEmpty(Session.getInstance().getUser());
-            menu.findItem(R.id.menu_suggest).setVisible(isAuthenticated);
-            menu.findItem(R.id.menu_join).setVisible(isAuthenticated);
-            menu.findItem(R.id.menu_leave).setVisible(isAuthenticated);
-            menu.findItem(R.id.menu_sort).setVisible(isAuthenticated);
-            menu.findItem(R.id.menu_info).setVisible(isAuthenticated);
-            menu.findItem(R.id.menu_login).setVisible(!isAuthenticated);
-        }
+        infoDialog.show();
     }
 
     private void saveAccessToken(String accessToken) {
@@ -287,7 +253,7 @@ public class SessionActivity extends AppCompatActivity {
                 .apply();
     }
 
-    private void logOut() {
+    public void logOut() {
         user = null;
         Session.getInstance().setUser(null);
         accessToken = null;
@@ -416,6 +382,10 @@ public class SessionActivity extends AppCompatActivity {
 
                         setMainMenuVisibility(mainMenu);
                         invalidateOptionsMenu();
+
+                        Intent intent = new Intent(INTENT_SESSION);
+                        intent.putExtra(INTENT_SESSION_LOGIN, true);
+                        LocalBroadcastManager.getInstance(clazz).sendBroadcast(intent);
                     }
                 }
             } else {
@@ -466,42 +436,12 @@ public class SessionActivity extends AppCompatActivity {
 
                 setMainMenuVisibility(mainMenu);
                 invalidateOptionsMenu();
+
+                Intent intent = new Intent(INTENT_SESSION);
+                intent.putExtra(INTENT_SESSION_LOGIN, true);
+                LocalBroadcastManager.getInstance(clazz).sendBroadcast(intent);
             } else {
                 Utils.showConnectionError(rootView, getString(R.string.error_user_login));
-                logOut();
-            }
-        }
-    }
-
-    private class ProcessDeleteUser extends AsyncTask<Void, Void, Boolean> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            isApiWorking = true;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            Boolean result = Boolean.FALSE;
-            try {
-                result = Api.removeUser(Session.getInstance().getUser());
-            } catch (IOException e) {
-                handleConnectionError(getString(R.string.error_account_remove));
-                Utils.logError(clazz, "IOException: " + e.getMessage());
-            } catch (JSONException e) {
-                handleConnectionError(getString(R.string.error_account_remove));
-                Utils.logError(clazz, "JSONException: " + e.getMessage());
-            }
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-            super.onPostExecute(result);
-            isApiWorking = false;
-
-            if (result) {
-                Utils.showQuickInfo(rootView, getString(R.string.remove_account_success));
                 logOut();
             }
         }

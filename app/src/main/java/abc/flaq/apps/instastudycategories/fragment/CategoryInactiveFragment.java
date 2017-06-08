@@ -53,8 +53,8 @@ public class CategoryInactiveFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle args = getArguments();
-        //tabNo = args.getInt(BUNDLE_CATEGORY_TAB_NO);
+        /*Bundle args = getArguments();
+        tabNo = args.getInt(BUNDLE_CATEGORY_TAB_NO);*/
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -103,7 +103,6 @@ public class CategoryInactiveFragment extends Fragment {
         filter.addAction(INTENT_CATEGORY);
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(receiver, filter);
     }
-
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {

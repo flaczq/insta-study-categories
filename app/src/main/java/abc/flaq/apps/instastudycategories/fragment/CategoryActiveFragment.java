@@ -22,8 +22,8 @@ import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.activity.SubcategoryActivity;
 import abc.flaq.apps.instastudycategories.activity.UserActivity;
 import abc.flaq.apps.instastudycategories.adapter.CategoryAdapter;
-import abc.flaq.apps.instastudycategories.pojo.Category;
 import abc.flaq.apps.instastudycategories.helper.Utils;
+import abc.flaq.apps.instastudycategories.pojo.Category;
 
 import static abc.flaq.apps.instastudycategories.helper.Constants.FONT_CATEGORY_NAME;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY;
@@ -53,8 +53,8 @@ public class CategoryActiveFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle args = getArguments();
-        //tabNo = args.getInt(BUNDLE_CATEGORY_TAB_NO);
+        /*Bundle args = getArguments();
+        tabNo = args.getInt(BUNDLE_CATEGORY_TAB_NO);*/
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -103,7 +103,6 @@ public class CategoryActiveFragment extends Fragment {
         filter.addAction(INTENT_CATEGORY);
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(receiver, filter);
     }
-
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {

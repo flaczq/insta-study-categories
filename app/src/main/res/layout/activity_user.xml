@@ -8,10 +8,23 @@
     android:background="@color/colorBackgroundLight"
     tools:context=".activity.UserActivity">
 
-    <!-- TODO: pull to refresh -->
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar android:id="@+id/user_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:theme="@style/ToolbarTheme"
+            app:popupTheme="@style/PopupToolbarTheme" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <!-- TODO SOMEDAY: pull to refresh -->
     <ListView android:id="@+id/user_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
         android:dividerHeight="1px"
         android:divider="@drawable/user_divider"
         android:smoothScrollbar="true"

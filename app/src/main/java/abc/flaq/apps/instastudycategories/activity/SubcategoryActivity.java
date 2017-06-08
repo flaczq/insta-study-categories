@@ -9,6 +9,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -56,6 +57,9 @@ public class SubcategoryActivity extends SessionActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_subcategory_container);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.subcategory_toolbar);
+        setSupportActionBar(toolbar);
 
         pager = (ViewPager) findViewById(R.id.subcategory_pager);
         pager.setAdapter(new SubcategoryTabAdapter(getSupportFragmentManager(), clazz));
@@ -127,8 +131,6 @@ public class SubcategoryActivity extends SessionActivity {
             case R.id.menu_sort:
                 // not available from here
                 break;
-            case R.id.menu_info:
-                return super.onOptionsItemSelected(item);
             case R.id.menu_login:
                 return super.onOptionsItemSelected(item);
             default:

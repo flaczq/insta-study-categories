@@ -58,7 +58,7 @@
     <string name="subcategory_add_success_1">Nowa podkategoria znajduje się w zakładce NIEAKTYWNE.</string>
     <string name="subcategory_add_success_2">Stanie się ona aktywna po dołączeniu do niej 10 użytkowników.</string>
     <string name="subcategory_add_success_short">Nowa podkategoria stanie się aktywna po dołączeniu do niej 10 użytkowników</string>
-    <string name="error_subcategories_not_found">Brak podkategorii. Zasugeruj jakąś!</string>
+    <string name="error_subcategories_not_found">Brak podkategorii. Zaproponuj jakąś!</string>
     <string name="error_subcategories_load">Nie udało się pobrać podkategorii</string>
     <string name="error_subcategory_add">Nie udało się dodać podkategorii</string>
 

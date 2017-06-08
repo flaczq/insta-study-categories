@@ -12,9 +12,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
+import com.mikepenz.iconics.view.IconicsTextView;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.design.Decorator;
@@ -74,34 +74,34 @@ public class CategoryAdapter extends BaseAdapter {
     }
 
     private class CategoryViewHolder {
-        private final TextView subcategories;
+        private final IconicsTextView subcategories;
         private final ImageView image;
         private final TextView name;
 
         private CategoryViewHolder(View view) {
-            subcategories = (TextView) view.findViewById(R.id.category_item_subcategories);
+            subcategories = (IconicsTextView) view.findViewById(R.id.category_item_subcategories);
             image = (ImageView) view.findViewById(R.id.category_item_image);
             name = (TextView) view.findViewById(R.id.category_item_name);
 
             if (Build.VERSION.SDK_INT >= 21) {
-                subcategories.setPadding(0, 3, 0, 0);
+                subcategories.setPadding(0, 5, 0, 0);
                 name.setPadding(0, 5, 0, 0);
+            } else {
+                subcategories.setPadding(0, 3, 0, 0);
+                name.setPadding(0, 0, 0, 10);
             }
             subcategories.setTypeface(font);
             name.setTypeface(font);
-            name.setLineSpacing(0, 0.6f);
+            name.setLineSpacing(0, 0.7f);
         }
 
         private void bind(Category model) {
             if (model.isAsSubcategory()) {
-                if (Build.VERSION.SDK_INT >= 21) {
-                    subcategories.setText(String.format(Locale.ENGLISH, "☻ %d", model.getUsersSize()));
-                } else {
-                    subcategories.setText(String.format(Locale.ENGLISH, "☺ %d", model.getUsersSize()));
-                }
+                subcategories.setText("{faw-smile-o} " + model.getUsersSize());
             } else {
-                subcategories.setText(String.format(Locale.ENGLISH, "▣ %d", model.getSubcategoriesSize()));
+                subcategories.setText("{faw-th-large} " + model.getSubcategoriesSize());
             }
+
             String categoryName = Utils.getStringByCategoryName(context, model.getName());
             name.setText(Utils.simplifyCharacters(categoryName));
             Decorator.fitFont(name);
