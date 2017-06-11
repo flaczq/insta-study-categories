@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         Session.getInstance().setSettings(settings);
 
         Intent intent = new Intent(this, CategoryActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
     }

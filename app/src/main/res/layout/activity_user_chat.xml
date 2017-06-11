@@ -31,7 +31,10 @@
         <ImageButton android:id="@+id/user_chat_input_send"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/arrow_down_float"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:src="@drawable/ic_send_black_24dp"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/imageview.description" />
 
     </LinearLayout>

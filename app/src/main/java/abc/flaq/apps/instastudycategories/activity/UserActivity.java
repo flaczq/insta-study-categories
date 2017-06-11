@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -68,6 +69,7 @@ public class UserActivity extends SessionActivity {
     private List<User> users = new ArrayList<>();
     private Menu mainMenu;
     private String parentForeignId;
+    private String subcategoryParentName;
     private Boolean isCategory = false;
     private Boolean hasJoined;
     private Boolean isApiWorking = false;
@@ -110,7 +112,7 @@ public class UserActivity extends SessionActivity {
             if (Utils.isNotEmpty(subcategoryForeignId)) {
                 parentForeignId = subcategoryForeignId;
                 String categoryParentName = Utils.getStringByCategoryName(clazz, Session.getInstance().getCategoryName());
-                String subcategoryParentName = Utils.getStringBySubcategoryName(clazz, intent.getStringExtra(INTENT_SUBCATEGORY_NAME));
+                subcategoryParentName = Utils.getStringBySubcategoryName(clazz, intent.getStringExtra(INTENT_SUBCATEGORY_NAME));
                 Decorator.setActionBarTitle(clazz, subcategoryParentName, categoryParentName);
             }
         }
@@ -133,7 +135,9 @@ public class UserActivity extends SessionActivity {
 
     @Override
     protected void onPause() {
-        chatDialog.dismiss();
+        if (Utils.isNotEmpty(chatDialog)) {
+            chatDialog.dismiss();
+        }
         super.onPause();
     }
 
@@ -168,9 +172,6 @@ public class UserActivity extends SessionActivity {
             return true;
         }
 
-        CharSequence title = item.getTitle();
-        int length = title.length();
-
         switch (item.getItemId()) {
             case R.id.menu_suggest:
                 // not available from here
@@ -179,7 +180,14 @@ public class UserActivity extends SessionActivity {
                 new ProcessAddUserToSubcategory().execute();
                 break;
             case R.id.menu_leave:
-                new ProcessRemoveUserFromSubcategory().execute();
+                Snackbar.make(Utils.findSnackbarView(layout), "Czy na pewno chcesz opuścić kategorię \"" + subcategoryParentName + "\"?", Snackbar.LENGTH_LONG)
+                        .setActionTextColor(ContextCompat.getColor(clazz, R.color.colorError))
+                        .setAction("OPUŚĆ", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                new ProcessRemoveUserFromSubcategory().execute();
+                            }
+                        }).show();
                 break;
             case R.id.menu_sort:
                 // submenu only
@@ -188,7 +196,7 @@ public class UserActivity extends SessionActivity {
                 if (sortDate) {
                     item.setTitle("Od najstarszego");
                 } else {
-                    item.setTitle("Od najmłodszego");
+                    item.setTitle("Od najnowszego");
                 }
                 sortDate = !sortDate;
                 Utils.sortByJoinedDate(users, sortDate);
@@ -254,7 +262,7 @@ public class UserActivity extends SessionActivity {
                 if (chatInput.hasFocus()) {
                     chatInput.clearFocus();
                 }
-                fab.setBackgroundTintList(ContextCompat.getColorStateList(clazz, R.color.colorAccent));
+                fab.setImageResource(R.drawable.ic_chat_bubble_white_24dp);
             }
         });
         chatInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {

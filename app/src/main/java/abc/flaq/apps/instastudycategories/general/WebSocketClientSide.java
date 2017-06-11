@@ -3,7 +3,6 @@ package abc.flaq.apps.instastudycategories.general;
 import android.app.Dialog;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
@@ -104,7 +103,7 @@ public class WebSocketClientSide extends WebSocketClient {
                     public void run() {
                         adapter.addItem(message);
                         if (adapter.getCount() > WEB_SOCKET_MAX_MESSAGES) {
-                            fab.setBackgroundTintList(ContextCompat.getColorStateList(clazz, R.color.colorPrimary));
+                            fab.setImageResource(R.drawable.ic_chat_white_24dp);
                         }
                     }
                 });

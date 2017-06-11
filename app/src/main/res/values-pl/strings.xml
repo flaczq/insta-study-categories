@@ -104,7 +104,7 @@
     <string name="logout">Wyloguj</string>
     <string name="delete_account">Usuń\nkonto</string>
     <string name="logged_out">Wylogowano</string>
-    <string name="remove_account_info">Wszystkie informacje o Tobie zostaną usunięte</string>
+    <string name="remove_account_info">Czy na pewno chcesz usunąć wszystkie informacje o sobie?</string>
     <string name="remove">USUŃ</string>
     <string name="logged_in">Zalogowano</string>
     <string name="error_account_remove">Nie udało się usunąć konta użytkownika</string>

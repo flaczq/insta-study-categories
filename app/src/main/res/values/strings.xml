@@ -103,7 +103,7 @@
     <string name="logout">Log out</string>
     <string name="delete_account">Delete\naccount</string>
     <string name="logged_out">Logged out</string>
-    <string name="remove_account_info">All your informations will be removed</string>
+    <string name="remove_account_info">Do you really want to remove all your informations?</string>
     <string name="remove">REMOVE</string>
     <string name="logged_in">Logged in</string>
     <string name="error_account_remove">Couldn\'t remove user account</string>

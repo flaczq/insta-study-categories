@@ -20,9 +20,11 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.crystal.crystalpreloaders.widgets.CrystalPreloader;
 import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 
 import org.json.JSONException;
@@ -118,7 +120,6 @@ public class SessionActivity extends AppCompatActivity {
     }
 
     public void showLoginDialog() {
-        initInstagramDialog();
         new MaterialDialog.Builder(clazz)
                 .title(R.string.login)
                 .content(R.string.login_info)
@@ -127,6 +128,7 @@ public class SessionActivity extends AppCompatActivity {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        initInstagramDialog();
                         instagramDialog.show();
                         dialog.dismiss();
                     }
@@ -141,11 +143,13 @@ public class SessionActivity extends AppCompatActivity {
             handleConnectionError(getString(R.string.error_user_login));
             Utils.logError(clazz, "URISyntaxException: " + e.getMessage());
         }
+
+        final CrystalPreloader preloader = new CrystalPreloader(clazz);
         WebView loginWebView = new WebView(clazz);
         loginWebView.loadUrl(instagramAuthUrl);
         loginWebView.setWebViewClient(new WebViewClient() {
             @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            public boolean shouldOverrideUrlLoading(final WebView view, String url) {
                 if (url.startsWith(INSTAGRAM_REMOTE_REDIRECT_URL) && url.length() > INSTAGRAM_REMOTE_REDIRECT_URL.length()) {
                     if (url.contains("user_denied")) {
                         instagramDialog.dismiss();
@@ -162,6 +166,13 @@ public class SessionActivity extends AppCompatActivity {
                     }
                 } else {
                     view.loadUrl(url);
+                    view.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            preloader.setVisibility(View.GONE);
+                            instagramDialog.setContentView(view);
+                        }
+                    }, 750);
                 }
                 return true;
             }
@@ -177,7 +188,7 @@ public class SessionActivity extends AppCompatActivity {
 
         instagramDialog = new Dialog(clazz);
         instagramDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        instagramDialog.setContentView(loginWebView);
+        instagramDialog.addContentView(preloader, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT , RelativeLayout.LayoutParams.MATCH_PARENT));
     }
 
     public void setMainMenuVisibility(Menu menu) {
@@ -254,18 +265,18 @@ public class SessionActivity extends AppCompatActivity {
     }
 
     public void logOut() {
+        if (Build.VERSION.SDK_INT >= 21) {
+            CookieManager.getInstance().removeAllCookies(null);
+        } else {
+            CookieManager.getInstance().removeAllCookie();
+        }
+
         user = null;
         Session.getInstance().setUser(null);
         accessToken = null;
         removeAccessToken();
         setMainMenuVisibility(mainMenu);
         invalidateOptionsMenu();
-
-        if (Build.VERSION.SDK_INT >= 21) {
-            CookieManager.getInstance().removeAllCookies(null);
-        } else {
-            CookieManager.getInstance().removeAllCookie();
-        }
     }
 
     private void handleConnectionError(String message) {
@@ -386,6 +397,11 @@ public class SessionActivity extends AppCompatActivity {
                         Intent intent = new Intent(INTENT_SESSION);
                         intent.putExtra(INTENT_SESSION_LOGIN, true);
                         LocalBroadcastManager.getInstance(clazz).sendBroadcast(intent);
+
+                        if (!"CategoryActivity".equals(clazz.getClass().getSimpleName())) {
+                            Intent nextIntent = new Intent(clazz, MainActivity.class);
+                            startActivity(nextIntent);
+                        }
                     }
                 }
             } else {

@@ -14,6 +14,7 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -162,13 +163,26 @@ public class CategoryActivity extends SessionActivity {
         return true;
     }
 
+    private void updateDrawerProfile(boolean loggedIn) {
+        if (loggedIn) {
+            drawerProfile.withName(Session.getInstance().getUser().getUsername());
+            drawerProfile.withEmail(Utils.formatDate(Session.getInstance().getUser().getCreated(), DATE_FORMAT));
+            drawerProfile.withIcon(Session.getInstance().getUserProfilePic().getDrawable());
+        } else {
+            drawerProfile.withName("Log in");
+            drawerProfile.withEmail("to see your profile");
+            drawerProfile.withIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.placeholder_profile_pic_72, null));
+        }
+        drawerHeader.updateProfile(drawerProfile);
+    }
+
     private void initDrawer() {
         String name, info;
         Drawable profilePic;
         if (Utils.isEmpty(Session.getInstance().getUser())) {
             name = "Log in";
             info = "to see your profile";
-            profilePic = getResources().getDrawable(R.drawable.placeholder_profile_pic_72);
+            profilePic = ResourcesCompat.getDrawable(getResources(), R.drawable.placeholder_profile_pic_72, null);
         } else {
             name = Session.getInstance().getUser().getUsername();
             info = Utils.formatDate(Session.getInstance().getUser().getCreated(), DATE_FORMAT);
@@ -213,7 +227,7 @@ public class CategoryActivity extends SessionActivity {
                 .addProfiles(drawerProfile)
                 .build();
         PrimaryDrawerItem itemTop0 = new PrimaryDrawerItem().withIdentifier(0).withIcon(FontAwesome.Icon.faw_home).withName("Powrót");
-        PrimaryDrawerItem itemTop1 = new PrimaryDrawerItem().withIdentifier(1).withIcon(FontAwesome.Icon.faw_info).withName("Profil").withSelectable(false);
+        PrimaryDrawerItem itemTop1 = new PrimaryDrawerItem().withIdentifier(1).withIcon(FontAwesome.Icon.faw_info).withName("Twój profil").withSelectable(false);
         PrimaryDrawerItem itemTop2 = new PrimaryDrawerItem().withIdentifier(2).withIcon(FontAwesome.Icon.faw_money).withName("Kup dodatki").withSelectable(false);
         PrimaryDrawerItem itemBottom1 = new PrimaryDrawerItem().withIdentifier(3).withIcon(FontAwesome.Icon.faw_question).withName("Pomoc").withSelectable(false);
         PrimaryDrawerItem itemBottom2 = new PrimaryDrawerItem().withIdentifier(4).withIcon(FontAwesome.Icon.faw_bullhorn).withName("O aplikacji...").withSelectable(false);
@@ -274,9 +288,7 @@ public class CategoryActivity extends SessionActivity {
             if (intent.hasExtra(INTENT_SESSION_LOGIN)
                     && Utils.isNotEmpty(drawerHeader)
                     && Utils.isNotEmpty(Session.getInstance().getUser())) {
-                drawerProfile.withName(Session.getInstance().getUser().getUsername());
-                drawerProfile.withEmail(Utils.formatDate(Session.getInstance().getUser().getCreated(), DATE_FORMAT));
-                drawerProfile.withIcon(Session.getInstance().getUserProfilePic().getDrawable());
+                updateDrawerProfile(true);
                 drawerHeader.updateProfile(drawerProfile);
             }
         }
@@ -324,10 +336,7 @@ public class CategoryActivity extends SessionActivity {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         Utils.showQuickInfo(tabs, getString(R.string.logged_out));
-                        drawerProfile.withName("Log in");
-                        drawerProfile.withEmail("to see your profile");
-                        drawerProfile.withIcon(getResources().getDrawable(R.drawable.placeholder_profile_pic_72));
-                        drawerHeader.updateProfile(drawerProfile);
+                        updateDrawerProfile(false);
                         logOut();
                         dialog.hide();
                     }
@@ -558,7 +567,9 @@ public class CategoryActivity extends SessionActivity {
 
             if (result) {
                 Utils.showQuickInfo(tabs, getString(R.string.remove_account_success));
+                updateDrawerProfile(false);
                 logOut();
+                new ProcessCategories().execute();
             }
         }
     }

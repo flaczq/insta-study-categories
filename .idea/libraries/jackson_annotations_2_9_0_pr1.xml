@@ -5,6 +5,7 @@
     </CLASSES>
     <JAVADOC />
     <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.9.0.pr1/c8cb6a0e6d7656cb50a106368ff023b2b8a1c1d4/jackson-annotations-2.9.0.pr1-sources.jar!/" />
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.9.0.pr1/c93ec99c868114a28d2ab311c9d79cad2145a3e9/jackson-annotations-2.9.0.pr1-sources.jar!/" />
     </SOURCES>
   </library>
