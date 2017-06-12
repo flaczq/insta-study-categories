@@ -331,6 +331,7 @@ public class SessionActivity extends AppCompatActivity {
 
     public class ProcessGetUser extends AsyncTask<Void, Void, InstagramUser> {
         private Boolean isNewUser = false;
+        private Boolean wasUserInactive = false;
 
         @Override
         protected void onPreExecute() {
@@ -351,7 +352,9 @@ public class SessionActivity extends AppCompatActivity {
                         user = Factory.userFromInstagramUser(instagramUser.getData());
                     } else {
                         Utils.logDebug(clazz, "User already exists: " + user);
+                        wasUserInactive = !user.isActive();
                         user.updateFromInstagramUser(instagramUser.getData());
+                        Api.getAllCategories(true);
                         Api.updateUser(user);
                     }
                 }
@@ -391,17 +394,33 @@ public class SessionActivity extends AppCompatActivity {
                         UrlImageViewHelper.setUrlDrawable(profilePic, Session.getInstance().getUser().getProfilePicUrl(), R.drawable.placeholder_profile_pic_72);
                         Session.getInstance().setUserProfilePic(profilePic);
 
-                        setMainMenuVisibility(mainMenu);
-                        invalidateOptionsMenu();
+                        Session.getInstance().setCategoryChanged(true);
 
-                        Intent intent = new Intent(INTENT_SESSION);
+                        if (wasUserInactive) {
+                            Intent nextIntent = new Intent(clazz, MainActivity.class);
+                            startActivity(nextIntent);
+                        } else {
+                            setMainMenuVisibility(mainMenu);
+                            invalidateOptionsMenu();
+
+                            Intent intent = new Intent(INTENT_SESSION);
+                            intent.putExtra(INTENT_SESSION_LOGIN, true);
+                            LocalBroadcastManager.getInstance(clazz).sendBroadcast(intent);
+                        }
+
+                        /*Intent intent = new Intent(INTENT_SESSION);
                         intent.putExtra(INTENT_SESSION_LOGIN, true);
                         LocalBroadcastManager.getInstance(clazz).sendBroadcast(intent);
 
-                        if (!"CategoryActivity".equals(clazz.getClass().getSimpleName())) {
-                            Intent nextIntent = new Intent(clazz, MainActivity.class);
-                            startActivity(nextIntent);
-                        }
+                        if (wasUserInactive) {
+                            // Refresh activity if login from CategoryActivity
+                            if ("CategoryActivity".equals(clazz.getClass().getSimpleName())) {
+                                Intent nextIntent = new Intent(clazz, MainActivity.class);
+                                startActivity(nextIntent);
+                            } else {
+                                Session.getInstance().setCategoryChanged(true);
+                            }
+                        }*/
                     }
                 }
             } else {

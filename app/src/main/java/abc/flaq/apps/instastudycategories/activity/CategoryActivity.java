@@ -111,6 +111,11 @@ public class CategoryActivity extends SessionActivity {
         setBroadcastReceivers();
         // Update categories when going back from User activity and user has joined or left the subcategory in category
         if (Session.getInstance().isCategoryChanged()) {
+            if (Utils.isEmpty(Session.getInstance().getUser())) {
+                updateDrawerProfile(false);
+            } else {
+                updateDrawerProfile(true);
+            }
             new ProcessCategories().execute();
         }
     }
@@ -164,16 +169,18 @@ public class CategoryActivity extends SessionActivity {
     }
 
     private void updateDrawerProfile(boolean loggedIn) {
-        if (loggedIn) {
-            drawerProfile.withName(Session.getInstance().getUser().getUsername());
-            drawerProfile.withEmail(Utils.formatDate(Session.getInstance().getUser().getCreated(), DATE_FORMAT));
-            drawerProfile.withIcon(Session.getInstance().getUserProfilePic().getDrawable());
-        } else {
-            drawerProfile.withName("Log in");
-            drawerProfile.withEmail("to see your profile");
-            drawerProfile.withIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.placeholder_profile_pic_72, null));
+        if (Utils.isNotEmpty(drawerProfile) && Utils.isNotEmpty(drawerHeader)) {
+            if (loggedIn) {
+                drawerProfile.withName(Session.getInstance().getUser().getUsername());
+                drawerProfile.withEmail(Utils.formatDate(Session.getInstance().getUser().getCreated(), DATE_FORMAT));
+                drawerProfile.withIcon(Session.getInstance().getUserProfilePic().getDrawable());
+            } else {
+                drawerProfile.withName("Log in");
+                drawerProfile.withEmail("to see your profile");
+                drawerProfile.withIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.placeholder_profile_pic_72, null));
+            }
+            drawerHeader.updateProfile(drawerProfile);
         }
-        drawerHeader.updateProfile(drawerProfile);
     }
 
     private void initDrawer() {
@@ -567,9 +574,11 @@ public class CategoryActivity extends SessionActivity {
 
             if (result) {
                 Utils.showQuickInfo(tabs, getString(R.string.remove_account_success));
-                updateDrawerProfile(false);
+                //updateDrawerProfile(false);
                 logOut();
-                new ProcessCategories().execute();
+                Session.getInstance().setCategoryChanged(true);
+                Intent nextIntent = new Intent(clazz, MainActivity.class);
+                startActivity(nextIntent);
             }
         }
     }

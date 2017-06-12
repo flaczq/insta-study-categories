@@ -262,9 +262,11 @@ public class Api {
         return null;
     }
     public static Category getCategoryByNameFromCache(String name) {
-        for (Category category : Session.getInstance().getCategories()) {
-            if (name.equals(category.getName())) {
-                return category;
+        if (Utils.isNotEmpty(Session.getInstance().getCategories())) {
+            for (Category category : Session.getInstance().getCategories()) {
+                if (name.equals(category.getName())) {
+                    return category;
+                }
             }
         }
 
@@ -283,7 +285,7 @@ public class Api {
         // Set etag
         category.updateFromResponse(response);
         correctForeignId(API_CATEGORIES_URL + "/" + category.getId(), category);
-        ///getAllCategories(true);
+        getAllCategories(true);
 
         return category;
     }
@@ -296,7 +298,7 @@ public class Api {
             return Boolean.FALSE;
         }
 
-        getAllCategories(true);
+        //getAllCategories(true);
 
         return Boolean.TRUE;
     }
@@ -306,7 +308,7 @@ public class Api {
         if (!force && allSubcategories.size() > 0) {
             for (Subcategory subcategory : allSubcategories) {
                 for (String categoryForeignId : subcategory.getCategories()) {
-                    getSubcategoriesByCategoryForeignId(force, categoryForeignId);
+                    getSubcategoriesByCategoryForeignId(false, categoryForeignId);
                 }
             }
             return allSubcategories;
@@ -391,8 +393,8 @@ public class Api {
             );
         }
         // Update sizes of category
-        ///getAllCategories(true);
-        ///getAllSubcategories(true);
+        getAllCategories(true);
+        getAllSubcategories(true);
 
         return subcategory;
     }
@@ -405,7 +407,7 @@ public class Api {
             return Boolean.FALSE;
         }
 
-        getAllSubcategories(true);
+        //getAllSubcategories(true);
 
         return Boolean.TRUE;
     }
@@ -488,13 +490,26 @@ public class Api {
         return null;
     }
     public static ArrayList<User> getUsersByCategoryForeignId(String categoryForeignId) throws IOException, JSONException {
+        int usersSize = 0;
         ArrayList<User> users = new ArrayList<>();
 
         if (allUsers.size() > 0) {
             for (User user : allUsers) {
                 if (user.isActive() && user.getCategories().contains(categoryForeignId)) {
                     users.add(user);
+                    usersSize++;
                 }
+            }
+            Category allCategory = getCategoryByNameFromCache("all");
+            if (Utils.isNotEmpty(allCategory) && usersSize != allCategory.getUsersSize()) {
+                Utils.logDebug("Api.getUsersByCategoryForeignId()", "Poprawa liczby użytkowników w kategorii Wszyscy");
+                correctSize(
+                        API_CATEGORIES_URL + "/" + allCategory.getId(),
+                        allCategory,
+                        "usersSize",
+                        usersSize
+                );
+                Session.getInstance().setCategoryChanged(true);
             }
         } else {
             Map<String, String> conditions = new HashMap<>();
@@ -591,7 +606,7 @@ public class Api {
         }
 
         user.updateFromResponse(response);
-        getAllUsers(true);
+        ///getAllUsers(true);
 
         String categoryId = category.getId();
         if (Utils.isEmpty(category)) {
@@ -609,7 +624,7 @@ public class Api {
                         API_CATEGORIES_URL + "/" + categoryId,
                         category.getEtag(),
                         "{\"usersSize\":" + (category.getUsersSize() + 1) + "," +
-                                "\"active\":true}"
+                        "\"active\":true}"
                 );
                 String categoryStream = getStream(categoryIs);
                 Response categoryResponse = mapper.readValue(categoryStream, Response.class);
@@ -618,7 +633,7 @@ public class Api {
                 }
 
                 user.updateFromResponse(categoryResponse);
-                getAllCategories(true);
+                ///getAllCategories(true);
             }
         }
         // Update sizes of category
@@ -651,7 +666,7 @@ public class Api {
         }
 
         user.updateFromResponse(response);
-        getAllUsers(true);
+        ///getAllUsers(true);
 
         String subcategoryId = subcategory.getId();
         if (Utils.isEmpty(subcategory)) {
@@ -678,7 +693,7 @@ public class Api {
                 }
 
                 user.updateFromResponse(subcategoryResponse);
-                getAllSubcategories(true);
+                ///getAllSubcategories(true);
             }
         }
         // Update sizes of subcategory
@@ -711,7 +726,7 @@ public class Api {
                 }
 
                 user.updateFromResponse(categoryResponse);
-                getAllCategories(true);
+                ///getAllCategories(true);
             }
         }
         // Update sizes of category
@@ -742,7 +757,7 @@ public class Api {
         }
 
         user.updateFromResponse(response);
-        getAllUsers(true);
+        ///getAllUsers(true);
 
         return Boolean.TRUE;
     }
@@ -778,7 +793,7 @@ public class Api {
         }
 
         user.updateFromResponse(response);
-        getAllUsers(true);
+        ///getAllUsers(true);
 
         Category category = getCategoryByName("all");
         if (Utils.isEmpty(category)) {
@@ -792,9 +807,7 @@ public class Api {
             );
         }
         // Update sizes of category
-        getAllCategories(true);
-
-        Session.getInstance().setCategoryChanged(true);
+        ///getAllCategories(true);
 
         return Boolean.TRUE;
     }
@@ -818,7 +831,7 @@ public class Api {
         }
 
         user.updateFromResponse(response);
-        getAllUsers(true);
+        ///getAllUsers(true);
 
         // Remove user from all categories
         for (String categoryForeignId : user.getCategories()) {
@@ -850,9 +863,6 @@ public class Api {
             }
         }
 
-        Session.getInstance().setCategoryChanged(true);
-        Session.getInstance().setSubcategoryChanged(true);
-
         return Boolean.TRUE;
     }
     public static Boolean removeUserFromCategory(User user, Category category) throws IOException, JSONException {
@@ -877,7 +887,7 @@ public class Api {
         }
 
         user.updateFromResponse(response);
-        getAllUsers(true);
+        ///getAllUsers(true);
 
         String categoryId = category.getId();
         if (Utils.isEmpty(category)) {
@@ -920,7 +930,7 @@ public class Api {
         }
 
         user.updateFromResponse(response);
-        getAllUsers(true);
+        ///getAllUsers(true);
 
         String subcategoryId = subcategory.getId();
         if (Utils.isEmpty(subcategory)) {
