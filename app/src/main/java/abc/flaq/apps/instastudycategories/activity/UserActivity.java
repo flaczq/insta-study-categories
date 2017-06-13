@@ -118,8 +118,7 @@ public class UserActivity extends SessionActivity {
         }
 
         if (Utils.isEmpty(parentForeignId)) {
-            handleConnectionError(getString(R.string.error_users_load));
-            Utils.logError(clazz, "Empty 'categoryId' and 'subcategoryId'");
+            handleConnectionError("Empty 'categoryId' and 'subcategoryId'", getString(R.string.error_users_load));
         } else {
             new ProcessUsers().execute();
         }
@@ -319,9 +318,9 @@ public class UserActivity extends SessionActivity {
         chatDialog.show();
     }
 
-    private void handleConnectionError(String message) {
-        isApiWorking = true;
-        Utils.showConnectionError(layout, message);
+    private void handleConnectionError(String logMessage, String showMessage) {
+        //isApiWorking = true;
+        Utils.showConnectionError(layout, logMessage, showMessage);
     }
 
     private class ProcessUsers extends AsyncTask<Void, Void, Void> {
@@ -355,14 +354,11 @@ public class UserActivity extends SessionActivity {
                     user.calculateJoinDate(parentForeignId);
                 }
             } catch (JSONException e) {
-                handleConnectionError(getString(R.string.error_users_load));
-                Utils.logError(clazz, "JSONException: " + e.getMessage());
+                handleConnectionError("JSONException: " + e.getMessage(), getString(R.string.error_users_load));
             } catch (IOException e) {
-                handleConnectionError(getString(R.string.error_users_load));
-                Utils.logError(clazz, "IOException: " + e.getMessage());
+                handleConnectionError("IOException: " + e.getMessage(), getString(R.string.error_users_load));
             } catch (ParseException e) {
-                handleConnectionError(getString(R.string.error_users_load));
-                Utils.logError(clazz, "ParseException: " + e.getMessage());
+                handleConnectionError("ParseException: " + e.getMessage(), getString(R.string.error_users_load));
             }
             return null;
         }
@@ -408,14 +404,11 @@ public class UserActivity extends SessionActivity {
 
                 Session.getInstance().getUser().calculateJoinDate(parentForeignId);
             } catch (JSONException e) {
-                handleConnectionError(getString(R.string.error_user_subcategory_add));
-                Utils.logError(clazz, "JSONException: " + e.getMessage());
+                handleConnectionError("JSONException: " + e.getMessage(), getString(R.string.error_user_subcategory_add));
             } catch (IOException e) {
-                handleConnectionError(getString(R.string.error_user_subcategory_add));
-                Utils.logError(clazz, "IOException: " + e.getMessage());
+                handleConnectionError("IOException: " + e.getMessage(), getString(R.string.error_user_subcategory_add));
             } catch (ParseException e) {
-                handleConnectionError(getString(R.string.error_user_subcategory_add));
-                Utils.logError(clazz, "ParseException: " + e.getMessage());
+                handleConnectionError("ParseException: " + e.getMessage(), getString(R.string.error_user_subcategory_add));
             }
             return result;
         }
@@ -445,7 +438,7 @@ public class UserActivity extends SessionActivity {
 
                 Session.getInstance().setSubcategoryChanged(true);
             } else {
-                Utils.showConnectionError(layout, getString(R.string.error_user_subcategory_add));
+                handleConnectionError("ProcessAddUserToSubcategory - empty result", getString(R.string.error_user_subcategory_add));
             }
         }
     }
@@ -471,11 +464,9 @@ public class UserActivity extends SessionActivity {
                     result = Api.removeUserFromSubcategory(Session.getInstance().getUser(), subcategory);
                 }
             } catch (JSONException e) {
-                handleConnectionError(getString(R.string.error_user_subcategory_remove));
-                Utils.logError(clazz, "JSONException: " + e.getMessage());
+                handleConnectionError("JSONException: " + e.getMessage(), getString(R.string.error_user_subcategory_remove));
             } catch (IOException e) {
-                handleConnectionError(getString(R.string.error_user_subcategory_remove));
-                Utils.logError(clazz, "IOException: " + e.getMessage());
+                handleConnectionError("IOException: " + e.getMessage(), getString(R.string.error_user_subcategory_remove));
             }
             return result;
         }
@@ -499,7 +490,7 @@ public class UserActivity extends SessionActivity {
 
                 Session.getInstance().setSubcategoryChanged(true);
             } else {
-                Utils.showConnectionError(layout, getString(R.string.error_user_subcategory_remove));
+                handleConnectionError("ProcessRemoveUserFromSubcategory - empty result", getString(R.string.error_user_subcategory_remove));
             }
         }
     }

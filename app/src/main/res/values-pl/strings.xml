@@ -116,4 +116,17 @@
     <string name="login">Logowanie</string>
     <string name="login_info">Aplikacja StudyGram korzysta z narzędzia \"Pixel Union\" w celu połączenia z kontem Instagram. Na następnej stronie zaloguj się do swojego konta Instagram, a następnie zezwól aplikacji \"PXU Access Token\" na dostęp do swoich podstawowych informacji.</string>
     <string name="log_in">Zaloguj</string>
+
+    <string name="drawer_login">Zaloguj się,</string>
+    <string name="drawer_login_2">aby zobaczyć swój profil</string>
+    <string name="drawer_help">Pomoc</string>
+    <string name="drawer_back">Powrót</string>
+    <string name="drawer_profile">Twój profil</string>
+    <string name="drawer_buy">Kup dodatki</string>
+    <string name="drawer_about">O StudyGram&#8230;</string>
+    <string name="drawer_buy_not_yet">Brak dodatków, zapraszamy wkrótce!</string>
+    <string name="drawer_help_info">Aplikacja StudyGram pozwala na dołączanie do grup tematycznych, np. Lekarz w grupie Praca albo Biologia w Liceum.\nItd itd</string>
+    <string name="send_email">Wyślij email</string>
+    <string name="drawer_about_info">Aplikacja StudyGram używa następujących bibliotek:</string>
+    <string name="drawer_about_apache_license">Wszystkie są rozpowszechniane pod Apache License</string>
 </resources>

@@ -26,6 +26,7 @@ import android.view.View;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
+import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -187,8 +188,8 @@ public class CategoryActivity extends SessionActivity {
         String name, info;
         Drawable profilePic;
         if (Utils.isEmpty(Session.getInstance().getUser())) {
-            name = "Log in";
-            info = "to see your profile";
+            name = getString(R.string.drawer_login);
+            info = getString(R.string.drawer_login_2);
             profilePic = ResourcesCompat.getDrawable(getResources(), R.drawable.placeholder_profile_pic_72, null);
         } else {
             name = Session.getInstance().getUser().getUsername();
@@ -233,11 +234,11 @@ public class CategoryActivity extends SessionActivity {
                 })
                 .addProfiles(drawerProfile)
                 .build();
-        PrimaryDrawerItem itemTop0 = new PrimaryDrawerItem().withIdentifier(0).withIcon(FontAwesome.Icon.faw_home).withName("Powrót");
-        PrimaryDrawerItem itemTop1 = new PrimaryDrawerItem().withIdentifier(1).withIcon(FontAwesome.Icon.faw_info).withName("Twój profil").withSelectable(false);
-        PrimaryDrawerItem itemTop2 = new PrimaryDrawerItem().withIdentifier(2).withIcon(FontAwesome.Icon.faw_money).withName("Kup dodatki").withSelectable(false);
-        PrimaryDrawerItem itemBottom1 = new PrimaryDrawerItem().withIdentifier(3).withIcon(FontAwesome.Icon.faw_question).withName("Pomoc").withSelectable(false);
-        PrimaryDrawerItem itemBottom2 = new PrimaryDrawerItem().withIdentifier(4).withIcon(FontAwesome.Icon.faw_bullhorn).withName("O aplikacji...").withSelectable(false);
+        PrimaryDrawerItem itemBack = new PrimaryDrawerItem().withIdentifier(1).withTag("back").withIcon(FontAwesome.Icon.faw_home).withName(R.string.drawer_back);
+        PrimaryDrawerItem itemProfile = new PrimaryDrawerItem().withIdentifier(2).withTag("profile").withIcon(FontAwesome.Icon.faw_info).withName(R.string.drawer_profile).withSelectable(false);
+        PrimaryDrawerItem itemBuy = new PrimaryDrawerItem().withIdentifier(3).withTag("buy").withIcon(FontAwesome.Icon.faw_money).withName(R.string.drawer_buy).withSelectable(false);
+        PrimaryDrawerItem itemHelp = new PrimaryDrawerItem().withIdentifier(4).withTag("help").withIcon(FontAwesome.Icon.faw_question).withName(R.string.drawer_help).withSelectable(false);
+        PrimaryDrawerItem itemAbout = new PrimaryDrawerItem().withIdentifier(5).withTag("about").withIcon(FontAwesome.Icon.faw_bullhorn).withName(R.string.drawer_about).withSelectable(false);
 
         drawer = new DrawerBuilder()
                 .withActivity(clazz)
@@ -245,38 +246,66 @@ public class CategoryActivity extends SessionActivity {
                 .withActionBarDrawerToggleAnimated(true)
                 .withAccountHeader(drawerHeader)
                 .addDrawerItems(
-                        itemTop0,
-                        itemTop1,
-                        itemTop2,
+                        itemBack,
+                        itemProfile,
+                        itemBuy,
                         new DividerDrawerItem(),
-                        itemBottom1,
-                        itemBottom2
+                        itemHelp,
+                        itemAbout
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        switch ((int)drawerItem.getIdentifier()) {
-                            case 0: // "Powrót"
+                        switch ((String)drawerItem.getTag()) {
+                            case "back":
                                 // dismiss
                                 break;
-                            case 1: // "Profil"
+                            case "profile":
                                 if (Utils.isEmpty(Session.getInstance().getUser())) {
                                     showLoginDialog();
                                 } else {
                                     showInfoDialog();
                                 }
                                 break;
-                            case 2: // "Kup dodatki"
-                                Utils.showQuickInfo(view, "Brak dodatków");
+                            case "buy":
+                                Utils.showQuickInfo(view, getString(R.string.drawer_buy_not_yet));
                                 return true;
-                            case 3: // "Pomoc"
-                                // TODO
-                                Utils.showQuickInfo(view, "Tu będzie pomoc");
-                                return true;
-                            case 4: // "O aplikacji..."
-                                // TODO
-                                Utils.showQuickInfo(view, "Tu będzie o aplikacji");
-                                return true;
+                            case "help":
+                                IconicsDrawable helpIcon = new IconicsDrawable(clazz).icon(FontAwesome.Icon.faw_question).colorRes(R.color.primary).actionBar();
+                                new MaterialDialog.Builder(clazz)
+                                        .icon(helpIcon)
+                                        .title(R.string.drawer_help)
+                                        .content(R.string.drawer_help_info)
+                                        .typeface("Roboto-Medium.ttf", "RobotoCondensed-Light.ttf")
+                                        .positiveText(R.string.back)
+                                        .neutralText(R.string.send_email)
+                                        .onNeutral(new MaterialDialog.SingleButtonCallback() {
+                                            @Override
+                                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                                Intent emailIntent = Utils.getEmailIntent("StudyGram");
+                                                startActivity(Intent.createChooser(emailIntent, getString(R.string.send_email)));
+                                                dialog.dismiss();
+                                            }
+                                        })
+                                        .show();
+                                break;
+                            case "about":
+                                IconicsDrawable aboutIcon = new IconicsDrawable(clazz).icon(FontAwesome.Icon.faw_bullhorn).colorRes(R.color.primary).actionBar();
+                                new MaterialDialog.Builder(clazz)
+                                        .icon(aboutIcon)
+                                        .title(R.string.drawer_about)
+                                        .content(
+                                                getString(R.string.drawer_about_info) + "\n\n" +
+                                                getString(R.string.drawer_about_info_grid) + "\n\n" +
+                                                getString(R.string.drawer_about_info_preloader) + "\n\n" +
+                                                getString(R.string.drawer_about_info_image_helper) + "\n\n" +
+                                                getString(R.string.drawer_about_apache_license) + "\n" +
+                                                getString(R.string.drawer_about_apache_license_info)
+                                        )
+                                        .typeface("Roboto-Medium.ttf", "RobotoCondensed-Light.ttf")
+                                        .positiveText(R.string.back)
+                                        .show();
+                                break;
                         }
                         return false;
                     }
@@ -408,9 +437,9 @@ public class CategoryActivity extends SessionActivity {
         infoDialog.show();
     }
 
-    private void handleConnectionError(String message) {
-        isApiWorking = true;
-        Utils.showConnectionError(tabs, message);
+    private void handleConnectionError(String logMessage, String showMessage) {
+        //isApiWorking = true;
+        Utils.showConnectionError(tabs, logMessage, showMessage);
     }
 
     private void startCategoryFragment() {
@@ -421,7 +450,7 @@ public class CategoryActivity extends SessionActivity {
     }
     private void endProcessCategoryFragment() {
         if (categories.size() == 0) {
-            Utils.showConnectionError(tabs, getString(R.string.error_categories_not_found));
+            handleConnectionError("Empty categories", getString(R.string.error_categories_not_found));
         } else {
             Session.getInstance().setCategories(categories);
             // Get first (not "all") category's size
@@ -477,11 +506,9 @@ public class CategoryActivity extends SessionActivity {
             try {
                 categories = Api.getAllCategories(true);
             } catch (JSONException e) {
-                handleConnectionError(getString(R.string.error_categories_load));
-                Utils.logError(clazz, "JSONException: " + e.getMessage());
+                handleConnectionError("JSONException: " + e.getMessage(), getString(R.string.error_categories_load));
             } catch (IOException e) {
-                handleConnectionError(getString(R.string.error_categories_load));
-                Utils.logError(clazz, "IOException: " + e.getMessage());
+                handleConnectionError("IOException: " + e.getMessage(), getString(R.string.error_categories_load));
             }
             return null;
         }
@@ -515,11 +542,9 @@ public class CategoryActivity extends SessionActivity {
                     result = Boolean.TRUE;
                 }
             } catch (JSONException e) {
-                handleConnectionError(getString(R.string.error_category_add));
-                Utils.logError(clazz, "JSONException: " + e.getMessage());
+                handleConnectionError("JSONException: " + e.getMessage(), getString(R.string.error_category_add));
             } catch (IOException e) {
-                handleConnectionError(getString(R.string.error_category_add));
-                Utils.logError(clazz, "IOException: " + e.getMessage());
+                handleConnectionError("IOException: " + e.getMessage(), getString(R.string.error_category_add));
             }
             return result;
         }
@@ -540,7 +565,7 @@ public class CategoryActivity extends SessionActivity {
                 Session.getInstance().setCategoryChanged(true);
                 new ProcessCategories().execute();
             } else {
-                Utils.showConnectionError(tabs, getString(R.string.error_category_add));
+                handleConnectionError("ProcessAddCategory - empty result", getString(R.string.error_category_add));
             }
         }
     }
@@ -558,11 +583,9 @@ public class CategoryActivity extends SessionActivity {
             try {
                 result = Api.removeUser(Session.getInstance().getUser());
             } catch (IOException e) {
-                handleConnectionError(getString(R.string.error_account_remove));
-                Utils.logError(clazz, "IOException: " + e.getMessage());
+                handleConnectionError("IOException: " + e.getMessage(), getString(R.string.error_account_remove));
             } catch (JSONException e) {
-                handleConnectionError(getString(R.string.error_account_remove));
-                Utils.logError(clazz, "JSONException: " + e.getMessage());
+                handleConnectionError("JSONException: " + e.getMessage(), getString(R.string.error_account_remove));
             }
             return result;
         }

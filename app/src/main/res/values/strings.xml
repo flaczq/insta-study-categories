@@ -115,4 +115,27 @@
     <string name="login">Login</string>
     <string name="login_info">StudyGroup app uses plugin called \"Pixel Union\" to connect with Instagram account. On the next page please login to your Instagram and allow permissions for \"PXU Access Token\" app.</string>
     <string name="log_in">Log in</string>
+
+    <string name="drawer_login">Log in</string>
+    <string name="drawer_login_2">to see your profile</string>
+    <string name="drawer_help">Help</string>
+    <string name="drawer_back">Go back</string>
+    <string name="drawer_profile">Your profile</string>
+    <string name="drawer_buy">Buy addons</string>
+    <string name="drawer_about">About StudyGram&#8230;</string>
+    <string name="drawer_buy_not_yet">No addons yet, coming soon!</string>
+    <string name="drawer_help_info">StudyGram app allows to join groups of certain topics, like Doctor in Work group or Biology in High School.\nItd itd</string>
+    <string name="send_email">Send email</string>
+    <string name="drawer_about_info">StudyGram app uses these 3rd party libraries:</string>
+    <string name="drawer_about_info_grid">AndroidStaggeredGrid\nCopyright &#169; 2013 Etsy</string>
+    <string name="drawer_about_info_preloader">Crystal Preloaders\nCopyright &#169; 2016 Syed Owais Ali</string>
+    <string name="drawer_about_info_image_helper">UrlImageViewHelper\nCopyright &#169; 2012 Koushik Dutta</string>
+    <string name="drawer_about_apache_license">They are all under Apache License</string>
+    <string name="drawer_about_apache_license_info">Licensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0\nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.</string>
+    <!--com.koushikdutta.urlimageviewhelper:urlimageviewhelper:1.0.4'
+    com.afollestad.material-dialogs:core:0.9.4.3'
+    de.hdodenhof:circleimageview:2.1.0'
+    com.mikepenz:materialdrawer:5.9.2'
+    com.mikepenz:iconics-core:2.8.5'
+    com.mikepenz:fontawesome-typeface:4.7.0.0@aar'-->
 </resources>

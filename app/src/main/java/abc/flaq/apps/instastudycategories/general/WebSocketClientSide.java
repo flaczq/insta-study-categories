@@ -117,21 +117,16 @@ public class WebSocketClientSide extends WebSocketClient {
                 });
                 Utils.logDebug(clazz, totalUsers.toString());
             } else {
-                handleConnectionError();
-                Utils.logError(clazz, "Nieprawidłowy typ wiadomości WebSocket");
+                handleConnectionError("Unknown WebSocket message type");
             }
         } catch (JSONException e) {
-            handleConnectionError();
-            Utils.logError(clazz, "JSONException: " + e.getMessage());
+            handleConnectionError("JSONException: " + e.getMessage());
         } catch (JsonParseException e) {
-            handleConnectionError();
-            Utils.logError(clazz, "JsonParseException: " + e.getMessage());
+            handleConnectionError("JsonParseException: " + e.getMessage());
         } catch (JsonMappingException e) {
-            handleConnectionError();
-            Utils.logError(clazz, "JsonMappingException: " + e.getMessage());
+            handleConnectionError("JsonMappingException: " + e.getMessage());
         } catch (IOException e) {
-            handleConnectionError();
-            Utils.logError(clazz, "IOException: " + e.getMessage());
+            handleConnectionError("IOException: " + e.getMessage());
         }
     }
 
@@ -152,18 +147,17 @@ public class WebSocketClientSide extends WebSocketClient {
                 String json = mapper.writeValueAsString(newMessage);
                 send(json);
             } catch (JsonProcessingException e) {
-                handleConnectionError();
-                Utils.logError(clazz, "JsonProcessingException: " + e.getMessage());
+                handleConnectionError("JsonProcessingException: " + e.getMessage());
             }
         } else {
-            handleConnectionError();
+            handleConnectionError("Connection closed: " + getConnection().isOpen() + " or User not logged in");
         }
     }
 
-    private void handleConnectionError() {
+    private void handleConnectionError(String logMessage) {
         fab.setClickable(false);
         chatDialog.dismiss();
-        Utils.showConnectionError(layout, clazz.getString(R.string.error_chat_connection));
+        Utils.showConnectionError(layout, logMessage, clazz.getString(R.string.error_chat_connection));
     }
 
 }

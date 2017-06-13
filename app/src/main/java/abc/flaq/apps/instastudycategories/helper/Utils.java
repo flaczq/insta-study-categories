@@ -32,6 +32,7 @@ import abc.flaq.apps.instastudycategories.pojo.Category;
 import abc.flaq.apps.instastudycategories.pojo.Subcategory;
 import abc.flaq.apps.instastudycategories.pojo.User;
 
+import static abc.flaq.apps.instastudycategories.helper.Constants.EMAIL_NAME;
 import static abc.flaq.apps.instastudycategories.helper.Constants.FULL_DATE_FORMAT;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_PACKAGE;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_URL;
@@ -91,23 +92,33 @@ public class Utils {
         return snackbarView;
     }
     public static void showInfo(View view, String message) {
-        Snackbar snackbar = Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_LONG);
+        final Snackbar snackbar = Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_LONG);
         TextView snackbarTextView = (TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
         if (isNotEmpty(snackbarTextView)) {
             snackbarTextView.setMaxLines(6);
         }
-        snackbar.show();
+        view.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                snackbar.show();
+            }
+        }, 100);
     }
     public static void showQuickInfo(View view, String message) {
-        Snackbar snackbar = Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_SHORT);
+        final Snackbar snackbar = Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_SHORT);
         TextView snackbarTextView = (TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
         if (isNotEmpty(snackbarTextView)) {
             snackbarTextView.setMaxLines(6);
         }
-        snackbar.show();
+        view.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                snackbar.show();
+            }
+        }, 100);
     }
     public static void showInfoDismiss(View view, String message) {
-        Snackbar snackbar = Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_INDEFINITE)
+        final Snackbar snackbar = Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_INDEFINITE)
                 .setActionTextColor(ContextCompat.getColor(view.getContext(), R.color.colorAccent))
                 .setAction("OK", new View.OnClickListener() {
                     @Override
@@ -119,30 +130,45 @@ public class Utils {
         if (isNotEmpty(snackbarTextView)) {
             snackbarTextView.setMaxLines(6);
         }
-        snackbar.show();
+        view.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                snackbar.show();
+            }
+        }, 100);
     }
     public static void showError(View view, String message) {
         logError(view.getContext(), message);
 
-        Snackbar snackbar = Snackbar.make(findSnackbarView(view), R.string.error_general, Snackbar.LENGTH_LONG);
+        final Snackbar snackbar = Snackbar.make(findSnackbarView(view), R.string.error_general, Snackbar.LENGTH_LONG);
         TextView snackbarTextView = (TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
         if (isNotEmpty(snackbarTextView)) {
             snackbarTextView.setMaxLines(6);
         }
-        snackbar.show();
+        view.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                snackbar.show();
+            }
+        }, 100);
     }
     public static void showQuickError(View view, String message) {
         logError(view.getContext(), message);
 
-        Snackbar snackbar = Snackbar.make(findSnackbarView(view), R.string.error_general, Snackbar.LENGTH_SHORT);
+        final Snackbar snackbar = Snackbar.make(findSnackbarView(view), R.string.error_general, Snackbar.LENGTH_SHORT);
         TextView snackbarTextView = (TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
         if (isNotEmpty(snackbarTextView)) {
             snackbarTextView.setMaxLines(6);
         }
-        snackbar.show();
+        view.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                snackbar.show();
+            }
+        }, 100);
     }
     public static void showErrorDismiss(View view, String message) {
-        Snackbar snackbar = Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_INDEFINITE)
+        final Snackbar snackbar = Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_INDEFINITE)
                 .setActionTextColor(ContextCompat.getColor(view.getContext(), R.color.colorError))
                 .setAction("OK", new View.OnClickListener() {
                     @Override
@@ -154,12 +180,17 @@ public class Utils {
         if (isNotEmpty(snackbarTextView)) {
             snackbarTextView.setMaxLines(6);
         }
-        snackbar.show();
+        view.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                snackbar.show();
+            }
+        }, 100);
     }
-    public static void showConnectionError(final View view, String message) {
-        logError(view.getContext(), message);
+    public static void showConnectionError(final View view, String logMessage, String showMessage) {
+        logError(view.getContext(), logMessage);
 
-        Snackbar snackbar = Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_INDEFINITE)
+        final Snackbar snackbar = Snackbar.make(findSnackbarView(view), showMessage, Snackbar.LENGTH_INDEFINITE)
                 .setActionTextColor(ContextCompat.getColor(view.getContext(), R.color.colorError))
                 .setAction(R.string.next, new View.OnClickListener() {
                     @Override
@@ -171,10 +202,15 @@ public class Utils {
         if (isNotEmpty(snackbarTextView)) {
             snackbarTextView.setMaxLines(6);
         }
-        snackbar.show();
+        view.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                snackbar.show();
+            }
+        }, 100);
     }
     public static void showLoginError(final View view, String message) {
-        Snackbar snackbar = Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_INDEFINITE)
+        final Snackbar snackbar = Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_INDEFINITE)
                 .setActionTextColor(ContextCompat.getColor(view.getContext(), R.color.colorError))
                 .setAction(R.string.next, new View.OnClickListener() {
                     @Override
@@ -186,7 +222,12 @@ public class Utils {
         if (isNotEmpty(snackbarTextView)) {
             snackbarTextView.setMaxLines(6);
         }
-        snackbar.show();
+        view.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                snackbar.show();
+            }
+        }, 100);
     }
 
     public static <T> boolean isEmpty(T element) {
@@ -229,9 +270,17 @@ public class Utils {
     }
     public static Intent getInstagramIntent(String username) {
         Uri instagramUri = Uri.parse(INSTAGRAM_URL + "_u/" + username);
-        Intent nextIntent = new Intent(Intent.ACTION_VIEW, instagramUri);
-        nextIntent.setPackage(INSTAGRAM_PACKAGE);
-        return nextIntent;
+        Intent instagramIntent = new Intent(Intent.ACTION_VIEW, instagramUri);
+        instagramIntent.setPackage(INSTAGRAM_PACKAGE);
+        return instagramIntent;
+    }
+    public static Intent getEmailIntent(String subject) {
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        emailIntent.setType("message/rfc822");
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { EMAIL_NAME });
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+
+        return emailIntent;
     }
 
     public static Date moveDateByDays(Date date, int days) {

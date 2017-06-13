@@ -71,8 +71,7 @@ public class SubcategoryActivity extends SessionActivity {
         categoryForeignId = intent.getStringExtra(INTENT_CATEGORY_FOREIGN_ID);
 
         if (Utils.isEmpty(categoryForeignId)) {
-            handleConnectionError(getString(R.string.error_subcategories_load));
-            Utils.logError(clazz, "Empty 'categoryForeignId'");
+            handleConnectionError("Empty 'categoryForeignId'", getString(R.string.error_subcategories_load));
         } else {
             String categoryName = intent.getStringExtra(INTENT_CATEGORY_NAME);
             Decorator.setActionBarTitle(clazz, Utils.getStringByCategoryName(clazz, categoryName), null);
@@ -171,9 +170,9 @@ public class SubcategoryActivity extends SessionActivity {
                 .show();
     }
 
-    private void handleConnectionError(String message) {
-        isApiWorking = true;
-        Utils.showConnectionError(tabs, message);
+    private void handleConnectionError(String logMessage, String showMessage) {
+        //isApiWorking = true;
+        Utils.showConnectionError(tabs, logMessage, showMessage);
     }
 
     private void startSubcategoryFragment() {
@@ -239,11 +238,9 @@ public class SubcategoryActivity extends SessionActivity {
                     Utils.logDebug(clazz, subcategory.toString());
                 }
             } catch (JSONException e) {
-                handleConnectionError(getString(R.string.error_subcategories_load));
-                Utils.logError(clazz, "JSONException: " + e.getMessage());
+                handleConnectionError("JSONException: " + e.getMessage(), getString(R.string.error_subcategories_load));
             } catch (IOException e) {
-                handleConnectionError(getString(R.string.error_subcategories_load));
-                Utils.logError(clazz, "IOException: " + e.getMessage());
+                handleConnectionError("IOException: " + e.getMessage(), getString(R.string.error_subcategories_load));
             }
             return null;
         }
@@ -281,14 +278,11 @@ public class SubcategoryActivity extends SessionActivity {
                     Api.addUserToSubcategory(Session.getInstance().getUser(), newSubcategory);
                 }
             } catch (JSONException e) {
-                handleConnectionError(getString(R.string.error_subcategory_add));
-                Utils.logError(clazz, "JSONException: " + e.getMessage());
+                handleConnectionError("JSONException: " + e.getMessage(), getString(R.string.error_subcategory_add));
             } catch (IOException e) {
-                handleConnectionError(getString(R.string.error_subcategory_add));
-                Utils.logError(clazz, "IOException: " + e.getMessage());
+                handleConnectionError("IOException: " + e.getMessage(), getString(R.string.error_subcategory_add));
             } catch (ParseException e) {
-                handleConnectionError(getString(R.string.error_subcategory_add));
-                Utils.logError(clazz, "ParseException: " + e.getMessage());
+                handleConnectionError("ParseException: " + e.getMessage(), getString(R.string.error_subcategory_add));
             }
             return result;
         }
@@ -310,7 +304,7 @@ public class SubcategoryActivity extends SessionActivity {
                 Session.getInstance().setCategoryChanged(true);
                 new ProcessSubcategories().execute();
             } else {
-                Utils.showConnectionError(tabs, getString(R.string.error_subcategory_add));
+                handleConnectionError("ProcessAddSubcategory - empty result", getString(R.string.error_subcategory_add));
             }
         }
     }
