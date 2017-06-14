@@ -22,9 +22,11 @@ import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.materialdrawer.AccountHeader;
@@ -36,6 +38,8 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
+import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
+import com.mikepenz.materialdrawer.util.DrawerImageLoader;
 
 import org.json.JSONException;
 
@@ -185,16 +189,15 @@ public class CategoryActivity extends SessionActivity {
     }
 
     private void initDrawer() {
-        String name, info;
-        Drawable profilePic;
+        final String name, info, profilePic;
         if (Utils.isEmpty(Session.getInstance().getUser())) {
             name = getString(R.string.drawer_login);
             info = getString(R.string.drawer_login_2);
-            profilePic = ResourcesCompat.getDrawable(getResources(), R.drawable.placeholder_profile_pic_72, null);
+            profilePic = "";
         } else {
             name = Session.getInstance().getUser().getUsername();
             info = Utils.formatDate(Session.getInstance().getUser().getCreated(), DATE_FORMAT);
-            profilePic = Session.getInstance().getUserProfilePic().getDrawable();
+            profilePic = Session.getInstance().getUser().getProfilePicUrl();
         }
 
         drawerProfile = new ProfileDrawerItem()
@@ -202,6 +205,18 @@ public class CategoryActivity extends SessionActivity {
                 .withName(name)
                 .withEmail(info)
                 .withIcon(profilePic);
+
+        DrawerImageLoader.init(new AbstractDrawerImageLoader() {
+            @Override
+            public void set(ImageView imageView, Uri uri, Drawable placeholder) {
+                UrlImageViewHelper.setUrlDrawable(imageView, profilePic, placeholder);
+            }
+
+            @Override
+            public Drawable placeholder(Context ctx) {
+                return ResourcesCompat.getDrawable(getResources(), R.drawable.placeholder_profile_pic_72, null);
+            }
+        });
 
         drawerHeader = new AccountHeaderBuilder()
                 .withActivity(clazz)

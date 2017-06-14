@@ -21,10 +21,10 @@
     <string name="error_category_add">Nie udało się dodać kategorii</string>
 
     <string name="subcategory_name.c_doctor">Lekarski</string>
-    <string name="subcategory_name.c_dentistry">Stomatologia</string>
+    <string name="subcategory_name.c_dentist">Stomatologia</string>
     <string name="subcategory_name.c_pharmacy">Farmacja</string>
-    <string name="subcategory_name.c_obstetrics">Położnictwo</string>
-    <string name="subcategory_name.c_nursing">Pielęgniarstwo</string>
+    <string name="subcategory_name.c_midwife">Położnictwo</string>
+    <string name="subcategory_name.c_nurse">Pielęgniarstwo</string>
     <string name="subcategory_name.c_veterinary">Weterynaria</string>
     <string name="subcategory_name.c_physiotherapy">Fizjoterapia</string>
     <string name="subcategory_name.c_dietetics">Dietetyka</string>
@@ -48,8 +48,8 @@
     <string name="subcategory_name.hs_lang">Językowy</string>
     <string name="subcategory_name.w_doctor">Lekarz</string>
     <string name="subcategory_name.w_dentist">Stomatolog</string>
-    <string name="subcategory_name.w_pharmacist">Farmaceuta</string>
-    <string name="subcategory_name.w_psychologist">Psycholog</string>
+    <string name="subcategory_name.w_pharmacy">Farmaceuta</string>
+    <string name="subcategory_name.w_psychology">Psycholog</string>
     <string name="subcategory_name.w_nurse">Pielęgniarka</string>
     <string name="subcategory_name.w_midwife">Położna</string>
 
@@ -114,7 +114,7 @@
     <string name="tab_active">AKTYWNE</string>
     <string name="tab_inactive">NIEAKTYWNE</string>
     <string name="login">Logowanie</string>
-    <string name="login_info">Aplikacja StudyGram korzysta z narzędzia \"Pixel Union\" w celu połączenia z kontem Instagram. Na następnej stronie zaloguj się do swojego konta Instagram, a następnie zezwól aplikacji \"PXU Access Token\" na dostęp do swoich podstawowych informacji.</string>
+    <string name="login_info">Aplikacja StudyGram korzysta z narzędzia \"Pixel Union\" w celu połączenia z kontem Instagram. Na następnej stronie zaloguj się do swojego konta Instagram, a następnie, jeśli robisz to po raz pierwszy, zezwól aplikacji \"PXU Access Token\" na dostęp do swoich podstawowych informacji.</string>
     <string name="log_in">Zaloguj</string>
 
     <string name="drawer_login">Zaloguj się,</string>

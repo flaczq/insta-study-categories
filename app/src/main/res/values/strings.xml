@@ -20,10 +20,10 @@
     <string name="error_category_add">Couldn\'t add category</string>
 
     <string name="subcategory_name.c_doctor">Medical</string>
-    <string name="subcategory_name.c_dentistry">Dentistry</string>
+    <string name="subcategory_name.c_dentist">Dentistry</string>
     <string name="subcategory_name.c_pharmacy">Pharmacy</string>
-    <string name="subcategory_name.c_obstetrics">Obstetrics</string>
-    <string name="subcategory_name.c_nursing">Nursing</string>
+    <string name="subcategory_name.c_midwife">Obstetrics</string>
+    <string name="subcategory_name.c_nurse">Nursing</string>
     <string name="subcategory_name.c_veterinary">Veterinary</string>
     <string name="subcategory_name.c_physiotherapy">Physiotherapy</string>
     <string name="subcategory_name.c_dietetics">Dietetics</string>
@@ -47,8 +47,8 @@
     <string name="subcategory_name.hs_lang">Lingual</string>
     <string name="subcategory_name.w_doctor">Doctor</string>
     <string name="subcategory_name.w_dentist">Dentist</string>
-    <string name="subcategory_name.w_pharmacist">Pharmacist</string>
-    <string name="subcategory_name.w_psychologist">Psychologist</string>
+    <string name="subcategory_name.w_pharmacy">Pharmacist</string>
+    <string name="subcategory_name.w_psychology">Psychologist</string>
     <string name="subcategory_name.w_nurse">Nurse</string>
     <string name="subcategory_name.w_midwife">Midwife</string>
 
@@ -113,7 +113,7 @@
     <string name="tab_active">ACTIVE</string>
     <string name="tab_inactive">INACTIVE</string>
     <string name="login">Login</string>
-    <string name="login_info">StudyGroup app uses plugin called \"Pixel Union\" to connect with Instagram account. On the next page please login to your Instagram and allow permissions for \"PXU Access Token\" app.</string>
+    <string name="login_info">StudyGroup app uses plugin called \"Pixel Union\" to connect with Instagram account. On the next page please login to your Instagram and if you do it for the first time, allow permissions for \"PXU Access Token\" app.</string>
     <string name="log_in">Log in</string>
 
     <string name="drawer_login">Log in</string>
