@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/category_item_info_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minHeight="200dp"
+    android:background="@color/colorCategoryBlueLight">
+
+    <TextView android:id="@+id/category_item_info_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorBackgroundForText"
+        android:fontFamily="casual"
+        android:textSize="26sp"
+        android:textColor="@color/textColorPrimary"
+        android:textAllCaps="true"
+        android:gravity="center_horizontal"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true" />
+    <abc.flaq.apps.instastudycategories.design.TypeWriter android:id="@+id/category_item_info_message"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fontFamily="casual"
+        android:textSize="22sp"
+        android:textColor="@color/textColorSecondary"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_below="@+id/category_item_info_title" />
+
+</RelativeLayout>

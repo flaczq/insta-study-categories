@@ -22,6 +22,7 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import abc.flaq.apps.instastudycategories.R;
@@ -41,6 +42,9 @@ import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATE
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_INACTIVE;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_INACTIVE_END;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_INACTIVE_START;
+import static abc.flaq.apps.instastudycategories.helper.Constants.SETTINGS_SUGGEST_SUBCATEGORY;
+import static abc.flaq.apps.instastudycategories.helper.Constants.SETTINGS_SUGGEST_SUBCATEGORY_DATE;
+import static abc.flaq.apps.instastudycategories.helper.Constants.SUGGEST_MAX_COUNT;
 import static abc.flaq.apps.instastudycategories.helper.Constants.TAB_INACTIVE;
 
 public class SubcategoryActivity extends SessionActivity {
@@ -52,6 +56,8 @@ public class SubcategoryActivity extends SessionActivity {
     private List<Subcategory> subcategories = new ArrayList<>();
     private String categoryForeignId;
     private Boolean isApiWorking = false;
+    private Integer addSubcategoryCounter;
+    private Long addSubcategoryDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +75,18 @@ public class SubcategoryActivity extends SessionActivity {
 
         Intent intent = getIntent();
         categoryForeignId = intent.getStringExtra(INTENT_CATEGORY_FOREIGN_ID);
+
+        addSubcategoryCounter = Session.getInstance().getSettings().getInt(SETTINGS_SUGGEST_SUBCATEGORY, SUGGEST_MAX_COUNT);
+        addSubcategoryDate = Session.getInstance().getSettings().getLong(SETTINGS_SUGGEST_SUBCATEGORY_DATE, 0);
+        Long minsSinceLastSuggestion = (new Date().getTime() / 60000) - addSubcategoryDate;
+        if (minsSinceLastSuggestion >= 1440) {
+            addSubcategoryCounter = SUGGEST_MAX_COUNT;
+            Session.getInstance().getSettings().edit()
+                    .putInt(SETTINGS_SUGGEST_SUBCATEGORY, addSubcategoryCounter)
+                    .apply();
+        } else {
+            addSubcategoryCounter = 0;
+        }
 
         if (Utils.isEmpty(categoryForeignId)) {
             handleConnectionError("Empty 'categoryForeignId'", getString(R.string.error_subcategories_load));
@@ -119,7 +137,11 @@ public class SubcategoryActivity extends SessionActivity {
         }
         switch (item.getItemId()) {
             case R.id.menu_suggest:
-                showSuggestSubcategoryDialog();
+                if (addSubcategoryCounter > 0) {
+                    showSuggestSubcategoryDialog();
+                } else {
+                    Utils.showInfo(tabs, getString(R.string.cant_add_subcategory));
+                }
                 break;
             case R.id.menu_join:
                 // not available from here
@@ -256,7 +278,6 @@ public class SubcategoryActivity extends SessionActivity {
     }
 
     private class ProcessAddSubcategory extends AsyncTask<String, Void, Boolean> {
-        // TODO!!: ogranicz mozliwosc do x-razy
         Subcategory newSubcategory;
 
         @Override
@@ -298,6 +319,13 @@ public class SubcategoryActivity extends SessionActivity {
                 );
 
                 pager.setCurrentItem(TAB_INACTIVE, true);
+
+                addSubcategoryCounter--;
+                addSubcategoryDate = new Date().getTime() / 60000;
+                Session.getInstance().getSettings().edit()
+                        .putInt(SETTINGS_SUGGEST_SUBCATEGORY, addSubcategoryCounter)
+                        .putLong(SETTINGS_SUGGEST_SUBCATEGORY_DATE, addSubcategoryDate)
+                        .apply();
 
                 // Don't show preloader, because subcategories are loaded just after
                 Session.getInstance().setSubcategoryChanged(true);

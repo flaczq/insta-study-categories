@@ -15,7 +15,6 @@ import abc.flaq.apps.instastudycategories.helper.Utils;
 
 import static abc.flaq.apps.instastudycategories.helper.Constants.SETTINGS_NAME;
 
-// FIXME: popieprzone rzeczy na liście kategorii
 public class MainActivity extends AppCompatActivity {
 
     @Override

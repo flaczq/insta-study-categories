@@ -10,6 +10,7 @@ import java.util.Map;
 
 import abc.flaq.apps.instastudycategories.helper.Utils;
 import abc.flaq.apps.instastudycategories.pojo.Category;
+import abc.flaq.apps.instastudycategories.pojo.Info;
 import abc.flaq.apps.instastudycategories.pojo.Subcategory;
 import abc.flaq.apps.instastudycategories.pojo.User;
 
@@ -19,6 +20,7 @@ public class Session {
     private SharedPreferences settings;
     private User user;
     private ImageView userProfilePic;
+    private Info newestInfo;
     private ArrayList<Category> categories;
     private Map<String, List<Subcategory>> subcategoriesMap = new HashMap<>();
     // For refreshing grids when something's changed
@@ -59,6 +61,13 @@ public class Session {
     }
     public void setUserProfilePic(ImageView userProfilePic) {
         this.userProfilePic = userProfilePic;
+    }
+
+    public Info getNewestInfo() {
+        return newestInfo;
+    }
+    public void setNewestInfo(Info newestInfo) {
+        this.newestInfo = newestInfo;
     }
 
     public ArrayList<Category> getCategories() {

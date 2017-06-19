@@ -45,6 +45,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import abc.flaq.apps.instastudycategories.R;
@@ -53,18 +54,24 @@ import abc.flaq.apps.instastudycategories.api.Api;
 import abc.flaq.apps.instastudycategories.general.Session;
 import abc.flaq.apps.instastudycategories.helper.Utils;
 import abc.flaq.apps.instastudycategories.pojo.Category;
+import abc.flaq.apps.instastudycategories.pojo.Info;
 
 import static abc.flaq.apps.instastudycategories.helper.Constants.DATE_FORMAT;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_URL;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_ACTIVE;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_ACTIVE_END;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_ACTIVE_INFO;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_ACTIVE_START;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_INACTIVE;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_INACTIVE_END;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_INACTIVE_INFO;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_INACTIVE_START;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SESSION;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SESSION_LOGIN;
+import static abc.flaq.apps.instastudycategories.helper.Constants.SETTINGS_SUGGEST_CATEGORY;
+import static abc.flaq.apps.instastudycategories.helper.Constants.SETTINGS_SUGGEST_CATEGORY_DATE;
+import static abc.flaq.apps.instastudycategories.helper.Constants.SUGGEST_MAX_COUNT;
 import static abc.flaq.apps.instastudycategories.helper.Constants.TAB_INACTIVE;
 
 public class CategoryActivity extends SessionActivity {
@@ -78,7 +85,10 @@ public class CategoryActivity extends SessionActivity {
     private IProfile drawerProfile;
 
     private ArrayList<Category> categories = new ArrayList<>();
+    private ArrayList<Info> infos = new ArrayList<>();
     private Boolean isApiWorking = false;
+    private Integer addCategoryCounter;
+    private Long addCategoryDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +103,18 @@ public class CategoryActivity extends SessionActivity {
 
         tabs = (TabLayout) findViewById(R.id.category_tabs);
         tabs.setupWithViewPager(pager);
+
+        addCategoryCounter = Session.getInstance().getSettings().getInt(SETTINGS_SUGGEST_CATEGORY, SUGGEST_MAX_COUNT);
+        addCategoryDate = Session.getInstance().getSettings().getLong(SETTINGS_SUGGEST_CATEGORY_DATE, 0);
+        Long minsSinceLastSuggestion = (new Date().getTime() / 60000) - addCategoryDate;
+        if (minsSinceLastSuggestion >= 1440) {
+            addCategoryCounter = SUGGEST_MAX_COUNT;
+            Session.getInstance().getSettings().edit()
+                    .putInt(SETTINGS_SUGGEST_CATEGORY, addCategoryCounter)
+                    .apply();
+        } else {
+            addCategoryCounter = 0;
+        }
 
         if (Utils.isEmpty(Session.getInstance().getCategories())) {
             new ProcessCategories().execute();
@@ -154,7 +176,11 @@ public class CategoryActivity extends SessionActivity {
         }
         switch (item.getItemId()) {
             case R.id.menu_suggest:
-                showSuggestCategoryDialog();
+                if (addCategoryCounter > 0) {
+                    showSuggestCategoryDialog();
+                } else {
+                    Utils.showInfo(tabs, getString(R.string.cant_add_category));
+                }
                 break;
             case R.id.menu_join:
                 // not available from here
@@ -466,10 +492,11 @@ public class CategoryActivity extends SessionActivity {
     private void endProcessCategoryFragment() {
         if (categories.size() == 0) {
             handleConnectionError("Empty categories", getString(R.string.error_categories_not_found));
-        } else {
-            Session.getInstance().setCategories(categories);
+        } else if (infos.size() == 0) {
+            new ProcessInfos().execute();
+            //Session.getInstance().setCategories(categories);
             // Get first (not "all") category's size
-            Session.getInstance().setMaxGridSize(categories.get(1).getSubcategoriesSize());
+            //Session.getInstance().setMaxGridSize(categories.get(1).getSubcategoriesSize());
         }
 
         ArrayList<Category> activeCategories = new ArrayList<>();
@@ -538,7 +565,6 @@ public class CategoryActivity extends SessionActivity {
         }
     }
     private class ProcessAddCategory extends AsyncTask<String, Void, Boolean> {
-        //TODO!!: ogranicz mozliwosc do x-razy
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -575,6 +601,14 @@ public class CategoryActivity extends SessionActivity {
                 );
 
                 pager.setCurrentItem(TAB_INACTIVE, true);
+
+                addCategoryCounter--;
+                addCategoryDate = new Date().getTime() / 60000;
+                Session.getInstance().getSettings().edit()
+                        .putInt(SETTINGS_SUGGEST_CATEGORY, addCategoryCounter)
+                        .putLong(SETTINGS_SUGGEST_CATEGORY_DATE, addCategoryDate)
+                        .apply();
+
 
                 // Don't show preloader, because categories are loaded just after
                 Session.getInstance().setCategoryChanged(true);
@@ -617,6 +651,40 @@ public class CategoryActivity extends SessionActivity {
                 Session.getInstance().setCategoryChanged(true);
                 Intent nextIntent = new Intent(clazz, MainActivity.class);
                 startActivity(nextIntent);
+            }
+        }
+    }
+    private class ProcessInfos extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                infos = Api.getAllInfos(true);
+            } catch (JSONException e) {
+                handleConnectionError("JSONException: " + e.getMessage(), getString(R.string.error_categories_load));
+            } catch (IOException e) {
+                handleConnectionError("IOException: " + e.getMessage(), getString(R.string.error_categories_load));
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+
+            if (infos.size() > 0) {
+                Session.getInstance().setNewestInfo(infos.get(0));
+
+                Intent activeIntent = new Intent(INTENT_CATEGORY);
+                activeIntent.putExtra(INTENT_CATEGORY_ACTIVE_INFO, infos.get(0));
+                LocalBroadcastManager.getInstance(clazz).sendBroadcast(activeIntent);
+                Intent inactiveIntent = new Intent(INTENT_CATEGORY);
+                inactiveIntent.putExtra(INTENT_CATEGORY_INACTIVE_INFO, infos.get(0));
+                LocalBroadcastManager.getInstance(clazz).sendBroadcast(inactiveIntent);
             }
         }
     }

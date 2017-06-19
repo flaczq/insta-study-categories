@@ -1,8 +1,12 @@
 package abc.flaq.apps.instastudycategories.pojo;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-public class Info extends EveObject implements Comparable<Info> {
+import static abc.flaq.apps.instastudycategories.helper.Constants.DB_INFO_TYPE_NEWS;
+
+public class Info extends EveObject implements Comparable<Info>, Parcelable {
 
     private String type;
     private String title;
@@ -10,6 +14,16 @@ public class Info extends EveObject implements Comparable<Info> {
     private String language;
 
     public Info() {
+        type = DB_INFO_TYPE_NEWS;
+        title = "";
+        message = "";
+        language = "pl";
+    }
+    private Info(Parcel parcel) {
+        type = parcel.readString();
+        title = parcel.readString();
+        message = parcel.readString();
+        language = parcel.readString();
     }
 
     public String getType() {
@@ -53,7 +67,27 @@ public class Info extends EveObject implements Comparable<Info> {
 
     @Override
     public int compareTo(@NonNull Info info) {
-        return (info.getCreated().compareTo(this.getCreated()));
+        return (info.getCreated().compareTo(getCreated()));
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(type);
+        parcel.writeString(title);
+        parcel.writeString(message);
+        parcel.writeString(language);
+    }
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public Info createFromParcel(Parcel parcel) {
+            return new Info(parcel);
+        }
+        public Info[] newArray(int size) {
+            return new Info[size];
+        }
+    };
 
 }

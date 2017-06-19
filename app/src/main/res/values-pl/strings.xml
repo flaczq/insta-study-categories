@@ -129,4 +129,6 @@
     <string name="send_email">Wyślij email</string>
     <string name="drawer_about_info">Aplikacja StudyGram używa następujących bibliotek:</string>
     <string name="drawer_about_apache_license">Wszystkie są rozpowszechniane pod Apache License</string>
+    <string name="cant_add_category">Możesz sugerować tylko jedną kategorię dziennie. Spróbuj ponownie jutro.</string>
+    <string name="cant_add_subcategory">Możesz sugerować tylko jedną podkategorię dziennie. Spróbuj ponownie jutro.</string>
 </resources>

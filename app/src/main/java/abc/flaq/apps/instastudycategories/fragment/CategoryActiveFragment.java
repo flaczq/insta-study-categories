@@ -22,13 +22,17 @@ import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.activity.SubcategoryActivity;
 import abc.flaq.apps.instastudycategories.activity.UserActivity;
 import abc.flaq.apps.instastudycategories.adapter.CategoryAdapter;
+import abc.flaq.apps.instastudycategories.general.Session;
 import abc.flaq.apps.instastudycategories.helper.Utils;
 import abc.flaq.apps.instastudycategories.pojo.Category;
+import abc.flaq.apps.instastudycategories.pojo.EveObject;
+import abc.flaq.apps.instastudycategories.pojo.Info;
 
 import static abc.flaq.apps.instastudycategories.helper.Constants.FONT_CATEGORY_NAME;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_ACTIVE;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_ACTIVE_END;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_ACTIVE_INFO;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_ACTIVE_START;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_FOREIGN_ID;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_NAME;
@@ -40,7 +44,7 @@ public class CategoryActiveFragment extends Fragment {
     private CrystalPreloader preloader;
 
     private int tabNo;
-    private ArrayList<Category> activeCategories = new ArrayList<>();
+    private ArrayList<EveObject> activeCategories = new ArrayList<>();
 
     public static CategoryActiveFragment newInstance(int tabNo) {
         Bundle args = new Bundle();
@@ -57,7 +61,7 @@ public class CategoryActiveFragment extends Fragment {
         tabNo = args.getInt(BUNDLE_CATEGORY_TAB_NO);*/
     }
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         View parentView = inflater.inflate(R.layout.activity_category, container, false);
 
         preloader = (CrystalPreloader) parentView.findViewById(R.id.category_preloader);
@@ -71,16 +75,20 @@ public class CategoryActiveFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
-                Category selected = categoryAdapter.getItem(position);
-                Intent nextIntent;
-                if (selected.isAsSubcategory()) {
-                    nextIntent = new Intent(getActivity(), UserActivity.class);
+                if (categoryAdapter.getItem(position) instanceof Category) {
+                    Category selected = (Category) categoryAdapter.getItem(position);
+                    Intent nextIntent;
+                    if (selected.isAsSubcategory()) {
+                        nextIntent = new Intent(getActivity(), UserActivity.class);
+                    } else {
+                        nextIntent = new Intent(getActivity(), SubcategoryActivity.class);
+                    }
+                    nextIntent.putExtra(INTENT_CATEGORY_FOREIGN_ID, selected.getForeignId());
+                    nextIntent.putExtra(INTENT_CATEGORY_NAME, selected.getName());
+                    getActivity().startActivity(nextIntent);
                 } else {
-                    nextIntent = new Intent(getActivity(), SubcategoryActivity.class);
+                    Utils.showInfo(container, "Tutaj będą prezentowane nowości i ważne informacje o aplikacji");
                 }
-                nextIntent.putExtra(INTENT_CATEGORY_FOREIGN_ID, selected.getForeignId());
-                nextIntent.putExtra(INTENT_CATEGORY_NAME, selected.getName());
-                getActivity().startActivity(nextIntent);
             }
         });
 
@@ -119,6 +127,25 @@ public class CategoryActiveFragment extends Fragment {
                 if (Utils.isNotEmpty(newCategories)) {
                     activeCategories.clear();
                     activeCategories.addAll(newCategories);
+                    if (activeCategories.size() > 1) {
+                        Info newestInfo = (Utils.isEmpty(Session.getInstance().getNewestInfo()) ? new Info() : Session.getInstance().getNewestInfo());
+                        if (activeCategories.get(1) instanceof Info) {
+                            activeCategories.set(1, newestInfo);
+                        } else {
+                            activeCategories.add(1, newestInfo);
+                        }
+                    }
+                    categoryAdapter.notifyDataSetChanged();
+                }
+            }
+            if (intent.hasExtra(INTENT_CATEGORY_ACTIVE_INFO) && activeCategories.size() > 1) {
+                Info newInfo = intent.getParcelableExtra(INTENT_CATEGORY_ACTIVE_INFO);
+                if (Utils.isNotEmpty(newInfo)) {
+                    if (activeCategories.get(1) instanceof Info) {
+                        activeCategories.set(1, newInfo);
+                    } else {
+                        activeCategories.add(1, newInfo);
+                    }
                     categoryAdapter.notifyDataSetChanged();
                 }
             }

@@ -22,11 +22,15 @@ import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.activity.SubcategoryActivity;
 import abc.flaq.apps.instastudycategories.activity.UserActivity;
 import abc.flaq.apps.instastudycategories.adapter.CategoryAdapter;
+import abc.flaq.apps.instastudycategories.general.Session;
 import abc.flaq.apps.instastudycategories.pojo.Category;
 import abc.flaq.apps.instastudycategories.helper.Utils;
+import abc.flaq.apps.instastudycategories.pojo.EveObject;
+import abc.flaq.apps.instastudycategories.pojo.Info;
 
 import static abc.flaq.apps.instastudycategories.helper.Constants.FONT_CATEGORY_NAME;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_ACTIVE_INFO;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_INACTIVE_END;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_FOREIGN_ID;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_INACTIVE;
@@ -40,7 +44,7 @@ public class CategoryInactiveFragment extends Fragment {
     private CrystalPreloader preloader;
 
     private int tabNo;
-    private ArrayList<Category> inactiveCategories = new ArrayList<>();
+    private ArrayList<EveObject> inactiveCategories = new ArrayList<>();
 
     public static CategoryInactiveFragment newInstance(int tabNo) {
         Bundle args = new Bundle();
@@ -71,16 +75,18 @@ public class CategoryInactiveFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parentView, View view, int position, long id) {
-                Category selected = categoryAdapter.getItem(position);
-                Intent nextIntent;
-                if (selected.isAsSubcategory()) {
-                    nextIntent = new Intent(getActivity(), UserActivity.class);
-                } else {
-                    nextIntent = new Intent(getActivity(), SubcategoryActivity.class);
+                if (categoryAdapter.getItem(position) instanceof Category) {
+                    Category selected = (Category) categoryAdapter.getItem(position);
+                    Intent nextIntent;
+                    if (selected.isAsSubcategory()) {
+                        nextIntent = new Intent(getActivity(), UserActivity.class);
+                    } else {
+                        nextIntent = new Intent(getActivity(), SubcategoryActivity.class);
+                    }
+                    nextIntent.putExtra(INTENT_CATEGORY_FOREIGN_ID, selected.getForeignId());
+                    nextIntent.putExtra(INTENT_CATEGORY_NAME, selected.getName());
+                    getActivity().startActivity(nextIntent);
                 }
-                nextIntent.putExtra(INTENT_CATEGORY_FOREIGN_ID, selected.getForeignId());
-                nextIntent.putExtra(INTENT_CATEGORY_NAME, selected.getName());
-                getActivity().startActivity(nextIntent);
             }
         });
 
@@ -119,6 +125,25 @@ public class CategoryInactiveFragment extends Fragment {
                 if (Utils.isNotEmpty(newCategories)) {
                     inactiveCategories.clear();
                     inactiveCategories.addAll(newCategories);
+                    if (inactiveCategories.size() > 1) {
+                        Info newestInfo = (Utils.isEmpty(Session.getInstance().getNewestInfo()) ? new Info() : Session.getInstance().getNewestInfo());
+                        if (inactiveCategories.get(1) instanceof Info) {
+                            inactiveCategories.set(1, newestInfo);
+                        } else {
+                            inactiveCategories.add(1, newestInfo);
+                        }
+                    }
+                    categoryAdapter.notifyDataSetChanged();
+                }
+            }
+            if (intent.hasExtra(INTENT_CATEGORY_ACTIVE_INFO) && inactiveCategories.size() > 1) {
+                Info newInfo = intent.getParcelableExtra(INTENT_CATEGORY_ACTIVE_INFO);
+                if (Utils.isNotEmpty(newInfo)) {
+                    if (inactiveCategories.get(1) instanceof Info) {
+                        inactiveCategories.set(1, newInfo);
+                    } else {
+                        inactiveCategories.add(1, newInfo);
+                    }
                     categoryAdapter.notifyDataSetChanged();
                 }
             }
