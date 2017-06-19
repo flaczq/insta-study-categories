@@ -229,8 +229,12 @@ public class CategoryActivity extends SessionActivity {
         drawerProfile = new ProfileDrawerItem()
                 .withIdentifier(123)
                 .withName(name)
-                .withEmail(info)
-                .withIcon(profilePic);
+                .withEmail(info);
+        if (Utils.isEmpty(profilePic)) {
+            drawerProfile.withIcon(R.drawable.placeholder_profile_pic_72);
+        } else {
+            drawerProfile.withIcon(profilePic);
+        }
 
         DrawerImageLoader.init(new AbstractDrawerImageLoader() {
             @Override

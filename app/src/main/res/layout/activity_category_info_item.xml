@@ -3,7 +3,7 @@
     android:id="@+id/category_item_info_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:minHeight="200dp"
+    android:minHeight="180dp"
     android:background="@color/colorCategoryBlueLight">
 
     <TextView android:id="@+id/category_item_info_title"
@@ -19,10 +19,11 @@
         android:layout_alignParentTop="true" />
     <abc.flaq.apps.instastudycategories.design.TypeWriter android:id="@+id/category_item_info_message"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:fontFamily="casual"
-        android:textSize="22sp"
+        android:textSize="20sp"
         android:textColor="@color/textColorSecondary"
+        android:paddingBottom="@dimen/default_margin"
         android:gravity="center"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"

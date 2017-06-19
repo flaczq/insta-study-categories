@@ -190,7 +190,7 @@ public class CategoryAdapter extends BaseAdapter {
             title.setTypeface(font);
             message.setTypeface(font);
             message.setLineSpacing(0, 0.7f);
-            message.setCharacterDelay(100);
+            message.setCharacterDelay(80);
         }
 
         private void bind(Info model) {
