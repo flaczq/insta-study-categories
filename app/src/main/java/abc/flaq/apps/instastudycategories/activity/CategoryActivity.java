@@ -514,7 +514,12 @@ public class CategoryActivity extends SessionActivity {
         }
 
         if (activeCategories.size() == 0 && inactiveCategories.size() > 0) {
-            pager.setCurrentItem(TAB_INACTIVE, true);
+            pager.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    pager.setCurrentItem(TAB_INACTIVE, true);
+                }
+            }, 100);
         }
 
         Intent activeIntent = new Intent(INTENT_CATEGORY);

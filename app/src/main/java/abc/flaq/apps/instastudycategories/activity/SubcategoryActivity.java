@@ -92,7 +92,7 @@ public class SubcategoryActivity extends SessionActivity {
             handleConnectionError("Empty 'categoryForeignId'", getString(R.string.error_subcategories_load));
         } else {
             String categoryName = intent.getStringExtra(INTENT_CATEGORY_NAME);
-            Decorator.setActionBarTitle(clazz, Utils.getStringByCategoryName(clazz, categoryName), null);
+            Decorator.setActionBarTitle(clazz, Utils.getCategoryString(clazz, categoryName), null);
             Session.getInstance().setCategoryName(categoryName);
 
             if (Utils.isEmpty(Session.getInstance().getSubcategories(categoryForeignId))) {
@@ -221,7 +221,12 @@ public class SubcategoryActivity extends SessionActivity {
         }
 
         if (activeSubcategories.size() == 0 && inactiveSubcategories.size() > 0) {
-            pager.setCurrentItem(TAB_INACTIVE, true);
+            pager.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    pager.setCurrentItem(TAB_INACTIVE, true);
+                }
+            }, 100);
         }
 
         Intent activeIntent = new Intent(INTENT_SUBCATEGORY);

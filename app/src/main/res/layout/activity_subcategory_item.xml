@@ -7,7 +7,7 @@
     <ImageView android:id="@+id/subcategory_item_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/biology"
+        android:src="@drawable/placeholder_category"
         android:scaleType="centerCrop"
         android:adjustViewBounds="true"
         android:contentDescription="@string/imageview.description" />

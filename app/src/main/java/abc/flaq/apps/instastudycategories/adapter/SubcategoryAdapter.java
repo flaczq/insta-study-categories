@@ -14,7 +14,9 @@ import android.widget.TextView;
 import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 import com.mikepenz.iconics.view.IconicsTextView;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.design.Decorator;
@@ -26,14 +28,25 @@ public class SubcategoryAdapter extends BaseAdapter {
     private final Context context;
     private final LayoutInflater inflater;
 
-    private final List<Subcategory> subcategories;
+    private final ArrayList<Subcategory> subcategories;
     private final Typeface font;
+    private Map<String, List<Object>> subcategoriesResources;
 
-    public SubcategoryAdapter(Context context, List<Subcategory> subcategories, Typeface font) {
+    public SubcategoryAdapter(Context context, ArrayList<Subcategory> subcategories, Typeface font) {
         this.context = context;
         this.subcategories = subcategories;
         this.inflater = LayoutInflater.from(context);
         this.font = font;
+        this.subcategoriesResources = Utils.getSubcategoriesResources(context, subcategories);
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
+        if (subcategories.size() != subcategoriesResources.get("names").size() ||
+                subcategories.size() != subcategoriesResources.get("photos").size()) {
+            subcategoriesResources = Utils.getSubcategoriesResources(context, subcategories);
+        }
     }
 
     @Override
@@ -68,19 +81,21 @@ public class SubcategoryAdapter extends BaseAdapter {
             subcategoryViewHolder = (SubcategoryViewHolder) view.getTag();
         }
 
-        subcategoryViewHolder.bind(subcategory);
+        String nameResource = (String) subcategoriesResources.get("names").get(position);
+        Drawable photoResource = (Drawable) subcategoriesResources.get("photos").get(position);
+        subcategoryViewHolder.bind(subcategory, nameResource, photoResource);
 
         return view;
     }
 
     private class SubcategoryViewHolder {
         private final IconicsTextView users;
-        private final ImageView image;
+        private final ImageView photo;
         private final TextView name;
 
         private SubcategoryViewHolder(View view) {
             users = (IconicsTextView) view.findViewById(R.id.subcategory_item_users);
-            image = (ImageView) view.findViewById(R.id.subcategory_item_image);
+            photo = (ImageView) view.findViewById(R.id.subcategory_item_image);
             name = (TextView) view.findViewById(R.id.subcategory_item_name);
 
             if (Build.VERSION.SDK_INT >= 21) {
@@ -95,26 +110,20 @@ public class SubcategoryAdapter extends BaseAdapter {
             name.setLineSpacing(0, 0.7f);
         }
 
-        private void bind(Subcategory model) {
+        private void bind(Subcategory model, String nameResource, Drawable photoResource) {
             users.setText("{faw-smile-o} " + model.getUsersSize());
 
-            String subcategoryName = Utils.getStringBySubcategoryName(context, model.getName());
-            name.setText(Utils.simplifyCharacters(subcategoryName));
+            name.setText(nameResource);
             Decorator.fitFont(name);
 
             if (Utils.isEmpty(model.getImageUrl())) {
-                Drawable drawable = Utils.getSubcategoryDrawable(context, model.getName());
-                if (Utils.isEmpty(drawable)) {
-                    image.setImageResource(R.drawable.placeholder_category);
-                } else {
-                    image.setImageDrawable(drawable);
-                }
+                photo.setImageDrawable(photoResource);
             } else {
-                UrlImageViewHelper.setUrlDrawable(image, model.getImageUrl(), R.drawable.placeholder_category);
+                UrlImageViewHelper.setUrlDrawable(photo, model.getImageUrl(), R.drawable.placeholder_category);
             }
 
             // Calculate height for all except "all" category
-            //Decorator.setGridHeight(model.getUsersSize(), image);
+            //Decorator.setGridHeight(model.getUsersSize(), photo);
         }
     }
 

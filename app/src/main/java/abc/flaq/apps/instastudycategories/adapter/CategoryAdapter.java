@@ -17,6 +17,8 @@ import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 import com.mikepenz.iconics.view.IconicsTextView;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.design.Decorator;
@@ -41,6 +43,7 @@ public class CategoryAdapter extends BaseAdapter {
     private final ArrayList<EveObject> categories;
     private final Typeface font;
     private Boolean firstTime;
+    private Map<String, List<Object>> categoriesResources;
 
     public CategoryAdapter(Context context, ArrayList<EveObject> categories, Typeface font) {
         this.context = context;
@@ -48,6 +51,16 @@ public class CategoryAdapter extends BaseAdapter {
         this.inflater = LayoutInflater.from(context);
         this.font = font;
         this.firstTime = true;
+        this.categoriesResources = Utils.getCategoriesResources(context, categories);
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
+        if (categories.size() != categoriesResources.get("names").size() ||
+                categories.size() != categoriesResources.get("photos").size()) {
+            categoriesResources = Utils.getCategoriesResources(context, categories);
+        }
     }
 
     @Override
@@ -102,7 +115,9 @@ public class CategoryAdapter extends BaseAdapter {
                 categoryViewHolder = (CategoryViewHolder) view.getTag();
             }
 
-            categoryViewHolder.bind(category);
+            String nameResource = (String) categoriesResources.get("names").get(position);
+            Drawable photoResource = (Drawable) categoriesResources.get("photos").get(position);
+            categoryViewHolder.bind(category, nameResource, photoResource);
         } else {
             // Info grid
             final Info info = (Info) getItem(position);
@@ -144,24 +159,18 @@ public class CategoryAdapter extends BaseAdapter {
             name.setLineSpacing(0, 0.7f);
         }
 
-        private void bind(Category model) {
+        private void bind(Category model, String nameResource, Drawable photoResource) {
             if (model.isAsSubcategory()) {
                 subcategories.setText("{faw-smile-o} " + model.getUsersSize());
             } else {
                 subcategories.setText("{faw-th-large} " + model.getSubcategoriesSize());
             }
 
-            String categoryName = Utils.getStringByCategoryName(context, model.getName());
-            name.setText(Utils.simplifyCharacters(categoryName));
+            name.setText(nameResource);
             Decorator.fitFont(name);
 
             if (Utils.isEmpty(model.getImageUrl())) {
-                Drawable drawable = Utils.getCategoryDrawable(context, model.getName());
-                if (Utils.isEmpty(drawable)) {
-                    photo.setImageResource(R.drawable.placeholder_category);
-                } else {
-                    photo.setImageDrawable(drawable);
-                }
+                photo.setImageDrawable(photoResource);
             } else {
                 UrlImageViewHelper.setUrlDrawable(photo, model.getImageUrl(), R.drawable.placeholder_category);
             }
@@ -207,7 +216,7 @@ public class CategoryAdapter extends BaseAdapter {
                         break;
                     case DB_INFO_TYPE_NEWS:
                     default:
-                        layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorCategoryBlueLight));
+                        layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorCategoryGreenLight));
                         break;
                 }
 

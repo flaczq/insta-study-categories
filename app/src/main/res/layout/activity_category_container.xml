@@ -20,7 +20,7 @@
             <android.support.v7.widget.Toolbar android:id="@+id/category_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:theme="@style/ToolbarTheme"
+                android:theme="@style/ToolbarTheme"
                 app:popupTheme="@style/PopupToolbarTheme" />
 
             <android.support.design.widget.TabLayout android:id="@+id/category_tabs"

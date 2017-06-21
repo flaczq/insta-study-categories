@@ -105,14 +105,14 @@ public class UserActivity extends SessionActivity {
         if (Utils.isNotEmpty(categoryForeignId)) {
             isCategory = true;
             parentForeignId = categoryForeignId;
-            String categoryParentName = Utils.getStringByCategoryName(clazz, intent.getStringExtra(INTENT_CATEGORY_NAME));
+            String categoryParentName = Utils.getCategoryString(clazz, intent.getStringExtra(INTENT_CATEGORY_NAME));
             Decorator.setActionBarTitle(clazz, categoryParentName, null);
         } else {
             String subcategoryForeignId = intent.getStringExtra(INTENT_SUBCATEGORY_FOREIGN_ID);
             if (Utils.isNotEmpty(subcategoryForeignId)) {
                 parentForeignId = subcategoryForeignId;
-                String categoryParentName = Utils.getStringByCategoryName(clazz, Session.getInstance().getCategoryName());
-                subcategoryParentName = Utils.getStringBySubcategoryName(clazz, intent.getStringExtra(INTENT_SUBCATEGORY_NAME));
+                String categoryParentName = Utils.getCategoryString(clazz, Session.getInstance().getCategoryName());
+                subcategoryParentName = Utils.getSubcategoryString(clazz, intent.getStringExtra(INTENT_SUBCATEGORY_NAME));
                 Decorator.setActionBarTitle(clazz, subcategoryParentName, categoryParentName);
             }
         }

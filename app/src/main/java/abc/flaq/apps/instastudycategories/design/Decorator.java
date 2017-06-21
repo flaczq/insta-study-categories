@@ -117,6 +117,8 @@ public class Decorator {
             textView.setTextSize(COMPLEX_UNIT_SP, 19);
         } else if (text.length() >= 10) {
             textView.setTextSize(COMPLEX_UNIT_SP, 22);
+        } else {
+            textView.setTextSize(COMPLEX_UNIT_SP, 24);
         }
     }
 
