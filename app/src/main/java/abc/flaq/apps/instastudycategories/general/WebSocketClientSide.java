@@ -33,7 +33,6 @@ import static abc.flaq.apps.instastudycategories.helper.Constants.WEB_SOCKET_TYP
 import static abc.flaq.apps.instastudycategories.helper.Constants.WEB_SOCKET_TYPE_MESSAGE;
 import static abc.flaq.apps.instastudycategories.helper.Constants.WEB_SOCKET_TYPE_TOTAL_USERS;
 
-// FIXME: szybkie otwarcie czatu wywala błąd
 public class WebSocketClientSide extends WebSocketClient {
 
     private AppCompatActivity clazz;
@@ -105,7 +104,8 @@ public class WebSocketClientSide extends WebSocketClient {
 
     @Override
     public void onError(Exception e) {
-        handleConnectionError("Error WebSocket: " + e.getMessage());
+        Utils.logDebug(clazz, "Error WebSocket: " + e.getMessage());
+        //handleConnectionError("Error WebSocket: " + e.getMessage());
     }
 
     public void sendMessage(String message) {

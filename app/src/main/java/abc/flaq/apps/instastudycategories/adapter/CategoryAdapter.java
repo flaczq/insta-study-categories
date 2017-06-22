@@ -57,10 +57,7 @@ public class CategoryAdapter extends BaseAdapter {
     @Override
     public void notifyDataSetChanged() {
         super.notifyDataSetChanged();
-        if (categories.size() != categoriesResources.get("names").size() ||
-                categories.size() != categoriesResources.get("photos").size()) {
-            categoriesResources = Utils.getCategoriesResources(context, categories);
-        }
+        categoriesResources = Utils.getCategoriesResources(context, categories);
     }
 
     @Override

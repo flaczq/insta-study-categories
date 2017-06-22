@@ -43,10 +43,7 @@ public class SubcategoryAdapter extends BaseAdapter {
     @Override
     public void notifyDataSetChanged() {
         super.notifyDataSetChanged();
-        if (subcategories.size() != subcategoriesResources.get("names").size() ||
-                subcategories.size() != subcategoriesResources.get("photos").size()) {
-            subcategoriesResources = Utils.getSubcategoriesResources(context, subcategories);
-        }
+        subcategoriesResources = Utils.getSubcategoriesResources(context, subcategories);
     }
 
     @Override

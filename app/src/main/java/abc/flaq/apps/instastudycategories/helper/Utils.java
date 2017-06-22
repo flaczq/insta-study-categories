@@ -474,22 +474,22 @@ public class Utils {
                     namesResources.add(context.getString(R.string.subcategory_name_sc_english));
                     photosResources.add(ContextCompat.getDrawable(context, R.drawable.english));
                     break;
-                /*case "hs_bio_chem":
+                case "hs_bio_chem":
                     namesResources.add(context.getString(R.string.subcategory_name_hs_bio_chem));
                     photosResources.add(ContextCompat.getDrawable(context, R.drawable.bio_chem));
-                    break;*/
+                    break;
                 case "hs_hum":
                     namesResources.add(context.getString(R.string.subcategory_name_hs_hum));
                     photosResources.add(ContextCompat.getDrawable(context, R.drawable.hum));
                     break;
-                /*case "hs_mat_phy":
+                case "hs_mat_phy":
                     namesResources.add(context.getString(R.string.subcategory_name_hs_mat_phy));
                     photosResources.add(ContextCompat.getDrawable(context, R.drawable.mat_phy));
                     break;
                 case "hs_mat_geo":
                     namesResources.add(context.getString(R.string.subcategory_name_hs_mat_geo));
                     photosResources.add(ContextCompat.getDrawable(context, R.drawable.mat_geo));
-                    break;*/
+                    break;
                 case "hs_lang":
                     namesResources.add(context.getString(R.string.subcategory_name_hs_lang));
                     photosResources.add(ContextCompat.getDrawable(context, R.drawable.lang));

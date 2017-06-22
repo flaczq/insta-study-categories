@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:minHeight="180dp"
-    android:background="@color/colorCategoryBlueLight">
+    android:background="@color/colorCategoryGreenLight">
 
     <TextView android:id="@+id/category_item_info_title"
         android:layout_width="match_parent"
