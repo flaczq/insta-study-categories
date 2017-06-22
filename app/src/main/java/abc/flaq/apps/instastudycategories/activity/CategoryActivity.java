@@ -261,6 +261,7 @@ public class CategoryActivity extends SessionActivity {
                             return false;
                         }
 
+                        Utils.showQuickInfo(tabs, getString(R.string.ig_profile_open) + Session.getInstance().getUser().getUsername() + "...");
                         Intent nextIntent = Utils.getInstagramIntent(Session.getInstance().getUser().getUsername());
                         if (Utils.isIntentAvailable(clazz, nextIntent)) {
                             Utils.logDebug(clazz, "Instagram intent is available");
@@ -448,6 +449,7 @@ public class CategoryActivity extends SessionActivity {
         infoDialog.getIconView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Utils.showQuickInfo(tabs, getString(R.string.ig_profile_open) + Session.getInstance().getUser().getUsername() + "...");
                 Intent nextIntent = Utils.getInstagramIntent(Session.getInstance().getUser().getUsername());
                 if (Utils.isIntentAvailable(clazz, nextIntent)) {
                     Utils.logDebug(clazz, "Instagram intent is available");
@@ -462,6 +464,7 @@ public class CategoryActivity extends SessionActivity {
         infoDialog.getTitleView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Utils.showQuickInfo(tabs, getString(R.string.ig_profile_open) + Session.getInstance().getUser().getUsername() + "...");
                 Intent nextIntent = Utils.getInstagramIntent(Session.getInstance().getUser().getUsername());
                 if (Utils.isIntentAvailable(clazz, nextIntent)) {
                     Utils.logDebug(clazz, "Instagram intent is available");

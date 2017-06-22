@@ -98,6 +98,7 @@ public class UserAdapter extends BaseAdapter {
                 profilePic.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        Utils.showQuickInfo(view, context.getString(R.string.ig_profile_open) + model.getUsername() + "...");
                         Intent nextIntent = Utils.getInstagramIntent(model.getUsername());
                         if (Utils.isIntentAvailable(context, nextIntent)) {
                             Utils.logDebug(context, "Instagram intent is available");

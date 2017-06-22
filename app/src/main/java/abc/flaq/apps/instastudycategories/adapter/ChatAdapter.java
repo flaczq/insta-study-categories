@@ -118,6 +118,7 @@ public class ChatAdapter extends BaseAdapter {
                 profilePic.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        Utils.showQuickInfo(view, context.getString(R.string.ig_profile_open) + model.getName() + "...");
                         Intent nextIntent = Utils.getInstagramIntent(model.getName());
                         if (Utils.isIntentAvailable(context, nextIntent)) {
                             Utils.logDebug(context, "Instagram intent is available");

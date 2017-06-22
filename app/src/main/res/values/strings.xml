@@ -91,7 +91,7 @@
     <string name="suggest">suggest</string>
     <string name="cancel">Cancel</string>
     <string name="type_name">Type name&#8230;</string>
-    <string name="ig_profile_open">Opening profile:</string>
+    <string name="ig_profile_open">Opening profile:&#160;</string>
     <string name="error_chat_login">Only logged in users can use chat</string>
     <string name="error_general">Application error, try again later</string>
     <string name="error_ig_login">Couldn\'t log into Instagram</string>

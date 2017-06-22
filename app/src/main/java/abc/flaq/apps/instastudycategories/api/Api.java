@@ -500,7 +500,8 @@ public class Api {
                     usersSize++;
                 }
             }
-            Category allCategory = getCategoryByNameFromCache("all");
+            // TODO: potrzebne?
+            /*Category allCategory = getCategoryByNameFromCache("all");
             if (Utils.isNotEmpty(allCategory) && usersSize != allCategory.getUsersSize()) {
                 Utils.logDebug("Api.getUsersByCategoryForeignId()", "Poprawa liczby użytkowników w kategorii Wszyscy");
                 correctSize(
@@ -510,7 +511,7 @@ public class Api {
                         usersSize
                 );
                 Session.getInstance().setCategoryChanged(true);
-            }
+            }*/
         } else {
             Map<String, String> conditions = new HashMap<>();
             conditions.put("categories", categoryForeignId);

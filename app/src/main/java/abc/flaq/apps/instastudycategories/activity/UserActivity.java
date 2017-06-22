@@ -230,6 +230,10 @@ public class UserActivity extends SessionActivity {
         return true;
     }
 
+    public CoordinatorLayout getLayout() {
+        return layout;
+    }
+
     private void initWebSocket() {
         final ArrayList<WebSocketMessage> messages = new ArrayList<>();
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);

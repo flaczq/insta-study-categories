@@ -92,7 +92,7 @@
     <string name="suggest">Zaproponuj</string>
     <string name="cancel">Anuluj</string>
     <string name="type_name">Wpisz nazwę&#8230;</string>
-    <string name="ig_profile_open">Otwieranie profilu </string>
+    <string name="ig_profile_open">Otwieranie profilu&#160;</string>
     <string name="error_chat_login">Tylko zalogowani użytkownicy mogą korzystać z czatu</string>
     <string name="error_general">Błąd aplikacji, spróbuj ponownie później</string>
     <string name="error_ig_login">Błąd logowania do Instagrama</string>
