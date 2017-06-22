@@ -65,7 +65,7 @@ public class CategoryAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        if (Utils.isEmpty(categories)) {
+        if (categories == null) {
             return 0;
         }
         return categories.size();

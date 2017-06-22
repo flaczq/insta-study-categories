@@ -56,6 +56,7 @@ import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGOR
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_NAME;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_FOREIGN_ID;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_NAME;
+import static abc.flaq.apps.instastudycategories.helper.Constants.WEB_SOCKET_MAX_MESSAGES;
 import static android.view.inputmethod.EditorInfo.IME_ACTION_SEND;
 
 public class UserActivity extends SessionActivity {
@@ -230,9 +231,11 @@ public class UserActivity extends SessionActivity {
     }
 
     private void initWebSocket() {
+        final ArrayList<WebSocketMessage> messages = new ArrayList<>();
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View chatView = inflater.inflate(R.layout.activity_user_chat, null);
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.user_fab);
+        final TextView chatHeader = (TextView) chatView.findViewById(R.id.user_chat_header);
         final ListView chatList = (ListView) chatView.findViewById(R.id.user_chat_list);
         final EditText chatInput = (EditText) chatView.findViewById(R.id.user_chat_input);
         final ImageButton sendButton = (ImageButton) chatView.findViewById(R.id.user_chat_input_send);
@@ -284,7 +287,7 @@ public class UserActivity extends SessionActivity {
             }
         });
 
-        final ChatAdapter chatAdapter = new ChatAdapter(clazz, new ArrayList<WebSocketMessage>());
+        final ChatAdapter chatAdapter = new ChatAdapter(clazz, messages);
         chatList.setAdapter(chatAdapter);
         chatList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -311,7 +314,35 @@ public class UserActivity extends SessionActivity {
             }
         });
 
-        webSocket = WebSocketClientSide.createWebSocketClientSide(clazz, layout, chatAdapter, chatView, chatDialog);
+        webSocket = WebSocketClientSide.createWebSocketClientSide(clazz);
+        webSocket.setWebSocketListener(new WebSocketClientSide.WebSocketListener() {
+            @Override
+            public void onConnectionOpen() {
+                fab.setClickable(true);
+            }
+
+            @Override
+            public void onConnectionError(String logMessage) {
+                fab.setClickable(false);
+                chatDialog.dismiss();
+                handleConnectionError(logMessage, getString(R.string.error_chat_connection));
+            }
+
+            @Override
+            public void onMessageTypeMsg(WebSocketMessage message) {
+                messages.add(message);
+                chatAdapter.notifyDataSetChanged();
+                if (chatAdapter.getCount() > WEB_SOCKET_MAX_MESSAGES) {
+                    fab.setImageResource(R.drawable.ic_chat_white_24dp);
+                }
+            }
+
+            @Override
+            public void onMessageTypeNum(Integer totalUsers) {
+                chatHeader.setText(getString(R.string.chat_total_users, totalUsers));
+            }
+        });
+        webSocket.connect();
     }
 
     private void showChatDialog() {

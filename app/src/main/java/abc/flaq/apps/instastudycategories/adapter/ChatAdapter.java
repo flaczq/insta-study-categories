@@ -46,7 +46,7 @@ public class ChatAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        if (Utils.isEmpty(messages)) {
+        if (messages == null) {
             return 0;
         }
         return messages.size();
@@ -60,11 +60,6 @@ public class ChatAdapter extends BaseAdapter {
     @Override
     public long getItemId(int position) {
         return 0;
-    }
-
-    public void addItem(WebSocketMessage item) {
-        messages.add(item);
-        notifyDataSetChanged();
     }
 
     @Override
@@ -124,7 +119,6 @@ public class ChatAdapter extends BaseAdapter {
                     @Override
                     public void onClick(View view) {
                         Intent nextIntent = Utils.getInstagramIntent(model.getName());
-
                         if (Utils.isIntentAvailable(context, nextIntent)) {
                             Utils.logDebug(context, "Instagram intent is available");
                             context.startActivity(nextIntent);

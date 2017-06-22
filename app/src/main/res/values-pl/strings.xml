@@ -131,4 +131,6 @@
     <string name="drawer_about_apache_license">Wszystkie są rozpowszechniane pod Apache License</string>
     <string name="cant_add_category">Możesz sugerować tylko jedną kategorię dziennie. Spróbuj ponownie jutro.</string>
     <string name="cant_add_subcategory">Możesz sugerować tylko jedną podkategorię dziennie. Spróbuj ponownie jutro.</string>
+    <string name="user_chat_header_placeholder">Trwa łączenie z czatem&#8230;</string>
+    <string name="user_chat_send_placeholder">Wpisz wiadomość&#8230;</string>
 </resources>

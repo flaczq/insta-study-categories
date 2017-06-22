@@ -219,7 +219,6 @@ public class SessionActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent nextIntent = Utils.getInstagramIntent(user.getUsername());
-
                 if (Utils.isIntentAvailable(activity, nextIntent)) {
                     Utils.logDebug(activity, "Instagram intent is available");
                     activity.startActivity(nextIntent);
@@ -227,7 +226,6 @@ public class SessionActivity extends AppCompatActivity {
                     Utils.logDebug(activity, "Instagram intent is NOT available");
                     activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + user.getUsername())));
                 }
-
                 infoDialog.hide();
             }
         });
@@ -235,7 +233,6 @@ public class SessionActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent nextIntent = Utils.getInstagramIntent(user.getUsername());
-
                 if (Utils.isIntentAvailable(activity, nextIntent)) {
                     Utils.logDebug(activity, "Instagram intent is available");
                     activity.startActivity(nextIntent);
@@ -243,7 +240,6 @@ public class SessionActivity extends AppCompatActivity {
                     Utils.logDebug(activity, "Instagram intent is NOT available");
                     activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + user.getUsername())));
                 }
-
                 infoDialog.hide();
             }
         });

@@ -37,7 +37,7 @@ public class UserAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        if (Utils.isEmpty(users)) {
+        if (users == null) {
             return 0;
         }
         return users.size();
@@ -99,7 +99,6 @@ public class UserAdapter extends BaseAdapter {
                     @Override
                     public void onClick(View view) {
                         Intent nextIntent = Utils.getInstagramIntent(model.getUsername());
-
                         if (Utils.isIntentAvailable(context, nextIntent)) {
                             Utils.logDebug(context, "Instagram intent is available");
                             context.startActivity(nextIntent);

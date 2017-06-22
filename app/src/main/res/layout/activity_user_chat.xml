@@ -65,7 +65,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-light"
-            android:text="Trwa łączenie z czatem..."
+            android:text="@string/user_chat_header_placeholder"
             android:textSize="13sp"
             android:textColor="@color/textColorMaybeImportant"
             android:layout_margin="@dimen/default_small_margin"

@@ -449,7 +449,6 @@ public class CategoryActivity extends SessionActivity {
             @Override
             public void onClick(View view) {
                 Intent nextIntent = Utils.getInstagramIntent(Session.getInstance().getUser().getUsername());
-
                 if (Utils.isIntentAvailable(clazz, nextIntent)) {
                     Utils.logDebug(clazz, "Instagram intent is available");
                     clazz.startActivity(nextIntent);
@@ -457,7 +456,6 @@ public class CategoryActivity extends SessionActivity {
                     Utils.logDebug(clazz, "Instagram intent is NOT available");
                     clazz.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + Session.getInstance().getUser().getUsername())));
                 }
-
                 infoDialog.hide();
             }
         });
@@ -465,7 +463,6 @@ public class CategoryActivity extends SessionActivity {
             @Override
             public void onClick(View view) {
                 Intent nextIntent = Utils.getInstagramIntent(Session.getInstance().getUser().getUsername());
-
                 if (Utils.isIntentAvailable(clazz, nextIntent)) {
                     Utils.logDebug(clazz, "Instagram intent is available");
                     clazz.startActivity(nextIntent);
@@ -473,7 +470,6 @@ public class CategoryActivity extends SessionActivity {
                     Utils.logDebug(clazz, "Instagram intent is NOT available");
                     clazz.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + Session.getInstance().getUser().getUsername())));
                 }
-
                 infoDialog.hide();
             }
         });

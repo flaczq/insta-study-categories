@@ -51,7 +51,7 @@ public class SubcategoryAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        if (Utils.isEmpty(subcategories)) {
+        if (subcategories == null) {
             return 0;
         }
         return subcategories.size();
