@@ -16,15 +16,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramAccessToken;
-import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramMeta;
 import abc.flaq.apps.instastudycategories.helper.Constants;
 import abc.flaq.apps.instastudycategories.helper.Utils;
+import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramAccessToken;
+import abc.flaq.apps.instastudycategories.pojo.instagram.InstagramMeta;
 
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_AUTH_URL;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_CODE_URL;
-import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_REMOTE_AUTH_URL;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_REDIRECT_URL;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_REMOTE_AUTH_URL;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_REMOTE_REDIRECT_URL;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_REQUEST_ACCESS_TOKEN_URL;
 

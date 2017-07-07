@@ -500,7 +500,7 @@ public class Api {
                     usersSize++;
                 }
             }
-            // TODO: potrzebne?
+            // TODO: włączyć w aktualizacji, gdy będą się psuły numerki
             /*Category allCategory = getCategoryByNameFromCache("all");
             if (Utils.isNotEmpty(allCategory) && usersSize != allCategory.getUsersSize()) {
                 Utils.logDebug("Api.getUsersByCategoryForeignId()", "Poprawa liczby użytkowników w kategorii Wszyscy");
@@ -607,7 +607,7 @@ public class Api {
         }
 
         user.updateFromResponse(response);
-        ///getAllUsers(true);
+        getAllUsers(true);
 
         String categoryId = category.getId();
         if (Utils.isEmpty(category)) {
@@ -638,7 +638,7 @@ public class Api {
             }
         }
         // Update sizes of category
-        ///getAllCategories(true);
+        getAllCategories(true);
 
         return Boolean.TRUE;
     }
@@ -667,7 +667,7 @@ public class Api {
         }
 
         user.updateFromResponse(response);
-        ///getAllUsers(true);
+        getAllUsers(true);
 
         String subcategoryId = subcategory.getId();
         if (Utils.isEmpty(subcategory)) {
@@ -698,7 +698,7 @@ public class Api {
             }
         }
         // Update sizes of subcategory
-        ///getAllSubcategories(true);
+        getAllSubcategories(true);
 
         // Assuming one subcategory is only in one category
         String categoryId = Utils.undoForeignId(subcategory.getCategories().get(0));
@@ -731,7 +731,7 @@ public class Api {
             }
         }
         // Update sizes of category
-        ///getAllCategories(true);
+        getAllCategories(true);
 
         return Boolean.TRUE;
     }
@@ -794,7 +794,7 @@ public class Api {
         }
 
         user.updateFromResponse(response);
-        ///getAllUsers(true);
+        getAllUsers(true);
 
         Category category = getCategoryByName("all");
         if (Utils.isEmpty(category)) {
@@ -808,7 +808,7 @@ public class Api {
             );
         }
         // Update sizes of category
-        ///getAllCategories(true);
+        getAllCategories(true);
 
         return Boolean.TRUE;
     }
@@ -832,7 +832,7 @@ public class Api {
         }
 
         user.updateFromResponse(response);
-        ///getAllUsers(true);
+        getAllUsers(true);
 
         // Remove user from all categories
         for (String categoryForeignId : user.getCategories()) {
@@ -848,6 +848,8 @@ public class Api {
                 );
             }
         }
+        // Update sizes of category
+        getAllCategories(true);
 
         // Remove user from all subcategories
         for (String subcategoryForeignId : user.getSubcategories()) {
@@ -863,6 +865,8 @@ public class Api {
                 );
             }
         }
+        // Update sizes of subcategory
+        getAllSubcategories(true);
 
         return Boolean.TRUE;
     }
@@ -888,7 +892,7 @@ public class Api {
         }
 
         user.updateFromResponse(response);
-        ///getAllUsers(true);
+        getAllUsers(true);
 
         String categoryId = category.getId();
         if (Utils.isEmpty(category)) {
@@ -902,7 +906,7 @@ public class Api {
             );
         }
         // Update sizes of category
-        ///getAllCategories(true);
+        getAllCategories(true);
 
         return Boolean.TRUE;
     }
@@ -931,7 +935,7 @@ public class Api {
         }
 
         user.updateFromResponse(response);
-        ///getAllUsers(true);
+        getAllUsers(true);
 
         String subcategoryId = subcategory.getId();
         if (Utils.isEmpty(subcategory)) {
@@ -945,7 +949,7 @@ public class Api {
             );
         }
         // Update sizes of subcategory
-        ///getAllSubcategories(true);
+        getAllSubcategories(true);
 
         // Assuming one subcategory is only in one category
         String categoryId = Utils.undoForeignId(subcategory.getCategories().get(0));
@@ -961,7 +965,7 @@ public class Api {
             );
         }
         // Update sizes of category
-        ///getAllCategories(true);
+        getAllCategories(true);
 
         return Boolean.TRUE;
     }

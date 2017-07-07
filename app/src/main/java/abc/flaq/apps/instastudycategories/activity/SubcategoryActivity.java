@@ -52,6 +52,7 @@ public class SubcategoryActivity extends SessionActivity {
     private final AppCompatActivity clazz = this;
     private ViewPager pager;
     private TabLayout tabs;
+    private Handler handler = new Handler();
 
     private List<Subcategory> subcategories = new ArrayList<>();
     private String categoryForeignId;
@@ -101,7 +102,6 @@ public class SubcategoryActivity extends SessionActivity {
                 subcategories = Session.getInstance().getSubcategories(categoryForeignId);
 
                 // Hack to wait for fragments to init
-                Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -221,7 +221,7 @@ public class SubcategoryActivity extends SessionActivity {
         }
 
         if (activeSubcategories.size() == 0 && inactiveSubcategories.size() > 0) {
-            pager.postDelayed(new Runnable() {
+            handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     pager.setCurrentItem(TAB_INACTIVE, true);
@@ -247,7 +247,6 @@ public class SubcategoryActivity extends SessionActivity {
 
             // Don't show preloader when going back from User activity
             if (!Session.getInstance().isSubcategoryChanged()) {
-                Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {

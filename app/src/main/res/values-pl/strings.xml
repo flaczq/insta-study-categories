@@ -116,6 +116,10 @@
     <string name="login">Logowanie</string>
     <string name="login_info">Aplikacja StudyGram korzysta z narzędzia \"Pixel Union\" w celu połączenia z kontem Instagram. Na następnej stronie zaloguj się do swojego konta Instagram, a następnie, jeśli robisz to po raz pierwszy, zezwól aplikacji \"PXU Access Token\" na dostęp do swoich podstawowych informacji.</string>
     <string name="log_in">Zaloguj</string>
+    <string name="cant_add_category">Możesz zaproponować tylko jedną kategorię dziennie. Spróbuj ponownie jutro.</string>
+    <string name="cant_add_subcategory">Możesz zaproponować tylko jedną podkategorię dziennie. Spróbuj ponownie jutro.</string>
+    <string name="user_chat_header_placeholder">Trwa łączenie z czatem&#8230;</string>
+    <string name="user_chat_send_placeholder">Wpisz wiadomość&#8230;</string>
 
     <string name="drawer_login">Zaloguj się,</string>
     <string name="drawer_login_2">aby zobaczyć swój profil</string>
@@ -125,12 +129,10 @@
     <string name="drawer_buy">Kup dodatki</string>
     <string name="drawer_about">O StudyGram&#8230;</string>
     <string name="drawer_buy_not_yet">Brak dodatków, zapraszamy wkrótce!</string>
-    <string name="drawer_help_info">Aplikacja StudyGram pozwala na dołączanie do grup tematycznych, np. Lekarz w grupie Praca albo Biologia w Liceum.\nItd itd</string>
+    <string name="drawer_help_info">Aplikacja StudyGram pozwala na dołączanie do grup tematycznych, np. Lekarz w kategorii Praca albo Biologia w Liceum.\nW celu korzystania ze wszystkich funkcjonalności należy zalogować się ikonką klucza w prawym górnym rogu. Następnie istnieje możliwość dołączania (+) i opuszczania grup (-), a także proponowania nowych (ikonka ołówka) - ale tylko raz dziennie!\nNa stronie startowej prezentowane są główne kategorie oraz najnowsze informacje o aplikacji wyświetlane na bieżąco.\nW każdej podkategorii prezentowana jest lista pozwalająca na wyświetlanie informacji o danym użytkowniku (po kliknięciu na wiersz listy) oraz przejście do jej/jego profilu instagramowego (po kliknięciu na zdjęcie profilowe).\nStudyGram posiada również czat, do którego dostęp można uzyskać klikając ikonkę dymku z tekstem na liście kategorii Wszyscy lub jakiejkolwiek podkategorii.\nJeśli masz pytanie lub sugestię - wyślij mail używając opcji poniżej.\n\nZapraszamy do miłego spędzania czasu! :)</string>
     <string name="send_email">Wyślij email</string>
-    <string name="drawer_about_info">Aplikacja StudyGram używa następujących bibliotek:</string>
-    <string name="drawer_about_apache_license">Wszystkie są rozpowszechniane pod Apache License</string>
-    <string name="cant_add_category">Możesz sugerować tylko jedną kategorię dziennie. Spróbuj ponownie jutro.</string>
-    <string name="cant_add_subcategory">Możesz sugerować tylko jedną podkategorię dziennie. Spróbuj ponownie jutro.</string>
-    <string name="user_chat_header_placeholder">Trwa łączenie z czatem&#8230;</string>
-    <string name="user_chat_send_placeholder">Wpisz wiadomość&#8230;</string>
+    <string name="drawer_about_libraries_info">Aplikacja StudyGram posiada licencję Apache License, Version 2.0. Używa następujących zewnętrznych bibliotek:</string>
+    <string name="drawer_about_apache_license">Wszystkie powyższe są rozpowszechniane pod Licencją Apache:</string>
+    <string name="drawer_about_mit_license">Wszystkie powyższe są rozpowszechniane pod Licencją MIT:</string>
+    <string name="type_message">Wpisz wiadomość&#8230;</string>
 </resources>

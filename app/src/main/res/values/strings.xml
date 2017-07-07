@@ -115,6 +115,10 @@
     <string name="login">Login</string>
     <string name="login_info">StudyGroup app uses plugin called \"Pixel Union\" to connect with Instagram account. On the next page please login to your Instagram and if you do it for the first time, allow permissions for \"PXU Access Token\" app.</string>
     <string name="log_in">Log in</string>
+    <string name="cant_add_category">You\'ve reached your suggestion limit for new categories. Try again in 24 hours.</string>
+    <string name="cant_add_subcategory">You\'ve reached your suggestion limit for new subcategories. Try again in 24 hours.</string>
+    <string name="user_chat_header_placeholder">Connecting to chat&#8230;</string>
+    <string name="user_chat_send_placeholder">Type message&#8230;</string>
 
     <string name="drawer_login">Log in</string>
     <string name="drawer_login_2">to see your profile</string>
@@ -124,22 +128,23 @@
     <string name="drawer_buy">Buy addons</string>
     <string name="drawer_about">About StudyGram&#8230;</string>
     <string name="drawer_buy_not_yet">No addons yet, coming soon!</string>
-    <string name="drawer_help_info">StudyGram app allows to join groups of certain topics, like Doctor in Work group or Biology in High School.\nItd itd</string>
+    <string name="drawer_help_info">StudyGram app allows to join groups of certain topics, like Doctor in Work group or Biology in High School.\nTo use all functions, first you must login using the key icon in the top right corner. Then you can join (+) and leave groups (-) as well as suggest new ones (pen icon) - but only once a day!\nOn the starting page the categories are shown with informations which can change dynamically up to date.\nIn every subcategory the list is presented allowing to show users info (click on the list row) and visit their Instagram profile (click on profile picture).\nThere is also a chat which can be accessed by clicking the chat icon on All category list view and every subcategory lists.\nIf you have any questions or suggestions - send email using option below.\n\nEnjoy your stay! :)</string>
     <string name="send_email">Send email</string>
-    <string name="drawer_about_info">StudyGram app uses these 3rd party libraries:</string>
-    <string name="drawer_about_info_grid" translatable="false">AndroidStaggeredGrid\nCopyright &#169; 2013 Etsy</string>
-    <string name="drawer_about_info_preloader" translatable="false">Crystal Preloaders\nCopyright &#169; 2016 Syed Owais Ali</string>
-    <string name="drawer_about_info_image_helper" translatable="false">UrlImageViewHelper\nCopyright &#169; 2012 Koushik Dutta</string>
-    <string name="drawer_about_apache_license">They are all under Apache License</string>
+    <string name="drawer_about_dev_info" translatable="false">Copyright &#169; 2017 Jakub Zaguła</string>
+    <string name="drawer_about_libraries_info">StudyGram is licensed under the Apache License, Version 2.0. It uses these 3rd party libraries:</string>
+    <string name="drawer_about_info_apache_grid" translatable="false">AndroidStaggeredGrid\nCopyright &#169; 2013 Etsy</string>
+    <string name="drawer_about_info_apache_preloader" translatable="false">Crystal Preloaders\nCopyright &#169; 2016 Syed Owais Ali</string>
+    <string name="drawer_about_info_apache_image_helper" translatable="false">UrlImageViewHelper\nCopyright &#169; 2012 Koushik Dutta</string>
+    <string name="drawer_about_info_apache_circle_image" translatable="false">CircleImageView\nCopyright &#169; 2014-2017 Henning Dodenhof</string>
+    <string name="drawer_about_info_apache_material_drawer" translatable="false">MaterialDrawer\nCopyright &#169; 2016 Mike Penz</string>
+    <string name="drawer_about_info_apache_iconics" translatable="false">Android-Iconics\nCopyright &#169; 2016 Mike Penz</string>
+    <string name="drawer_about_info_apache_fontawesome" translatable="false">Fontawesome\nCopyright &#169; 2016 Mike Penz</string>
+    <string name="drawer_about_info_apache_jackson" translatable="false">Jackson Core: Databind\nCopyright &#169; 2016 FasterXML</string>
+    <string name="drawer_about_apache_license">Those above are all licensed under the Apache License:</string>
     <string name="drawer_about_apache_license_info" translatable="false">Licensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0\nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.</string>
-    <string name="cant_add_category">You\'ve reached your suggestion limit for new categories. Try again in 24 hours.</string>
-    <string name="cant_add_subcategory">You\'ve reached your suggestion limit for new subcategories. Try again in 24 hours.</string>
-    <string name="user_chat_header_placeholder">Connecting to chat&#8230;</string>
-    <string name="user_chat_send_placeholder">Type message&#8230;</string>
-    <!--com.koushikdutta.urlimageviewhelper:urlimageviewhelper:1.0.4'
-    com.afollestad.material-dialogs:core:0.9.4.3'
-    de.hdodenhof:circleimageview:2.1.0'
-    com.mikepenz:materialdrawer:5.9.2'
-    com.mikepenz:iconics-core:2.8.5'
-    com.mikepenz:fontawesome-typeface:4.7.0.0@aar'-->
+    <string name="drawer_about_info_mit_material_dialog" translatable="false">Material Dialogs\nCopyright &#169; 2014-2016 Aidan Michael Follestad</string>
+    <string name="drawer_about_info_mit_java_websocket" translatable="false">Java WebSockets\nCopyright &#169; 2010-2017 Nathan Rajlich</string>
+    <string name="drawer_about_mit_license">Those above are all licensed under the MIT License:</string>
+    <string name="drawer_about_mit_license_info" translatable="false">Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</string>
+    <string name="type_message">Type message&#8230;</string>
 </resources>

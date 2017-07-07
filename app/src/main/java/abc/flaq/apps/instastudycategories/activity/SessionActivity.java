@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -54,6 +55,7 @@ public class SessionActivity extends AppCompatActivity {
 
     private final AppCompatActivity clazz = this;
     private View rootView;
+    private Handler handler = new Handler();
 
     private Menu mainMenu;
     private User user;
@@ -164,7 +166,7 @@ public class SessionActivity extends AppCompatActivity {
                     }
                 } else {
                     view.loadUrl(url);
-                    view.postDelayed(new Runnable() {
+                    handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             preloader.setVisibility(View.GONE);
@@ -398,20 +400,6 @@ public class SessionActivity extends AppCompatActivity {
                             intent.putExtra(INTENT_SESSION_LOGIN, true);
                             LocalBroadcastManager.getInstance(clazz).sendBroadcast(intent);
                         }
-
-                        /*Intent intent = new Intent(INTENT_SESSION);
-                        intent.putExtra(INTENT_SESSION_LOGIN, true);
-                        LocalBroadcastManager.getInstance(clazz).sendBroadcast(intent);
-
-                        if (wasUserInactive) {
-                            // Refresh activity if login from CategoryActivity
-                            if ("CategoryActivity".equals(clazz.getClass().getSimpleName())) {
-                                Intent nextIntent = new Intent(clazz, MainActivity.class);
-                                startActivity(nextIntent);
-                            } else {
-                                Session.getInstance().setCategoryChanged(true);
-                            }
-                        }*/
                     }
                 }
             } else {

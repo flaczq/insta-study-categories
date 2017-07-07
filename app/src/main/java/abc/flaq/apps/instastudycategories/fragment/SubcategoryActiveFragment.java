@@ -31,6 +31,7 @@ import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATE
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_FOREIGN_ID;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_NAME;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_ACTIVE_START;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_USERS_SIZE;
 
 public class SubcategoryActiveFragment extends Fragment {
 
@@ -74,6 +75,7 @@ public class SubcategoryActiveFragment extends Fragment {
                 Intent nextIntent = new Intent(getActivity(), UserActivity.class);
                 nextIntent.putExtra(INTENT_SUBCATEGORY_FOREIGN_ID, selected.getForeignId());
                 nextIntent.putExtra(INTENT_SUBCATEGORY_NAME, selected.getName());
+                nextIntent.putExtra(INTENT_SUBCATEGORY_USERS_SIZE, selected.getUsersSize());
                 getActivity().startActivity(nextIntent);
             }
         });

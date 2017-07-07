@@ -36,6 +36,7 @@ import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGOR
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_INACTIVE;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_NAME;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_INACTIVE_START;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_USERS_SIZE;
 
 public class CategoryInactiveFragment extends Fragment {
 
@@ -61,7 +62,7 @@ public class CategoryInactiveFragment extends Fragment {
         tabNo = args.getInt(BUNDLE_CATEGORY_TAB_NO);*/
     }
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         View parentView = inflater.inflate(R.layout.activity_category, container, false);
 
         preloader = (CrystalPreloader) parentView.findViewById(R.id.category_preloader);
@@ -85,7 +86,10 @@ public class CategoryInactiveFragment extends Fragment {
                     }
                     nextIntent.putExtra(INTENT_CATEGORY_FOREIGN_ID, selected.getForeignId());
                     nextIntent.putExtra(INTENT_CATEGORY_NAME, selected.getName());
+                    nextIntent.putExtra(INTENT_CATEGORY_USERS_SIZE, selected.getUsersSize());
                     getActivity().startActivity(nextIntent);
+                } else {
+                    Utils.showInfo(container, "Tutaj będą prezentowane nowości i ważne informacje o aplikacji");
                 }
             }
         });

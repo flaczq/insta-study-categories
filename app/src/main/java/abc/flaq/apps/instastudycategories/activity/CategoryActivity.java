@@ -83,6 +83,7 @@ public class CategoryActivity extends SessionActivity {
     private Drawer drawer;
     private AccountHeader drawerHeader;
     private IProfile drawerProfile;
+    private Handler handler = new Handler();
 
     private ArrayList<Category> categories = new ArrayList<>();
     private ArrayList<Info> infos = new ArrayList<>();
@@ -270,7 +271,7 @@ public class CategoryActivity extends SessionActivity {
                             Utils.logDebug(clazz, "Instagram intent is NOT available");
                             clazz.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + Session.getInstance().getUser().getUsername())));
                         }
-                        return true;
+                        return false;
                     }
 
                     @Override
@@ -341,12 +342,22 @@ public class CategoryActivity extends SessionActivity {
                                         .icon(aboutIcon)
                                         .title(R.string.drawer_about)
                                         .content(
-                                                getString(R.string.drawer_about_info) + "\n\n" +
-                                                getString(R.string.drawer_about_info_grid) + "\n\n" +
-                                                getString(R.string.drawer_about_info_preloader) + "\n\n" +
-                                                getString(R.string.drawer_about_info_image_helper) + "\n\n" +
+                                                getString(R.string.drawer_about_dev_info) + "\n\n" +
+                                                getString(R.string.drawer_about_libraries_info) + "\n\n" +
+                                                getString(R.string.drawer_about_info_apache_jackson) + "\n\n" +
+                                                getString(R.string.drawer_about_info_apache_grid) + "\n\n" +
+                                                getString(R.string.drawer_about_info_apache_preloader) + "\n\n" +
+                                                getString(R.string.drawer_about_info_apache_image_helper) + "\n\n" +
+                                                getString(R.string.drawer_about_info_apache_circle_image) + "\n\n" +
+                                                getString(R.string.drawer_about_info_apache_material_drawer) + "\n\n" +
+                                                getString(R.string.drawer_about_info_apache_iconics) + "\n\n" +
+                                                getString(R.string.drawer_about_info_apache_fontawesome) + "\n\n" +
                                                 getString(R.string.drawer_about_apache_license) + "\n" +
-                                                getString(R.string.drawer_about_apache_license_info)
+                                                getString(R.string.drawer_about_apache_license_info) + "\n\n" +
+                                                getString(R.string.drawer_about_info_mit_java_websocket) + "\n\n" +
+                                                getString(R.string.drawer_about_info_mit_material_dialog) + "\n\n" +
+                                                getString(R.string.drawer_about_mit_license) + "\n" +
+                                                getString(R.string.drawer_about_mit_license_info)
                                         )
                                         .typeface("Roboto-Medium.ttf", "RobotoCondensed-Light.ttf")
                                         .positiveText(R.string.back)
@@ -513,7 +524,7 @@ public class CategoryActivity extends SessionActivity {
         }
 
         if (activeCategories.size() == 0 && inactiveCategories.size() > 0) {
-            pager.postDelayed(new Runnable() {
+            handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     pager.setCurrentItem(TAB_INACTIVE, true);

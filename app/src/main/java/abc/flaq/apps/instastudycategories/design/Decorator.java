@@ -14,7 +14,6 @@ import android.widget.TextView;
 import java.util.Locale;
 
 import abc.flaq.apps.instastudycategories.R;
-import abc.flaq.apps.instastudycategories.general.Session;
 
 import static abc.flaq.apps.instastudycategories.helper.Utils.isNotEmpty;
 import static android.util.TypedValue.COMPLEX_UNIT_SP;
@@ -107,7 +106,7 @@ public class Decorator {
         }
     }
     public static void setGridHeight(int size, ImageView imageView) {
-        int height = Session.getInstance().getMaxGridSize();
+        //int height = Session.getInstance().getMaxGridSize();
         // TODO SOMEDAY: how to set imageview height properly?
     }
 

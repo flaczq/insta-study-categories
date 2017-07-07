@@ -36,6 +36,7 @@ import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGOR
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_ACTIVE_START;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_FOREIGN_ID;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_NAME;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_USERS_SIZE;
 
 public class CategoryActiveFragment extends Fragment {
 
@@ -85,6 +86,7 @@ public class CategoryActiveFragment extends Fragment {
                     }
                     nextIntent.putExtra(INTENT_CATEGORY_FOREIGN_ID, selected.getForeignId());
                     nextIntent.putExtra(INTENT_CATEGORY_NAME, selected.getName());
+                    nextIntent.putExtra(INTENT_CATEGORY_USERS_SIZE, selected.getUsersSize());
                     getActivity().startActivity(nextIntent);
                 } else {
                     Utils.showInfo(container, "Tutaj będą prezentowane nowości i ważne informacje o aplikacji");

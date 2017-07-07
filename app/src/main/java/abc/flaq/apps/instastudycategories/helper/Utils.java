@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
@@ -45,6 +46,7 @@ import static abc.flaq.apps.instastudycategories.helper.Constants.STRINGS_SUBCAT
 public class Utils {
 
     private static final Calendar calendar = Calendar.getInstance();
+    private static final Handler handler = new Handler();
 
     private static final int LOG_DEBUG = 0;
     private static final int LOG_ERROR = 1;
@@ -100,12 +102,12 @@ public class Utils {
         if (isNotEmpty(snackbarTextView)) {
             snackbarTextView.setMaxLines(6);
         }
-        view.postDelayed(new Runnable() {
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 snackbar.show();
             }
-        }, 100);
+        }, 150);
     }
     public static void showQuickInfo(View view, String message) {
         final Snackbar snackbar = Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_SHORT);
@@ -113,12 +115,12 @@ public class Utils {
         if (isNotEmpty(snackbarTextView)) {
             snackbarTextView.setMaxLines(6);
         }
-        view.postDelayed(new Runnable() {
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 snackbar.show();
             }
-        }, 100);
+        }, 150);
     }
     public static void showInfoDismiss(View view, String message) {
         final Snackbar snackbar = Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_INDEFINITE)
@@ -133,12 +135,12 @@ public class Utils {
         if (isNotEmpty(snackbarTextView)) {
             snackbarTextView.setMaxLines(6);
         }
-        view.postDelayed(new Runnable() {
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 snackbar.show();
             }
-        }, 100);
+        }, 150);
     }
     public static void showError(View view, String message) {
         logError(view.getContext(), message);
@@ -148,12 +150,12 @@ public class Utils {
         if (isNotEmpty(snackbarTextView)) {
             snackbarTextView.setMaxLines(6);
         }
-        view.postDelayed(new Runnable() {
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 snackbar.show();
             }
-        }, 100);
+        }, 150);
     }
     public static void showQuickError(View view, String message) {
         logError(view.getContext(), message);
@@ -163,12 +165,12 @@ public class Utils {
         if (isNotEmpty(snackbarTextView)) {
             snackbarTextView.setMaxLines(6);
         }
-        view.postDelayed(new Runnable() {
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 snackbar.show();
             }
-        }, 100);
+        }, 150);
     }
     public static void showErrorDismiss(View view, String message) {
         final Snackbar snackbar = Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_INDEFINITE)
@@ -183,12 +185,12 @@ public class Utils {
         if (isNotEmpty(snackbarTextView)) {
             snackbarTextView.setMaxLines(6);
         }
-        view.postDelayed(new Runnable() {
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 snackbar.show();
             }
-        }, 100);
+        }, 150);
     }
     public static void showConnectionError(final View view, String logMessage, String showMessage) {
         logError(view.getContext(), logMessage);
@@ -205,12 +207,12 @@ public class Utils {
         if (isNotEmpty(snackbarTextView)) {
             snackbarTextView.setMaxLines(6);
         }
-        view.postDelayed(new Runnable() {
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 snackbar.show();
             }
-        }, 100);
+        }, 150);
     }
     public static void showLoginError(final View view, String message) {
         final Snackbar snackbar = Snackbar.make(findSnackbarView(view), message, Snackbar.LENGTH_INDEFINITE)
@@ -225,12 +227,12 @@ public class Utils {
         if (isNotEmpty(snackbarTextView)) {
             snackbarTextView.setMaxLines(6);
         }
-        view.postDelayed(new Runnable() {
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 snackbar.show();
             }
-        }, 100);
+        }, 150);
     }
 
     public static <T> boolean isEmpty(T element) {
@@ -282,7 +284,6 @@ public class Utils {
         emailIntent.setType("message/rfc822");
         emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { EMAIL_NAME });
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
-
         return emailIntent;
     }
 

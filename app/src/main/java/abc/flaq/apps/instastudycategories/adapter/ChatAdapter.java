@@ -1,8 +1,6 @@
 package abc.flaq.apps.instastudycategories.adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 
@@ -25,7 +24,6 @@ import abc.flaq.apps.instastudycategories.pojo.WebSocketMessage;
 import static abc.flaq.apps.instastudycategories.helper.Constants.CHAT_DATE_FORMAT;
 import static abc.flaq.apps.instastudycategories.helper.Constants.CHAT_EARLY_DATE_FORMAT;
 import static abc.flaq.apps.instastudycategories.helper.Constants.CHAT_LATE_DATE_FORMAT;
-import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_URL;
 
 public class ChatAdapter extends BaseAdapter {
 
@@ -118,15 +116,7 @@ public class ChatAdapter extends BaseAdapter {
                 profilePic.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Utils.showQuickInfo(view, context.getString(R.string.ig_profile_open) + model.getName() + "...");
-                        Intent nextIntent = Utils.getInstagramIntent(model.getName());
-                        if (Utils.isIntentAvailable(context, nextIntent)) {
-                            Utils.logDebug(context, "Instagram intent is available");
-                            context.startActivity(nextIntent);
-                        } else {
-                            Utils.logDebug(context, "Instagram intent is NOT available");
-                            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(INSTAGRAM_URL + model.getName())));
-                        }
+                        Toast.makeText(context, model.getName(), Toast.LENGTH_SHORT).show();
                     }
                 });
 

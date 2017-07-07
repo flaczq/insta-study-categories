@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +40,7 @@ public class CategoryAdapter extends BaseAdapter {
 
     private final Context context;
     private final LayoutInflater inflater;
+    private final Handler handler = new Handler();
 
     private final ArrayList<EveObject> categories;
     private final Typeface font;
@@ -173,9 +175,9 @@ public class CategoryAdapter extends BaseAdapter {
             }
 
             // Calculate height for all except "all" category
-            /*if (!"all".equals(model.getName())) {
+            if (!"all".equals(model.getName())) {
                 Decorator.setGridHeight(model.getSubcategoriesSize(), photo);
-            }*/
+            }
         }
     }
     private class InfoViewHolder {
@@ -220,7 +222,7 @@ public class CategoryAdapter extends BaseAdapter {
                 title.setText(model.getTitle());
                 if (firstTime) {
                     message.animateText(model.getMessage());
-                    message.postDelayed(new Runnable() {
+                    handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             firstTime = false;

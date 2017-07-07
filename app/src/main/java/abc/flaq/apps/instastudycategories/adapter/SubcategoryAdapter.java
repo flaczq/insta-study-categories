@@ -120,7 +120,7 @@ public class SubcategoryAdapter extends BaseAdapter {
             }
 
             // Calculate height for all except "all" category
-            //Decorator.setGridHeight(model.getUsersSize(), photo);
+            Decorator.setGridHeight(model.getUsersSize(), photo);
         }
     }
 

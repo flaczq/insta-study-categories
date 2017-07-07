@@ -35,6 +35,7 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import abc.flaq.apps.instastudycategories.R;
@@ -54,8 +55,10 @@ import static abc.flaq.apps.instastudycategories.R.id.menu_sort_alphabet;
 import static abc.flaq.apps.instastudycategories.R.id.menu_sort_followers;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_FOREIGN_ID;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_NAME;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_USERS_SIZE;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_FOREIGN_ID;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_NAME;
+import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY_USERS_SIZE;
 import static abc.flaq.apps.instastudycategories.helper.Constants.WEB_SOCKET_MAX_MESSAGES;
 import static android.view.inputmethod.EditorInfo.IME_ACTION_SEND;
 
@@ -70,11 +73,13 @@ public class UserActivity extends SessionActivity {
     private List<User> users = new ArrayList<>();
     private Menu mainMenu;
     private String parentForeignId;
+    private Integer parentUsersSize;
     private String subcategoryParentName;
     private Boolean isCategory = false;
     private Boolean hasJoined;
     private Boolean isApiWorking = false;
     private WebSocketClientSide webSocket;
+    private Integer messageCount = WEB_SOCKET_MAX_MESSAGES;
     private Dialog chatDialog;
     private Boolean sortDate = false;
     private Boolean sortFollowers = true;
@@ -106,12 +111,14 @@ public class UserActivity extends SessionActivity {
         if (Utils.isNotEmpty(categoryForeignId)) {
             isCategory = true;
             parentForeignId = categoryForeignId;
+            parentUsersSize = intent.getIntExtra(INTENT_CATEGORY_USERS_SIZE, -1);
             String categoryParentName = Utils.getCategoryString(clazz, intent.getStringExtra(INTENT_CATEGORY_NAME));
             Decorator.setActionBarTitle(clazz, categoryParentName, null);
         } else {
             String subcategoryForeignId = intent.getStringExtra(INTENT_SUBCATEGORY_FOREIGN_ID);
             if (Utils.isNotEmpty(subcategoryForeignId)) {
                 parentForeignId = subcategoryForeignId;
+                parentUsersSize = intent.getIntExtra(INTENT_SUBCATEGORY_USERS_SIZE, -1);
                 String categoryParentName = Utils.getCategoryString(clazz, Session.getInstance().getCategoryName());
                 subcategoryParentName = Utils.getSubcategoryString(clazz, intent.getStringExtra(INTENT_SUBCATEGORY_NAME));
                 Decorator.setActionBarTitle(clazz, subcategoryParentName, categoryParentName);
@@ -236,6 +243,8 @@ public class UserActivity extends SessionActivity {
 
     private void initWebSocket() {
         final ArrayList<WebSocketMessage> messages = new ArrayList<>();
+        final ChatAdapter chatAdapter = new ChatAdapter(clazz, messages);
+
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View chatView = inflater.inflate(R.layout.activity_user_chat, null);
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.user_fab);
@@ -285,13 +294,13 @@ public class UserActivity extends SessionActivity {
             @Override
             public void onClick(View view) {
                 if (Utils.isNotEmpty(chatInput.getText())) {
+                    messageCount = chatAdapter.getCount();
                     webSocket.sendMessage(chatInput.getText().toString());
                     chatInput.setText(null);
                 }
             }
         });
 
-        final ChatAdapter chatAdapter = new ChatAdapter(clazz, messages);
         chatList.setAdapter(chatAdapter);
         chatList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -333,17 +342,27 @@ public class UserActivity extends SessionActivity {
             }
 
             @Override
-            public void onMessageTypeMsg(WebSocketMessage message) {
+            public void onMessageTypeMsg(final WebSocketMessage message) {
                 messages.add(message);
-                chatAdapter.notifyDataSetChanged();
-                if (chatAdapter.getCount() > WEB_SOCKET_MAX_MESSAGES) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        chatAdapter.notifyDataSetChanged();
+                    }
+                });
+                if (chatAdapter.getCount() > messageCount) {
                     fab.setImageResource(R.drawable.ic_chat_white_24dp);
                 }
             }
 
             @Override
-            public void onMessageTypeNum(Integer totalUsers) {
-                chatHeader.setText(getString(R.string.chat_total_users, totalUsers));
+            public void onMessageTypeNum(final Integer totalUsers) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        chatHeader.setText(getString(R.string.chat_total_users, totalUsers));
+                    }
+                });
             }
         });
         webSocket.connect();
@@ -388,6 +407,7 @@ public class UserActivity extends SessionActivity {
 
                     user.calculateJoinDate(parentForeignId);
                 }
+                Collections.sort(users);
             } catch (JSONException e) {
                 handleConnectionError("JSONException: " + e.getMessage(), getString(R.string.error_users_load));
             } catch (IOException e) {
@@ -407,6 +427,10 @@ public class UserActivity extends SessionActivity {
             userAdapter = new UserAdapter(clazz, users);
             listView.setAdapter(userAdapter);
             setCategoryMenuVisibility(hasJoined);
+
+            if (parentUsersSize >= 0 && users.size() != parentUsersSize) {
+                Session.getInstance().setSubcategoryChanged(true);
+            }
 
             initWebSocket();
         }
