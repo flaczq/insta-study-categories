@@ -110,7 +110,7 @@ public class CategoryActivity extends SessionActivity {
         tabs = (TabLayout) findViewById(R.id.category_tabs);
         tabs.setupWithViewPager(pager);
 
-        adView = (AdView) findViewById(R.id.subcategory_adView);
+        adView = (AdView) findViewById(R.id.category_adView);
         AdRequest adRequest = (
                 BuildConfig.IS_DEBUG ?
                         new AdRequest.Builder().addTestDevice(ADMOB_TEST_DEVICE_ID).build() :

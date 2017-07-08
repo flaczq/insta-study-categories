@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crystal.crystalpreloaders.widgets.CrystalPreloader;
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
@@ -110,13 +111,39 @@ public class UserActivity extends SessionActivity {
             }
         });
 
-        adView = (AdView) findViewById(R.id.subcategory_adView);
+        adView = (AdView) findViewById(R.id.user_adView);
         AdRequest adRequest = (
                 BuildConfig.IS_DEBUG ?
                         new AdRequest.Builder().addTestDevice(ADMOB_TEST_DEVICE_ID).build() :
                         new AdRequest.Builder().build()
         );
         adView.loadAd(adRequest);
+        adView.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+                if (listView.getPaddingBottom() == 0) {
+                    // Move up to show adView
+                    if (adView.getHeight() == 0) {
+                        listView.setPadding(0, 0, 0, Utils.getDpFromPx(clazz, 50));
+                    } else {
+                        listView.setPadding(0, 0, 0, adView.getHeight());
+                    }
+                }
+            }
+            @Override
+            public void onAdFailedToLoad(int i) {
+                super.onAdFailedToLoad(i);
+                if (listView.getPaddingBottom() == 0) {
+                    // Move up to show adView
+                    if (adView.getHeight() == 0) {
+                        listView.setPadding(0, 0, 0, Utils.getDpFromPx(clazz, 50));
+                    } else {
+                        listView.setPadding(0, 0, 0, adView.getHeight());
+                    }
+                }
+            }
+        });
 
         Intent intent = getIntent();
         String categoryForeignId = intent.getStringExtra(INTENT_CATEGORY_FOREIGN_ID);

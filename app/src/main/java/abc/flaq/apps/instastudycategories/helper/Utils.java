@@ -14,6 +14,7 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.text.format.DateFormat;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 
@@ -596,6 +597,11 @@ public class Utils {
         DisplayMetrics metrics = getScreenMetrics(activity);
         int screenWidth = metrics.widthPixels;
         return screenWidth;
+    }
+    public static int getDpFromPx(Activity activity, int px) {
+        DisplayMetrics metrics = getScreenMetrics(activity);
+        int dp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, px, metrics);
+        return dp;
     }
 
     public static String listToString(List list) {
