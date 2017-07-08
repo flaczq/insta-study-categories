@@ -26,6 +26,8 @@ import android.widget.ImageView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.iconics.IconicsDrawable;
@@ -56,6 +58,7 @@ import abc.flaq.apps.instastudycategories.helper.Utils;
 import abc.flaq.apps.instastudycategories.pojo.Category;
 import abc.flaq.apps.instastudycategories.pojo.Info;
 
+import static abc.flaq.apps.instastudycategories.helper.Constants.ADMOB_TEST_DEVICE_ID;
 import static abc.flaq.apps.instastudycategories.helper.Constants.DATE_FORMAT;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INSTAGRAM_URL;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY;
@@ -84,6 +87,7 @@ public class CategoryActivity extends SessionActivity {
     private AccountHeader drawerHeader;
     private IProfile drawerProfile;
     private Handler handler = new Handler();
+    private AdView adView;
 
     private ArrayList<Category> categories = new ArrayList<>();
     private ArrayList<Info> infos = new ArrayList<>();
@@ -104,6 +108,10 @@ public class CategoryActivity extends SessionActivity {
 
         tabs = (TabLayout) findViewById(R.id.category_tabs);
         tabs.setupWithViewPager(pager);
+
+        adView = (AdView) findViewById(R.id.category_adView);
+        AdRequest adRequest = new AdRequest.Builder().addTestDevice(ADMOB_TEST_DEVICE_ID).build();
+        adView.loadAd(adRequest);
 
         addCategoryCounter = Session.getInstance().getSettings().getInt(SETTINGS_SUGGEST_CATEGORY, SUGGEST_MAX_COUNT);
         addCategoryDate = Session.getInstance().getSettings().getLong(SETTINGS_SUGGEST_CATEGORY_DATE, 0);
@@ -135,6 +143,7 @@ public class CategoryActivity extends SessionActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        adView.resume();
         invalidateOptionsMenu();
         setBroadcastReceivers();
         // Update categories when going back from User activity and user has joined or left the subcategory in category
@@ -150,6 +159,7 @@ public class CategoryActivity extends SessionActivity {
     @Override
     protected void onPause() {
         LocalBroadcastManager.getInstance(clazz).unregisterReceiver(receiver);
+        adView.pause();
         super.onPause();
     }
     @Override

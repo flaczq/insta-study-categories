@@ -23,8 +23,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         Utils.logDebug(this, "Build data: " +
-                BuildConfig.FLAVOR_FULLNAME +
-                "/" + BuildConfig.BUILD_TYPE + " " +
+                BuildConfig.FLAVOR_FULLNAME + "/" +
+                BuildConfig.BUILD_TYPE + " " +
                 BuildConfig.VERSION_NAME
         );
 

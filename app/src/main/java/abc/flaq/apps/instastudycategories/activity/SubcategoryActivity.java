@@ -16,6 +16,8 @@ import android.view.MenuItem;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import org.json.JSONException;
 
@@ -25,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import abc.flaq.apps.instastudycategories.BuildConfig;
 import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.adapter.SubcategoryTabAdapter;
 import abc.flaq.apps.instastudycategories.api.Api;
@@ -33,6 +36,7 @@ import abc.flaq.apps.instastudycategories.general.Session;
 import abc.flaq.apps.instastudycategories.helper.Utils;
 import abc.flaq.apps.instastudycategories.pojo.Subcategory;
 
+import static abc.flaq.apps.instastudycategories.helper.Constants.ADMOB_TEST_DEVICE_ID;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_FOREIGN_ID;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_NAME;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_SUBCATEGORY;
@@ -53,6 +57,7 @@ public class SubcategoryActivity extends SessionActivity {
     private ViewPager pager;
     private TabLayout tabs;
     private Handler handler = new Handler();
+    private AdView adView;
 
     private List<Subcategory> subcategories = new ArrayList<>();
     private String categoryForeignId;
@@ -73,6 +78,14 @@ public class SubcategoryActivity extends SessionActivity {
 
         tabs = (TabLayout) findViewById(R.id.subcategory_tabs);
         tabs.setupWithViewPager(pager);
+
+        adView = (AdView) findViewById(R.id.subcategory_adView);
+        AdRequest adRequest = (
+                BuildConfig.IS_DEBUG ?
+                new AdRequest.Builder().addTestDevice(ADMOB_TEST_DEVICE_ID).build() :
+                new AdRequest.Builder().build()
+        );
+        adView.loadAd(adRequest);
 
         Intent intent = getIntent();
         categoryForeignId = intent.getStringExtra(INTENT_CATEGORY_FOREIGN_ID);
@@ -114,11 +127,18 @@ public class SubcategoryActivity extends SessionActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        adView.resume();
         invalidateOptionsMenu();
         // Load subcategories when going back from User activity and user has joined or left the subcategory
         if (Session.getInstance().isSubcategoryChanged()) {
             new ProcessSubcategories().execute();
         }
+    }
+
+    @Override
+    protected void onPause() {
+        adView.pause();
+        super.onPause();
     }
 
     @Override

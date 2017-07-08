@@ -29,6 +29,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crystal.crystalpreloaders.widgets.CrystalPreloader;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import org.json.JSONException;
 
@@ -53,6 +55,7 @@ import abc.flaq.apps.instastudycategories.pojo.WebSocketMessage;
 
 import static abc.flaq.apps.instastudycategories.R.id.menu_sort_alphabet;
 import static abc.flaq.apps.instastudycategories.R.id.menu_sort_followers;
+import static abc.flaq.apps.instastudycategories.helper.Constants.ADMOB_TEST_DEVICE_ID;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_FOREIGN_ID;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_NAME;
 import static abc.flaq.apps.instastudycategories.helper.Constants.INTENT_CATEGORY_USERS_SIZE;
@@ -69,6 +72,7 @@ public class UserActivity extends SessionActivity {
     private ListView listView;
     private UserAdapter userAdapter;
     private CrystalPreloader preloader;
+    private AdView adView;
 
     private List<User> users = new ArrayList<>();
     private Menu mainMenu;
@@ -105,6 +109,10 @@ public class UserActivity extends SessionActivity {
             }
         });
 
+        adView = (AdView) findViewById(R.id.user_adView);
+        AdRequest adRequest = new AdRequest.Builder().addTestDevice(ADMOB_TEST_DEVICE_ID).build();
+        adView.loadAd(adRequest);
+
         Intent intent = getIntent();
         String categoryForeignId = intent.getStringExtra(INTENT_CATEGORY_FOREIGN_ID);
         // Check if parentForeignId is from newCategory or subcategory
@@ -133,18 +141,23 @@ public class UserActivity extends SessionActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        adView.resume();
+    }
+    @Override
     protected void onDestroy() {
         if (Utils.isNotEmpty(webSocket)) {
             webSocket.close();
         }
         super.onDestroy();
     }
-
     @Override
     protected void onPause() {
         if (Utils.isNotEmpty(chatDialog)) {
             chatDialog.dismiss();
         }
+        adView.pause();
         super.onPause();
     }
 
@@ -404,7 +417,6 @@ public class UserActivity extends SessionActivity {
                             hasJoined = Session.getInstance().getUser().getSubcategories().contains(parentForeignId);
                         }
                     }
-
                     user.calculateJoinDate(parentForeignId);
                 }
                 Collections.sort(users);

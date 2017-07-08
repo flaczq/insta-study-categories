@@ -18,7 +18,6 @@
         android:gravity="center_vertical"
         android:descendantFocusability="beforeDescendants"
         android:focusableInTouchMode="true">
-
         <EditText android:id="@+id/user_chat_input"
             android:layout_width="0dp"
             android:layout_height="42dp"
@@ -36,7 +35,6 @@
             android:src="@drawable/ic_send_black_24dp"
             android:background="@android:color/transparent"
             android:contentDescription="@string/imageview.description" />
-
     </LinearLayout>
 
     <ListView android:id="@+id/user_chat_list"
@@ -51,7 +49,6 @@
         android:transcriptMode="alwaysScroll"
         android:layout_below="@+id/user_chat_header_layout"
         android:layout_above="@id/user_chat_input_layout" />
-
     <LinearLayout android:id="@+id/user_chat_header_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -60,7 +57,6 @@
         android:layout_alignParentStart="true"
         android:background="@color/colorAccent"
         android:gravity="center_vertical">
-
         <TextView android:id="@+id/user_chat_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -70,7 +66,6 @@
             android:textColor="@color/textColorMaybeImportant"
             android:layout_margin="@dimen/default_small_margin"
             android:gravity="center_horizontal" />
-
     </LinearLayout>
 
 </RelativeLayout>
