@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import abc.flaq.apps.instastudycategories.BuildConfig;
 import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.adapter.ChatAdapter;
 import abc.flaq.apps.instastudycategories.adapter.UserAdapter;
@@ -109,8 +110,12 @@ public class UserActivity extends SessionActivity {
             }
         });
 
-        adView = (AdView) findViewById(R.id.user_adView);
-        AdRequest adRequest = new AdRequest.Builder().addTestDevice(ADMOB_TEST_DEVICE_ID).build();
+        adView = (AdView) findViewById(R.id.subcategory_adView);
+        AdRequest adRequest = (
+                BuildConfig.IS_DEBUG ?
+                        new AdRequest.Builder().addTestDevice(ADMOB_TEST_DEVICE_ID).build() :
+                        new AdRequest.Builder().build()
+        );
         adView.loadAd(adRequest);
 
         Intent intent = getIntent();

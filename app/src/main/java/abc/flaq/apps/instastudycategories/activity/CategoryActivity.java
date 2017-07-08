@@ -50,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import abc.flaq.apps.instastudycategories.BuildConfig;
 import abc.flaq.apps.instastudycategories.R;
 import abc.flaq.apps.instastudycategories.adapter.CategoryTabAdapter;
 import abc.flaq.apps.instastudycategories.api.Api;
@@ -109,8 +110,12 @@ public class CategoryActivity extends SessionActivity {
         tabs = (TabLayout) findViewById(R.id.category_tabs);
         tabs.setupWithViewPager(pager);
 
-        adView = (AdView) findViewById(R.id.category_adView);
-        AdRequest adRequest = new AdRequest.Builder().addTestDevice(ADMOB_TEST_DEVICE_ID).build();
+        adView = (AdView) findViewById(R.id.subcategory_adView);
+        AdRequest adRequest = (
+                BuildConfig.IS_DEBUG ?
+                        new AdRequest.Builder().addTestDevice(ADMOB_TEST_DEVICE_ID).build() :
+                        new AdRequest.Builder().build()
+        );
         adView.loadAd(adRequest);
 
         addCategoryCounter = Session.getInstance().getSettings().getInt(SETTINGS_SUGGEST_CATEGORY, SUGGEST_MAX_COUNT);
