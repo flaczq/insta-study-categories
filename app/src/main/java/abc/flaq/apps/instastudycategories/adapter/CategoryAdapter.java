@@ -215,7 +215,7 @@ public class CategoryAdapter extends BaseAdapter {
                         break;
                     case DB_INFO_TYPE_NEWS:
                     default:
-                        layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorCategoryGreenLight));
+                        layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorCategoryGray));
                         break;
                 }
 

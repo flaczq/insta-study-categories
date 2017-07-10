@@ -446,6 +446,8 @@ public class SessionActivity extends AppCompatActivity {
                 UrlImageViewHelper.setUrlDrawable(profilePic, Session.getInstance().getUser().getProfilePicUrl(), R.drawable.placeholder_profile_pic_72);
                 Session.getInstance().setUserProfilePic(profilePic);
 
+                Session.getInstance().setCategoryChanged(true);
+
                 setMainMenuVisibility(mainMenu);
                 invalidateOptionsMenu();
 

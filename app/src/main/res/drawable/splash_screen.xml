@@ -6,14 +6,15 @@
             <gradient
                 android:type="radial"
                 android:gradientRadius="1000"
-                android:startColor="@color/colorPrimary"
-                android:endColor="@color/colorAccent" />
+                android:startColor="@color/colorSplashInner"
+                android:endColor="@color/colorSplashOuter" />
         </shape>
     </item>
     <item>
         <bitmap
             android:gravity="center"
-            android:src="@drawable/splash_image" />
+            android:src="@drawable/splash_image"
+            />
     </item>
 
 </layer-list>

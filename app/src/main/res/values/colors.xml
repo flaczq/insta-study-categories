@@ -41,4 +41,8 @@
 
     <!-- DRAWER -->
     <color name="material_drawer_background">#F3F3F3</color>
+
+    <!-- SPLASH -->
+    <color name="colorSplashOuter">#404040</color>
+    <color name="colorSplashInner">#FFFFFF</color>
 </resources>

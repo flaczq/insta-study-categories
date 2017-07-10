@@ -169,7 +169,7 @@ public class CategoryActivity extends SessionActivity {
     }
     @Override
     public void onBackPressed() {
-        if (drawer.isDrawerOpen()) {
+        if (Utils.isNotEmpty(drawer) && drawer.isDrawerOpen()) {
             drawer.closeDrawer();
         } else {
             super.onBackPressed();
